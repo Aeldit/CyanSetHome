@@ -3,6 +3,8 @@ package fr.raphoulfifou.sethome.util;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.raphoulfifou.sethome.util.structure.HomeParameters;
+import fr.raphoulfifou.sethome.util.structure.Parameters;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileOutputStream;
@@ -14,10 +16,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SetHomeJSONConfig {
-    public final Options options = new Options();
+    public static Options options = new Options();
     private static Path jsonPath = FabricLoader.getInstance().getConfigDir().resolve("sethome.json");
 
     public static class Options {
@@ -52,25 +56,24 @@ public class SetHomeJSONConfig {
         try (FileOutputStream fos = new FileOutputStream(String.valueOf(jsonPath));
              OutputStreamWriter isr = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
 
-            Parameters parameters = new Parameters("name", "dimension", 0, 0, 0, 0, 0);
+            Map<String, Object> options = new HashMap<>();
+            options.put("areHomesAllowed", SetHomeJSONConfig.options.allowHomes);
+            options.put("multiDimensionalHomes", SetHomeJSONConfig.options.multiDimensionalHomes);
+            options.put("maxHomes", SetHomeJSONConfig.options.maxHomes);
 
-            /*
-            if(homesMap.contains(uuid)) {
-                return;
-            } else {
-                homesMap.add(uuid);
-            }
-             */
-
+            Parameters parameters = new Parameters("name", "dimension");
             List<Parameters> parametersList = new ArrayList<>();
             parametersList.add(parameters);
 
             HomeParameters parametersH = new HomeParameters(parametersList);
-
             List<HomeParameters> homesList = new ArrayList<>();
             homesList.add(parametersH);
 
-            GSON.toJson(homesList, isr);
+            Map<Object, Object> sethome = new HashMap<>();
+            sethome.put("options", options);
+            sethome.put("homes", homesList);
+
+            GSON.toJson(sethome, isr);
 
         } catch (IOException e) {
             e.printStackTrace();
