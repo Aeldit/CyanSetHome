@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "sh",
+  "version": "${version}",
+
+  "name": "SetHome",
+  "description": "This mod adds the home commands to minecraft",
+  "authors": ["Raphoulfifou"],
+  "contact": {
+    "homepage": "https://github.com/Raphoulfifou/SetHome",
+    "sources": "https://github.com/Raphoulfifou/SetHome"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/sethome/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "server": ["fr.raphoulfifou.sethome.HomeServerCore"],
+    "client": ["fr.raphoulfifou.sethome.HomeClientCore"]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "java": ">=16"
+  }
+}
