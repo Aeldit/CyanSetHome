@@ -2,5 +2,8 @@
   "language.name": "English",
   "language.region": "United Kingdom",
   "language.code": "en_gb",
-  "sh.msg.sethome": "§6Your home has been successfully set"
+  "sh.msg.sethome": "§6Your home has been successfully set",
+  "sh.msg.allowHomesSet": "Allow homes option have been set to %s",
+  "sh.msg.multiDimHomesSet": "Multi dimensional homes option have been set to %s",
+  "sh.msg.maxHomesSet": "Max homes option have been set to %s"
 }

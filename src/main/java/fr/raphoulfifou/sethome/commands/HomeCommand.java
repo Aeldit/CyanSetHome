@@ -17,8 +17,7 @@ import java.util.Objects;
 
 public class HomeCommand {
 
-    private static SetHomeJSONConfig.Options options;
-    private static SetHomeJSONConfig homes;
+    private static SetHomeJSONConfig jsonConfig;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("home")
@@ -46,9 +45,9 @@ public class HomeCommand {
         float yaw = player.getYaw();
         float pitch = player.getPitch();
 
-        if(options.areHomesAllowed()) {
-            if(options.maxHomes == options.getMaxHomes()) {
-                if(!options.multiDimensionalHomes) {
+        if(jsonConfig.areHomesAllowed()) {
+            if(jsonConfig.maxHomes == jsonConfig.getMaxHomes()) {
+                if(!jsonConfig.multiDimensionalHomes) {
                     if(player.getServerWorld().getDimension() == Objects.requireNonNull(overworld).getDimension()) {
                         //player.teleport(dimension, x, y, z, yaw, pitch);
                         player.sendMessage(new TranslatableText("sh.msg.sethome"), true);

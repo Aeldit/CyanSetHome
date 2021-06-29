@@ -17,8 +17,7 @@ import java.util.UUID;
 
 public class SetHomeCommand {
 
-    private static SetHomeJSONConfig.Options options;
-    private static SetHomeJSONConfig homes;
+    private static SetHomeJSONConfig jsonConfig;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("sethome")

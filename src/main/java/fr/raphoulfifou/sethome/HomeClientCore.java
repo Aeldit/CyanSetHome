@@ -22,7 +22,6 @@ public class HomeClientCore implements ClientModInitializer {
     public void onInitializeClient() {
         // Loads the homes
         SetHomeJSONConfig.load(FabricLoader.getInstance().getConfigDir().resolve("sethome.json"));
-        SetHomeJSONConfig.main();
 
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

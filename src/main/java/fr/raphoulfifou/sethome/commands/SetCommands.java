@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableText;
 
 public class SetCommands {
 
-    private static SetHomeJSONConfig.Options options;
+    private static final SetHomeJSONConfig jsonConfig = new SetHomeJSONConfig();
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
                 dispatcher.register(CommandManager.literal("allowhomes")
@@ -28,10 +28,22 @@ public class SetCommands {
                 )
         );
 
+        dispatcher.register(CommandManager.literal("multidimensionalhomes")
+                .then(CommandManager.argument("true | false", BoolArgumentType.bool())
+                        .executes(SetCommands::setAreMultiDimensionalHomesAllowed)
+                )
+        );
+        dispatcher.register(CommandManager.literal("mdh")
+                .then(CommandManager.argument("true | false", BoolArgumentType.bool())
+                        .executes(SetCommands::setAreMultiDimensionalHomesAllowed)
+                )
+        );
+
         dispatcher.register(CommandManager.literal("setmaxhomes")
                 .then(CommandManager.argument("maxHomes", IntegerArgumentType.integer())
                         .executes(SetCommands::setMaxHomes)
                 )
+
         );
         dispatcher.register(CommandManager.literal("smh")
                 .then(CommandManager.argument("maxHomes", IntegerArgumentType.integer())
@@ -40,23 +52,31 @@ public class SetCommands {
         );
     }
 
-
     public static int setAreHomesAllowed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        boolean bool = BoolArgumentType.getBool(context, "true | false");
-        options.setAreHomesAllowed(bool);
+        boolean arg = BoolArgumentType.getBool(context, "true | false");
+        jsonConfig.setAreHomesAllowed(arg);
 
-        player.sendMessage(new TranslatableText("sh.msg.allowHomes"), false);
+        player.sendMessage(new TranslatableText("sh.msg.allowHomesSet", arg), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static int setAreMultiDimensionalHomesAllowed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        boolean arg = BoolArgumentType.getBool(context, "true | false");
+        jsonConfig.setAreHomesMultiDimensional(arg);
+
+        player.sendMessage(new TranslatableText("sh.msg.multiDimHomesSet", arg), false);
         return Command.SINGLE_SUCCESS;
     }
 
     public static int setMaxHomes(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        int integer = IntegerArgumentType.getInteger(context, "homeName");
-        options.setMaxHomes(integer);
+        int arg = IntegerArgumentType.getInteger(context, "maxHomes");
+        jsonConfig.setMaxHomes(arg);
 
-        player.sendMessage(new TranslatableText("sh.msg.maxHomesSet"), false);
+        player.sendMessage(new TranslatableText("sh.msg.maxHomesSet", arg), false);
         return Command.SINGLE_SUCCESS;
     }
-
+    
 }
