@@ -28,7 +28,8 @@ public class HomeCommand {
         dispatcher.register(CommandManager.literal("h")
                 .then(CommandManager.argument("homeName", StringArgumentType.string())
                         .executes(HomeCommand::teleportHome)
-        ));
+                )
+        );
     }
 
 
@@ -38,7 +39,7 @@ public class HomeCommand {
         ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
         ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
         ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
-        //ServerWorld dimension = SetHomeJSONConfig.getDimension(name);
+        //RegistryKey<World> dimension = SetHomeJSONConfig.getDimension(name);
         double x = player.getX();
         double y = player.getY();
         double z = player.getZ();
@@ -46,8 +47,8 @@ public class HomeCommand {
         float pitch = player.getPitch();
 
         if(jsonConfig.areHomesAllowed()) {
-            if(jsonConfig.maxHomes == jsonConfig.getMaxHomes()) {
-                if(!jsonConfig.multiDimensionalHomes) {
+            if(SetHomeJSONConfig.maxHomes == jsonConfig.getMaxHomes()) {
+                if(!SetHomeJSONConfig.multiDimensionalHomes) {
                     if(player.getServerWorld().getDimension() == Objects.requireNonNull(overworld).getDimension()) {
                         //player.teleport(dimension, x, y, z, yaw, pitch);
                         player.sendMessage(new TranslatableText("sh.msg.sethome"), true);

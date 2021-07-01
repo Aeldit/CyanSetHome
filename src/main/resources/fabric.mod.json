@@ -3,12 +3,12 @@
   "id": "sh",
   "version": "${version}",
 
-  "name": "SetHome",
+  "name": "CyanSetHome",
   "description": "This mod adds the home commands to minecraft",
   "authors": ["Raphoulfifou"],
   "contact": {
-    "homepage": "https://github.com/Raphoulfifou/SetHome",
-    "sources": "https://github.com/Raphoulfifou/SetHome"
+    "homepage": "https://github.com/Raphoulfifou/CyanSetHome",
+    "sources": "https://github.com/Raphoulfifou/CyanSetHome"
   },
 
   "license": "CC0-1.0",

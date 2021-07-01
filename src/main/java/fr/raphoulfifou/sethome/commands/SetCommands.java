@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableText;
 
 public class SetCommands {
 
-    private static final SetHomeJSONConfig jsonConfig = new SetHomeJSONConfig();
+    private static final SetHomeJSONConfig JSON_CONFIG = new SetHomeJSONConfig();
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
                 dispatcher.register(CommandManager.literal("allowhomes")
@@ -55,7 +55,7 @@ public class SetCommands {
     public static int setAreHomesAllowed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         boolean arg = BoolArgumentType.getBool(context, "true | false");
-        jsonConfig.setAreHomesAllowed(arg);
+        JSON_CONFIG.setAreHomesAllowed(arg);
 
         player.sendMessage(new TranslatableText("sh.msg.allowHomesSet", arg), false);
         return Command.SINGLE_SUCCESS;
@@ -64,7 +64,7 @@ public class SetCommands {
     public static int setAreMultiDimensionalHomesAllowed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         boolean arg = BoolArgumentType.getBool(context, "true | false");
-        jsonConfig.setAreHomesMultiDimensional(arg);
+        JSON_CONFIG.setAreHomesMultiDimensional(arg);
 
         player.sendMessage(new TranslatableText("sh.msg.multiDimHomesSet", arg), false);
         return Command.SINGLE_SUCCESS;
@@ -73,7 +73,7 @@ public class SetCommands {
     public static int setMaxHomes(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         int arg = IntegerArgumentType.getInteger(context, "maxHomes");
-        jsonConfig.setMaxHomes(arg);
+        JSON_CONFIG.setMaxHomes(arg);
 
         player.sendMessage(new TranslatableText("sh.msg.maxHomesSet", arg), false);
         return Command.SINGLE_SUCCESS;

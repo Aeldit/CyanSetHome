@@ -9,15 +9,14 @@ import fr.raphoulfifou.sethome.util.SetHomeJSONConfig;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class SetHomeCommand {
 
-    private static SetHomeJSONConfig jsonConfig;
+    private static final SetHomeJSONConfig JSON_CONFIG = new SetHomeJSONConfig();
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("sethome")
@@ -35,16 +34,15 @@ public class SetHomeCommand {
     public static int setHome(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         String name = StringArgumentType.getString(context, "homeName");
-        ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
-        ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
-        ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
-        //String name = "base";
+        RegistryKey<World> dimension = player.getServerWorld().getRegistryKey();
         UUID uuid = player.getUuid();
         double x = player.getX();
         double y = player.getY();
         double z = player.getZ();
         float yaw = player.getYaw();
         float pitch = player.getPitch();
+
+        JSON_CONFIG.createHome(uuid, name, dimension, x, y, z, yaw, pitch);
 
         /*
         if(options.areHomesAllowed()) {
