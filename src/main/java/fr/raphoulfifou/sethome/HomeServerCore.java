@@ -8,7 +8,6 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class HomeServerCore implements DedicatedServerModInitializer {
     // Initialize the differents instances (here commands) when lauched on server
     public void onInitializeServer() {
         // Loads the homes
-        SetHomeJSONConfig.load(FabricLoader.getInstance().getConfigDir().resolve("sethome.json"));
+        SetHomeJSONConfig.load();
 
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

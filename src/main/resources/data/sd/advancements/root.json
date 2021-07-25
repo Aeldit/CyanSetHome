@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:knowledge_book"
+    },
+    "title": {
+      "translate": "Server's datapacks"
+    },
+    "description": {
+      "translate": "Datapacks for a better experience of Minecraft"
+    },
+    "announce_to_chat": false,
+    "show_toast": false,
+    "background": "minecraft:textures/block/deepslate.png"
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

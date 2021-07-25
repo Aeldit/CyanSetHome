@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:blue_bed"
+    },
+    "title": {
+      "translate": "sh.advancements.root.title"
+    },
+    "description": {
+      "translate": "sh.advancements.root.description"
+    },
+    "announce_to_chat": false,
+    "show_toast": false,
+    "background": "minecraft:textures/block/deepslate_tiles.png"
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}
