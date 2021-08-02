@@ -16,12 +16,13 @@ public class HomeServerCore implements DedicatedServerModInitializer {
     public static final String MODID = "sh";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final String MODNAME = "[SetHome]";
+    public static SetHomeJSONConfig config = new SetHomeJSONConfig();
 
     @Override
     // Initialize the differents instances (here commands) when lauched on server
     public void onInitializeServer() {
         // Loads the homes
-        SetHomeJSONConfig.load();
+        config.load();
 
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

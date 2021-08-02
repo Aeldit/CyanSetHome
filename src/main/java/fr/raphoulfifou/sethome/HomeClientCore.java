@@ -15,12 +15,13 @@ import org.apache.logging.log4j.Logger;
 public class HomeClientCore implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger(HomeServerCore.MODID);
     public static final String MODNAME = HomeServerCore.MODNAME;
+    public static SetHomeJSONConfig config = new SetHomeJSONConfig();
 
     @Override
     // Initialize the differents instances (here commands) when lauched on client (used when in singleplayer)
     public void onInitializeClient() {
         // Loads the homes
-        SetHomeJSONConfig.load();
+        config.load();
 
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

@@ -3,15 +3,18 @@ package fr.raphoulfifou.sethome.util;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.raphoulfifou.sethome.util.structure.CoordinatesParam;
 import fr.raphoulfifou.sethome.util.structure.HomeParameters;
 import fr.raphoulfifou.sethome.util.structure.Parameters;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -20,14 +23,15 @@ public class SetHomeJSONConfig {
     private static final Path jsonPath = FabricLoader.getInstance().getConfigDir().resolve("sethome.json");
     private static final File jsonFile = FabricLoader.getInstance().getConfigDir().resolve("sethome.json").toFile();
 
-    private static final Map<Object, Object> sethome = new HashMap<>();
-    private static final Map<Object, Object> options = new HashMap<>();
-    private static final Map<Object, Object> homesList = new HashMap<>();
+    private static Map<Object, Object> sethome = new HashMap<>();
+    private static Map<Object, Object> options = new HashMap<>();
+    private static Map<Object, Object> homesList = new HashMap<>();
     private static final List<Parameters> parametersList = new ArrayList<>();
+    private static final List<CoordinatesParam> coordinatesList = new ArrayList<>();
 
-    public static boolean allowHomes = true;
-    public static boolean multiDimensionalHomes = true;
-    public static int maxHomes = 15;
+    public boolean allowHomes = true;
+    public boolean multiDimensionalHomes = true;
+    public int maxHomes = 15;
 
     // Get a variable's value
     public boolean areHomesAllowed() {
@@ -42,73 +46,47 @@ public class SetHomeJSONConfig {
 
     // Set the value of the option to the given value
     public void setAreHomesAllowed(boolean allowHomes) {
-        SetHomeJSONConfig.allowHomes = allowHomes;
+        this.allowHomes = allowHomes;
         try {
-            writeChanges(options);
+            writeChanges(options, null, allowHomes, "areHomesAllowed");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void setAreHomesMultiDimensional(boolean multiDimensionalHomes) {
-        SetHomeJSONConfig.multiDimensionalHomes = multiDimensionalHomes;
+        this.multiDimensionalHomes = multiDimensionalHomes;
         try {
-            writeChanges(options);
+            writeChanges(options, null, multiDimensionalHomes, "multiDimensionalHomes");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void setMaxHomes(int maxHomes) {
-        SetHomeJSONConfig.maxHomes = maxHomes;
+        this.maxHomes = maxHomes;
         try {
-            writeChanges(options);
+            writeChanges(options, maxHomes, null, "maxHomes");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    /*
-    public static void main() {
-        try (FileOutputStream fos = new FileOutputStream(String.valueOf(jsonPath));
-             OutputStreamWriter isr = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
-
-            Map<String, Object> options = new HashMap<>();
-            options.put("areHomesAllowed", SetHomeJSONConfig.options.allowHomes);
-            options.put("multiDimensionalHomes", SetHomeJSONConfig.options.multiDimensionalHomes);
-            options.put("maxHomes", SetHomeJSONConfig.options.maxHomes);
-
-            Parameters parameters = new Parameters("name", "dimension");
-            List<Parameters> parametersList = new ArrayList<>();
-            parametersList.add(parameters);
-
-            HomeParameters parametersH = new HomeParameters(parametersList);
-            List<HomeParameters> homesList = new ArrayList<>();
-            homesList.add(parametersH);
-
-            Map<Object, Object> sethome = new HashMap<>();
-            sethome.put("options", options);
-            sethome.put("homes", homesList);
-
-            GSON.toJson(sethome, isr);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-     */
 
     /**
      * Called by the 'sethome' command
      * Create a new parameter with the input values and put it into a List (parametersList)
      * Create a new homeParameter with the parametersList value
      * and add to the homesList Map the uuid of the player executing the command
+     *
      *      -> if the player already have one or more homes, it will add the home to the homesList
      *      -> if the player don't already have a home, it will create a new Map with its UUID and add to it the home
+     *
      * Write the homesList into the "sethome.json" file, located in the config folder of the game (client or server)
      */
     public void createHome(UUID uuid, String name, RegistryKey<World> dimension, double x, double y, double z, float yaw, float pitch) {
         try {
+            CoordinatesParam coordinatesParam = new CoordinatesParam(x, y, z, yaw, pitch);
+            coordinatesList.add(coordinatesParam);
 
-            Parameters parameters = new Parameters(name, dimension, x, y, z, yaw, pitch);
+            Parameters parameters = new Parameters(name, dimension, coordinatesList);
             parametersList.add(parameters);
 
             HomeParameters homeParameters = new HomeParameters(parametersList);
@@ -138,24 +116,31 @@ public class SetHomeJSONConfig {
             .excludeFieldsWithModifiers(Modifier.PRIVATE)
             .create();
 
-    public static SetHomeJSONConfig load() {
-        SetHomeJSONConfig config;
+    /**
+     * Called by the 'onInitializeClient' and 'onInitializeServer' function located in HomeClientCore and HomeServerCore
+     *
+     *      -> If the file exists to the given path (jsonPath)
+     *          > Try to read the file as a json file
+     *          > Throws a RuntimeException
+     *      -> Else
+     *          > Try to write the default config
+     *          > Throws a RuntimeException
+     */
+    public void load() {
 
         if (Files.exists(jsonPath)) {
             try (FileReader reader = new FileReader(jsonFile)) {
-                config = GSON.fromJson(reader, SetHomeJSONConfig.class);
+                SetHomeJSONConfig.sethome = GSON.fromJson(reader, Map.class);
             } catch (IOException e) {
                 throw new RuntimeException("Could not read config", e);
             }
         } else {
-            config = new SetHomeJSONConfig();
             try {
-                config.writeDefaultConfig();
+                this.writeDefaultConfig();
             } catch (IOException e) {
                 throw new RuntimeException("Could not update config file", e);
             }
         }
-        return config;
     }
 
     /**
@@ -165,7 +150,8 @@ public class SetHomeJSONConfig {
      *      -> If the the given path is not a directory, an IOException is thrown
      *
      *      > Try to add the given map to the "sethomes" Map, and write it into the "sethome.json" file
-     *      > Throws an IOExecption
+     *
+     * @throws IOException if the config could not be write
      */
     public void writeHome(Map<Object, Object> map) throws IOException {
         Path dir = jsonPath.getParent();
@@ -176,10 +162,10 @@ public class SetHomeJSONConfig {
             throw new IOException("Not a directory: " + dir);
         }
 
-        try (FileWriter writer = new FileWriter(jsonFile, false)) {
+        try (FileWriter fw = new FileWriter(jsonFile, false)) {
             sethome.put("homes", map);
 
-            GSON.toJson(sethome, writer);
+            GSON.toJson(sethome, fw);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -194,9 +180,10 @@ public class SetHomeJSONConfig {
      *
      *      > Try to replace the current value of the option given value (map),
      *          and write it into the "sethome.json" file
-     *      > Throws an IOExecption
+     *
+     * @throws IOException if the config could not be write
      */
-    public void writeChanges(Map<Object, Object> map) throws IOException {
+    public void writeChanges(Map<Object, Object> map, Integer intValue, Boolean boolValue, String option) throws IOException {
         Path dir = jsonPath.getParent();
 
         if (!Files.exists(dir)) {
@@ -205,14 +192,24 @@ public class SetHomeJSONConfig {
             throw new IOException("Not a directory: " + dir);
         }
 
-        try (FileWriter writer = new FileWriter(jsonFile, false)) {
-            options.put("areHomesAllowed", SetHomeJSONConfig.allowHomes);
-            options.put("multiDimensionalHomes", SetHomeJSONConfig.multiDimensionalHomes);
-            options.put("maxHomes", SetHomeJSONConfig.maxHomes);
+        try (FileWriter fw = new FileWriter(jsonFile, false)) {
+            if (intValue == null) {
+                options.put("areHomesAllowed", boolValue);
+                options.put("multiDimensionalHomes", boolValue);
+                options.put("maxHomes", this.maxHomes);
+            }
+            else if (boolValue == null) {
+                options.put("areHomesAllowed", this.allowHomes);
+                options.put("multiDimensionalHomes", this.multiDimensionalHomes);
+                options.put("maxHomes", intValue);
+            }
+            else {
+                return;
+            }
 
-            sethome.put("options", map);
+            SetHomeJSONConfig.sethome.put("options", map);
 
-            GSON.toJson(sethome, writer);
+            GSON.toJson(SetHomeJSONConfig.sethome, fw);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -225,9 +222,10 @@ public class SetHomeJSONConfig {
      *      -> If the file doesn't exists to the given path, a new one is created
      *      -> If the the given path is not a directory, an IOException is thrown
      *
-     *      > Try to replace the current value of the option given value (map),
-     *          and write it into the "sethome.json" file
-     *      > Throws an IOExecption
+     *      > Try to write the default options in the "options" Map,
+     *          and write an empty "homes" Map into the "sethome.json" file
+     *
+     * @throws IOException if the config could not be write
      */
     public void writeDefaultConfig() throws IOException {
         Path dir = jsonPath.getParent();
@@ -238,8 +236,7 @@ public class SetHomeJSONConfig {
             throw new IOException("Not a directory: " + dir);
         }
 
-        try (FileOutputStream fos = new FileOutputStream(String.valueOf(jsonPath));
-             OutputStreamWriter isr = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+        try (FileWriter fw = new FileWriter(jsonFile)) {
 
             options.put("areHomesAllowed", true);
             options.put("multiDimensionalHomes", true);
@@ -248,7 +245,7 @@ public class SetHomeJSONConfig {
             sethome.put("options", options);
             sethome.put("homes", homesList);
 
-            GSON.toJson(sethome, isr);
+            GSON.toJson(sethome, fw);
 
         } catch (IOException e) {
             e.printStackTrace();

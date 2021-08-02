@@ -30,7 +30,19 @@ public class SetHomeCommand {
         ));
     }
 
-
+    /**
+     * Called when a player execute the command "/sethome home_name"
+     * Gets: - the name of the home (name)
+     *       - the dimension the player is in (dimension)
+     *       - the UUID of the player (uuid)
+     *       - the x, y, z coordinates (x, y, z)
+     *       - the yaw and pitch of the player -> his eyes position (yaw, pitch)
+     *
+     * Call the "createHome" function located in 'SetHomeJSONConfig' and take as parameters the elements listed above
+     *
+     * @throws CommandSyntaxException if the syntaxe of the command isn't correct (ex: "/sethome ba se" will throw
+     *                                an exception because there is two arguments instead of one)
+     */
     public static int setHome(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         String name = StringArgumentType.getString(context, "homeName");
