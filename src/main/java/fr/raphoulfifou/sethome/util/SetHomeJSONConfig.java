@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.raphoulfifou.sethome.HomeClientCore;
 import fr.raphoulfifou.sethome.HomeServerCore;
-import fr.raphoulfifou.sethome.util.structure.HomeParameters;
+import fr.raphoulfifou.sethome.util.structure.HomeParameter;
 import fr.raphoulfifou.sethome.util.structure.Parameters;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -68,24 +68,24 @@ public class SetHomeJSONConfig {
     }
 
     /**
-     * Called by the 'sethome' command
-     * Create a new parameter with the input values and put it into a List (parametersList)
-     * Create a new homeParameter with the parametersList value
-     * and add to the homesMap Map the uuid of the player executing the command
+     * <p>Called by the {@link fr.raphoulfifou.sethome.commands.SetHomeCommand#setHome sethome} method.</p>
      *
-     *      -> if the player already have one or more homes, it will add the home to the homesMap
-     *      -> if the player don't already have a home, it will create a new Map with its UUID and add to it the home
-     *
-     * Write the homesMap into the "sethome.json" file, located in the config folder of the game (client or server)
+     * <ul>Try to:
+     *      <li>Create a new parameter with the input values and put it into a List (parametersList).</li>
+     *      <li>Create a new homeParameter with the parametersList value.</li>
+     *      <li>Put to the homeParameter in the the Map named with the uuid of the player inside the homes Map.</li>
+     * </ul>
+     * <p>Calls the {@link SetHomeJSONConfig#writeHome(Map) writeHome} method with 'homes' as parameter.</p>
+     * <ul>Catche an {@code IOException} if the config could not be written.</ul>
      */
     public void createHome(UUID uuid, String name, String dimension, double x, double y, double z, float yaw, float pitch) {
         try {
             Parameters parameters = new Parameters(name, dimension, x, y, z, yaw, pitch);
             parametersList.add(parameters);
 
-            HomeParameters homeParameters = new HomeParameters(parametersList);
+            HomeParameter homeParameter = new HomeParameter(parametersList);
 
-            homes.put(uuid, homeParameters);
+            homes.put(uuid, homeParameter);
 
             writeHome(homes);
 
@@ -102,17 +102,17 @@ public class SetHomeJSONConfig {
 
     /**
      * <p>Called by the {@link HomeServerCore#onInitializeServer() onInitializeServer} and
-     * {@link HomeClientCore#onInitializeClient() onInitializeClient} functions located in
+     * {@link HomeClientCore#onInitializeClient() onInitializeClient} functions respectively located in
      * {@link fr.raphoulfifou.sethome.HomeServerCore HomeServerCore} and
      * {@link fr.raphoulfifou.sethome.HomeClientCore HomeClientCore}</p>
      *
-     * <ul>If the file exists to the given path (jsonPath)
-     *         <li>-> Try to read the file as a json file</li>
-     *         <li>-> Throws a {@code RuntimeException}</li>
+     * <ul>If the file exists to the given path (jsonPath):
+     *         <li>> Try to read the file as a json file.</li>
+     *         <li>> Throws a {@code RuntimeException} if the cofig could not be read.</li>
      * </ul>
      * <ul>Else
-     *     <li>-> Try to write the default config</li>
-     *     <li>-> Throws a {@code RuntimeException}</li>
+     *     <li>> Try to write the default config.</li>
+     *     <li>> Throws a {@code RuntimeException} if the default config could not be written.</li>
      * </ul>
      */
     public void load() {
@@ -132,17 +132,16 @@ public class SetHomeJSONConfig {
     }
 
     /**
-     * <p>Called by the createHome function located in this class, when creating a home.</p>
+     * <p>Called by the {@link SetHomeJSONConfig#createHome(UUID, String, String, double, double, double, float, float)
+     *      * createHome} method creating a home.</p>
      *
      * <p>Calls the {@link SetHomeJSONConfig#load() load} method.</p>
      *
      * <ul>Try with a FileWriter (fw) of the jsonFile to:
      *     <li>> add the given map to the "sethome" Map under the name "homes",
-     *          and write it into the "sethome.json" file</li>
+     *          and write it into the "sethome.json" file.</li>
      * </ul>
-     * <ul>Catch an {@code IOException}</ul>
-     *
-     * @throws IOException if the config could not be writen
+     * <ul>Catch an {@code IOException} if the config could not be written.</ul>
      */
     public void writeHome(Map<Object, Object> map) throws IOException {
         load();
@@ -159,7 +158,7 @@ public class SetHomeJSONConfig {
 
     /**
      * <p>Called by the {@link SetHomeJSONConfig#createHome(UUID, String, String, double, double, double, float, float)
-     * createHome} method, when creating a home.</p>
+     * createHome} method, when modifying the values inside the file.</p>
      *
      * <p>Calls the {@link SetHomeJSONConfig#load() load} method.</p>
      *
@@ -167,9 +166,7 @@ public class SetHomeJSONConfig {
      *     <li>> put in the options Map the values corresponding to their key, and put the given map to the "sethome"
      *     Map under the name options. Then write it to the "sethome.json" file.</li>
      * </ul>
-     * <ul>Catch an {@code IOException}</ul>
-     *
-     * @throws IOException if the config could not be writen
+     * <ul>Catch an {@code IOException} if the config could not be written.</ul>
      */
     public void writeChanges(Map<Object, Object> map) throws IOException {
         load();
@@ -189,15 +186,19 @@ public class SetHomeJSONConfig {
     }
 
     /**
-     * Called by the load function located in this class, when loading the config file ("sethome.json")
+     * <p>Called by the {@link SetHomeJSONConfig#load() load} method.</p>
      *
-     *      -> If the file doesn't exists to the given path, a new one is created
-     *      -> If the the given path is not a directory, an IOException is thrown
+     * <ul>If the file doesn't exists to the given path (dir):
+     *      <li>-> a directory is created to the given path (dir).</li>
+     * </ul>
+     * <ul>Else if the given path is not a directory:
+     *      <li>-> An {@code IOException} is thrown.</li>
+     * </ul>
      *
-     *      > Try to write the default optionsMap in the "optionsMap" Map,
-     *          and write an empty "homes" Map into the "sethome.json" file
-     *
-     * @throws IOException if the config could not be write
+     * <ul>Try with a FileWriter (fw) of the jsonFile to:
+     *      <li>> put the default values to their respective map, and then write them to the jsonFile.</li>
+     * </ul>
+     * <ul>Catch an {@code IOException} if the config could not be written.</ul>
      */
     public void writeDefaultConfig() throws IOException {
         Path dir = jsonPath.getParent();
