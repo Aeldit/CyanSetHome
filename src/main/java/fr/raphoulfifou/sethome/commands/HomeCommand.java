@@ -10,8 +10,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -33,7 +33,7 @@ public class HomeCommand {
     }
 
 
-    public static int teleportHome(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    public static int teleportHome(@NotNull CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         String name = StringArgumentType.getString(context, "homeName");
         ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
@@ -46,6 +46,7 @@ public class HomeCommand {
         float yaw = player.getYaw();
         float pitch = player.getPitch();
 
+        /*
         if(jsonConfig.areHomesAllowed()) {
             if(jsonConfig.maxHomes == jsonConfig.getMaxHomes()) {
                 if(!jsonConfig.multiDimensionalHomes) {
@@ -73,6 +74,7 @@ public class HomeCommand {
         else {
             player.sendMessage(new TranslatableText("sh.msg.homesNotAllowed"), false);
         }
+         */
 
         return Command.SINGLE_SUCCESS;
     }

@@ -3,7 +3,7 @@ package fr.raphoulfifou.sethome.util.structure;
 import java.util.List;
 
 public class HomeParameters {
-    List<Parameters> parameters;
+    public List<Parameters> parameters;
 
     /**
      * Used when a home is created to store its parameters

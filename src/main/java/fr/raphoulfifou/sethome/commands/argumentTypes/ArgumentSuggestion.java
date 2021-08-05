@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 
 public class ArgumentSuggestion {
+    private static final SetHomeJSONConfig JSON_CONFIG = new SetHomeJSONConfig();
+
     public static @NotNull <S> CompletableFuture<Suggestions> suggestHomeName(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(SetHomeJSONConfig.getHomes(), builder);
+        return CommandSource.suggestMatching(JSON_CONFIG.getHomes(), builder);
     }
 }

@@ -1,14 +1,13 @@
 package fr.raphoulfifou.sethome.util.structure;
 
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-
-import java.util.List;
-
 public class Parameters {
-    String name;
-    RegistryKey<World> dimension;
-    List<CoordinatesParam> coordinatesParams;
+    public String name;
+    public String dimension;
+    public double x;
+    public double y;
+    public double z;
+    public float yaw;
+    public float pitch;
 
 
     /**
@@ -16,9 +15,13 @@ public class Parameters {
      * In the json file, it is inside the 'HomeParameters'
      * (Elements insinde '' are reffering to the class name)
      */
-    public Parameters(String name, RegistryKey<World> dimension, List<CoordinatesParam> coordinatesParams) {
+    public Parameters(String name, String dimension, double x, double y, double z, float yaw, float pitch) {
         this.name = name;
         this.dimension = dimension;
-        this.coordinatesParams = coordinatesParams;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
     }
 }
