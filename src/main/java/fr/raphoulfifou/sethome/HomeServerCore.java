@@ -11,6 +11,11 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * @since 0.0.1
+ * @see HomeClientCore
+ * @author Raphoulfifou
+ */
 @Environment(EnvType.SERVER)
 public class HomeServerCore implements DedicatedServerModInitializer {
     public static final String MODID = "sh";

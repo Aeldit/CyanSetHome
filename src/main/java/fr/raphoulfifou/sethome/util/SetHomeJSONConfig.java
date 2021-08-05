@@ -18,6 +18,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+/**
+ * @since 0.0.1
+ * @see Parameters
+ * @see HomeParameter
+ * @author Raphoulfifou
+ */
 public class SetHomeJSONConfig {
     public static final Path jsonPath = FabricLoader.getInstance().getConfigDir().resolve("sethome.json");
     public static final File jsonFile = FabricLoader.getInstance().getConfigDir().resolve("sethome.json").toFile();

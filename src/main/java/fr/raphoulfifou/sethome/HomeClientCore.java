@@ -11,6 +11,11 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * @since 0.0.1
+ * @see HomeServerCore
+ * @author Raphoulfifou
+ */
 @Environment(EnvType.CLIENT)
 public class HomeClientCore implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger(HomeServerCore.MODID);

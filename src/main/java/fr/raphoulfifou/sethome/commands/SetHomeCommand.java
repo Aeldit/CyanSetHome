@@ -16,6 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 /**
+ * @since 0.0.1
+ * @see SetCommands
+ * @see HomeCommand
  * @author Raphoulfifou
  */
 public class SetHomeCommand {
@@ -44,8 +47,8 @@ public class SetHomeCommand {
      *
      * Call the "createHome" function located in 'SetHomeJSONConfig' and take as parameters the elements listed above
      *
-     * @throws CommandSyntaxException if the syntaxe of the command isn't correct (ex: "/sethome ba se" will throw
-     *                                an exception because there is two arguments instead of one)
+     * @throws CommandSyntaxException if the syntaxe of the command isn't correct
+     * (ex: too much arguments or incorreect ones)
      */
     public static int setHome(@NotNull CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
