@@ -23,6 +23,9 @@
     ],
     "client": [
       "fr.raphoulfifou.sethome.HomeClientCore"
+    ],
+    "modmenu": [
+      "fr.raphoulfifou.sethome.config.ModMenuApiImpl"
     ]
   },
 

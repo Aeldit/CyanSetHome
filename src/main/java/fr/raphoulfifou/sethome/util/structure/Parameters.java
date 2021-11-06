@@ -1,5 +1,10 @@
 package fr.raphoulfifou.sethome.util.structure;
 
+/**
+ * @since 0.0.1
+ * @see HomeParameter
+ * @author Raphoulfifou
+ */
 public class Parameters {
     public String name;
     public String dimension;
@@ -11,9 +16,8 @@ public class Parameters {
 
 
     /**
-     * Used when a home is created to store its values
-     * In the json file, it is inside the 'HomeParameters'
-     * (Elements insinde '' are reffering to the class name)
+     * <p>Used when a home is created to store its values</p>
+     * <p>In the json file, it is inside the {@link HomeParameter HomeParameters}</p>
      */
     public Parameters(String name, String dimension, double x, double y, double z, float yaw, float pitch) {
         this.name = name;

@@ -10,6 +10,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,35 +47,22 @@ public class HomeCommand {
         float yaw = player.getYaw();
         float pitch = player.getPitch();
 
-        /*
-        if(jsonConfig.areHomesAllowed()) {
-            if(jsonConfig.maxHomes == jsonConfig.getMaxHomes()) {
-                if(!jsonConfig.multiDimensionalHomes) {
-                    if(player.getServerWorld().getDimension() == Objects.requireNonNull(overworld).getDimension()) {
-                        //player.teleport(dimension, x, y, z, yaw, pitch);
-                        player.sendMessage(new TranslatableText("sh.msg.sethome"), true);
-                    } else if(player.getServerWorld().getDimension() == Objects.requireNonNull(nether).getDimension()) {
-                        player.sendMessage(new TranslatableText("sh.msg.sethome"), true);
-                    } else if(player.getServerWorld().getDimension() == Objects.requireNonNull(end).getDimension()) {
-                        player.sendMessage(new TranslatableText("sh.msg.sethome"), true);
-                    }
-                    else {
-                        player.sendMessage(new TranslatableText("sh.msg.notInAnyDim"), false);
-                    }
-                }
-                else {
-                    player.teleport(overworld, x, y, z ,yaw, pitch);
-                    player.sendMessage(new TranslatableText("sh.msg.teleportedToHome"), true);
-                }
+        if(jsonConfig.areHomesAllowed())
+        {
+            if(jsonConfig.maxHomes == jsonConfig.getMaxHomes())
+            {
+                player.teleport(overworld, x, y, z ,yaw, pitch);
+                player.sendMessage(new TranslatableText("sh.msg.teleportedToHome"), true);
             }
-            else {
+            else
+            {
                 player.sendMessage(new TranslatableText("sh.msg.maxHomesReached"), false);
             }
         }
-        else {
+        else
+        {
             player.sendMessage(new TranslatableText("sh.msg.homesNotAllowed"), false);
         }
-         */
 
         return Command.SINGLE_SUCCESS;
     }

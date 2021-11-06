@@ -1,11 +1,15 @@
 {
   "language.name": "English",
   "language.region": "United Kingdom",
-  "language.code": "en_gb",
+  "language.code": "en_us",
   "sh.msg.sethome": "§6Your home has been successfully set",
   "sh.msg.allowHomesSet": "Allow homes option have been set to %s",
   "sh.msg.multiDimHomesSet": "Multi dimensional homes option have been set to %s",
   "sh.msg.maxHomesSet": "Max homes option have been set to %s",
   "sh.advancements.root.title": "SetHome",
-  "sh.advancements.root.description": "Advancements for the SetHome mod"
+  "sh.advancements.root.description": "Advancements for the SetHome mod",
+  "screen.sethome.config.title": "SetHome",
+  "category.sh.general": "General",
+  "option.sh.allowHomes": "Allow Homes",
+  "sh.mm.msg.allowHomes": "Allow the use of homes (basicly enables or disables the mod)"
 }

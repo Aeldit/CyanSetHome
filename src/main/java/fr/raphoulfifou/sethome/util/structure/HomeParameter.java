@@ -6,9 +6,8 @@ public class HomeParameter {
     public List<Parameters> parameters;
 
     /**
-     * Used when a home is created to store its parameters
-     * In the json file, contains the 'Parameters'
-     * (Elements insinde '' are reffering to the class name)
+     * <p>Used when a home is created to store its parameters</p>
+     * <p>In the json file, contains the {@link Parameters Parameters}</p>
      */
     public HomeParameter(List<Parameters> parameters) {
         this.parameters = parameters;
