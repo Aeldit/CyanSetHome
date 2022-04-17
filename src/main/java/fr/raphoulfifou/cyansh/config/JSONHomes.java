@@ -63,7 +63,6 @@ public class JSONHomes
             Homes.Home home = new Homes.Home(homeName, dimension, pos);
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
             Gson gsonr = new GsonBuilder().serializeNulls().create();
 
             Path of = Path.of(path);
