@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -61,8 +60,6 @@ public class SetHomeCommand
         double x = player.getX();
         double y = player.getY();
         double z = player.getZ();
-        float yaw = player.getYaw();
-        float pitch = player.getPitch();
         List<Double> pos = Arrays.asList(x, y, z);
 
         /*if (player.world.getRegistryKey() == World.OVERWORLD) {
@@ -81,8 +78,8 @@ public class SetHomeCommand
 
         if (SethomeMidnightConfig.allowSethome)
         {
-            Map<?, ?> t = JSONHomes.addHome(player.getUuid(), String.valueOf(player.getEntityName()), name, "nether", pos);
-            player.sendMessage(new TranslatableText(String.valueOf(t)), false);
+            JSONHomes.addHome(player.getUuid(), String.valueOf(player.getEntityName()), name, "nether", pos, player);
+            //JSONHomes.createUserFile(player.getUuid(), player.getEntityName(), player);
             /*if (JSON_CONFIG.getHomesNumber(uuid) < SethomeMidnightConfig.maxHomes) {
 
                 if (player.world.getRegistryKey() == World.OVERWORLD) {

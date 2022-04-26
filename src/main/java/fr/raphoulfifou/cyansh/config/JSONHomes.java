@@ -3,6 +3,8 @@ package fr.raphoulfifou.cyansh.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,16 +12,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JSONHomes
 {
 
-    public static void createUserFile(UUID playerUuid, String playerName)
+    public static void createUserFile(UUID playerUuid, String playerName, ServerPlayerEntity player)
     {
         String path = FabricLoader.getInstance().getConfigDir() + "\\homes\\" + playerUuid + ".json";
 
@@ -27,66 +25,71 @@ public class JSONHomes
         File f = new File(path);
         if (! dir.exists())
         {
-            dir.mkdir();
-
-            if (! f.exists())
+            if (! dir.mkdir())
             {
-                try
-                {
-                    HashMap<Object, Object> map = new HashMap<>();
-                    Homes homes = new Homes(playerName, map);
+                player.sendMessage(new TranslatableText("Error while creating the folder 'homes'"), false);
+            }
+        }
+        if (! f.exists())
+        {
+            try
+            {
+                List<Home> homesList = List.of(new Home("exampleName", "dimension", Arrays.asList(1.0, 256.2165, 50.3)));
+                Map<String, Object> content = new HashMap<>();
+                content.put("player_name", playerName);
+                content.put("homes", homesList);
 
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-                    Writer writer = Files.newBufferedWriter(Paths.get(path));
+                Writer writer = Files.newBufferedWriter(Path.of(path));
 
-                    gson.toJson(homes, writer);
+                gson.toJson(content, writer);
 
-                    writer.close();
+                writer.close();
 
-                } catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
             }
         }
     }
 
-    public static Map<?, ?> addHome(UUID playerUuid, String playerName, String homeName, String dimension, List<Double> pos)
+    public static void addHome(UUID playerUuid, String playerName, String homeName, String dimension, List<Double> pos, ServerPlayerEntity player)
     {
-        createUserFile(playerUuid, playerName);
+        createUserFile(playerUuid, playerName, player);
         String path = FabricLoader.getInstance().getConfigDir() + "\\homes\\" + playerUuid + ".json";
 
-        Map<?, ?> map;
+        Home homesRead;
+        List<Home> homeRead;
         try
         {
-            Homes.Home home = new Homes.Home(homeName, dimension, pos);
+            List<Home> homesList = List.of(new Home(homeName, dimension, pos));
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            Gson gsonr = new GsonBuilder().serializeNulls().create();
+            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-            Path of = Path.of(path);
-            Writer writer = Files.newBufferedWriter(of);
-            Reader reader = Files.newBufferedReader(of);
+            Reader reader = Files.newBufferedReader(Path.of(path));
 
-            map = gsonr.fromJson(reader, Map.class);
-            //map.put("homes", home);
-            for (Map.Entry<?, ?> entry : map.entrySet())
-            {
-                System.out.println(entry.getKey() + "=" + entry.getValue());
-            }
+            Map<?, ?> map = gson.fromJson(reader, Map.class);
+            player.sendMessage(new TranslatableText(String.valueOf(map)), false);
 
-            Homes homes = new Homes(playerName, map);
+            List<?> homes = (List<?>) map.get("homes");
+            player.sendMessage(new TranslatableText(String.valueOf(homes)), false);
+            player.sendMessage(new TranslatableText("Home name : " + homes.get(0)), false);
 
-            gson.toJson(homes, writer);
 
-            writer.close();
+            /*homesRead = gson.fromJson(reader, Homes.class);
+            homeRead = homesRead.getHome();
+            player.sendMessage(new TranslatableText(String.valueOf(homeRead)), false);
+
+            Homes homes = new Homes(playerName, homeRead);*/
+            //gson.toJson(jo, writer);
+
+            reader.close();
 
         } catch (IOException e)
         {
             throw new RuntimeException(e);
         }
-        return map;
     }
 
 }
