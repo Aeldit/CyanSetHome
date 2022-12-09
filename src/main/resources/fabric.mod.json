@@ -3,32 +3,32 @@
   "id": "cyansh",
   "version": "${version}",
   "name": "CyanSetHome",
-  "description": "This mod adds the home commands to minecraft",
+  "description": "This mod adds the /sethome commands to minecraft",
   "authors": [
     "Raphoulfifou"
   ],
   "contact": {
     "homepage": "https://modrinth.com/user/lRyDhyWM",
-    "sources": "https://github.com/Raphoulfifou/CyanSetHome"
+    "sources": "https://github.com/Aeldit/CyanSetHome"
   },
   "license": "CC0-1.0",
   "icon": "assets/sethome/icon.png",
   "environment": "*",
   "entrypoints": {
     "server": [
-      "fr.raphoulfifou.cyansh.HomeServerCore"
+      "fr.aeldit.cyansh.HomeServerCore"
     ],
     "client": [
-      "fr.raphoulfifou.cyansh.HomeClientCore"
+      "fr.aeldit.cyansh.HomeClientCore"
     ],
     "modmenu": [
-      "fr.raphoulfifou.cyansh.config.ModMenuApiImpl"
+      "fr.aeldit.cyansh.config.ModMenuApiImpl"
     ]
   },
   "depends": {
-    "fabricloader": ">=0.13.3",
+    "fabricloader": ">=0.14.10",
     "fabric": "*",
-    "minecraft": "1.18.x",
+    "minecraft": "1.19.x",
     "java": ">=17"
   }
 }
