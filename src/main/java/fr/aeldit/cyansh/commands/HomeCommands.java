@@ -25,9 +25,10 @@ import java.util.Properties;
 import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
 import static fr.aeldit.cyansh.util.Constants.*;
 
-public class HomeCommands {
-
-    public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher) {
+public class HomeCommands
+{
+    public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
+    {
         dispatcher.register(CommandManager.literal("sethome")
                 .then(CommandManager.argument("name", StringArgumentType.string())
                         .executes(HomeCommands::setHome)
@@ -74,16 +75,19 @@ public class HomeCommands {
         );
     }
 
-    public static int setHome(@NotNull CommandContext<ServerCommandSource> context) {
+    public static int setHome(@NotNull CommandContext<ServerCommandSource> context)
+    {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
         String homeName = StringArgumentType.getString(context, "name");
 
-        if (player == null) {
+        if (player == null)
+        {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
             return 0;
-        } else {
+        } else
+        {
             Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
             double x = player.getX();
             double y = player.getY();
@@ -91,37 +95,51 @@ public class HomeCommands {
             float yaw = player.getYaw();
             float pitch = player.getPitch();
 
-            if (CyanSHMidnightConfig.allowHomes) {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHome)) {
+            if (CyanSHMidnightConfig.allowHomes)
+            {
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
+                {
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
 
                     Properties properties = new Properties();
-                    try {
-                        if (!Files.exists(locationsPath)) {
-                            try {
+                    try
+                    {
+                        if (!Files.exists(locationsPath))
+                        {
+                            try
+                            {
                                 Files.createDirectory(locationsPath);
-                            } catch (IOException e) {
+                            } catch (IOException e)
+                            {
                                 throw new RuntimeException(e);
                             }
                         }
-                        if (!Files.exists(homesPath)) {
-                            try {
+                        if (!Files.exists(homesPath))
+                        {
+                            try
+                            {
                                 Files.createFile(homesPath);
-                            } catch (IOException e) {
+                            } catch (IOException e)
+                            {
                                 throw new RuntimeException(e);
                             }
                         }
                         properties.load(new FileInputStream(homesPath.toFile()));
 
-                        if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes) {
-                            if (!properties.containsKey(homeName)) {
-                                if (player.getWorld() == overworld) {
+                        if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes)
+                        {
+                            if (!properties.containsKey(homeName))
+                            {
+                                if (player.getWorld() == overworld)
+                                {
                                     properties.put(homeName, "%s %f %f %f %f %f".formatted("overworld", x, y, z, yaw, pitch));
-                                } else if (player.getWorld() == nether) {
+                                } else if (player.getWorld() == nether)
+                                {
                                     properties.put(homeName, "%s %f %f %f %f %f".formatted("nether", x, y, z, yaw, pitch));
-                                } else if (player.getWorld() == end) {
+                                } else if (player.getWorld() == end)
+                                {
                                     properties.put(homeName, "%s %f %f %f %f %f".formatted("end", x, y, z, yaw, pitch));
                                 }
 
@@ -134,33 +152,37 @@ public class HomeCommands {
                                         CyanSHMidnightConfig.msgToActionBar,
                                         CyanSHMidnightConfig.useTranslations
                                 );
-                            } else {
+                            } else
+                            {
                                 sendPlayerMessage(player,
                                         getCmdFeedbackTraduction("homeAlreadyExists"),
                                         null,
                                         "cyansh.error.homeAlreadyExists",
-                                        CyanSHMidnightConfig.msgToActionBar,
+                                        CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useTranslations
                                 );
                                 return 0;
                             }
-                        } else {
+                        } else
+                        {
                             sendPlayerMessage(player,
                                     getErrorTraduction("maxHomesReached"),
                                     gold + String.valueOf(CyanSHMidnightConfig.maxHomes),
                                     "cyansh.error.maxHomesReached",
-                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
                             return 0;
                         }
-                    } catch (IOException e) {
+                    } catch (IOException e)
+                    {
                         e.printStackTrace();
 
                     }
 
                     return Command.SINGLE_SUCCESS;
-                } else {
+                } else
+                {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
                             null,
@@ -170,7 +192,8 @@ public class HomeCommands {
                     );
                     return 0;
                 }
-            } else {
+            } else
+            {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
                         null,
@@ -183,32 +206,40 @@ public class HomeCommands {
         }
     }
 
-    public static int goToHome(@NotNull CommandContext<ServerCommandSource> context) {
+    public static int goToHome(@NotNull CommandContext<ServerCommandSource> context)
+    {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
         String homeName = StringArgumentType.getString(context, "name");
 
-        if (player == null) {
+        if (player == null)
+        {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
             return 0;
-        } else {
-            if (CyanSHMidnightConfig.allowHomes) {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHome)) {
+        } else
+        {
+            if (CyanSHMidnightConfig.allowHomes)
+            {
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
+                {
                     Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
 
-                    try {
+                    try
+                    {
                         Properties properties = new Properties();
                         properties.load(new FileInputStream(homesPath.toFile()));
 
-                        if (properties.containsKey(homeName)) {
+                        if (properties.containsKey(homeName))
+                        {
                             String location = (String) properties.get(homeName);
                             String world = location.split(" ")[0];
 
-                            if (Objects.equals(world, "overworld")) {
+                            if (Objects.equals(world, "overworld"))
+                            {
                                 player.teleport(
                                         overworld,
                                         Double.parseDouble(location.split(" ")[1]),
@@ -217,7 +248,8 @@ public class HomeCommands {
                                         Float.parseFloat(location.split(" ")[4]),
                                         Float.parseFloat(location.split(" ")[5])
                                 );
-                            } else if (Objects.equals(world, "nether")) {
+                            } else if (Objects.equals(world, "nether"))
+                            {
                                 player.teleport(
                                         nether,
                                         Double.parseDouble(location.split(" ")[1]),
@@ -226,7 +258,8 @@ public class HomeCommands {
                                         Float.parseFloat(location.split(" ")[4]),
                                         Float.parseFloat(location.split(" ")[5])
                                 );
-                            } else if (Objects.equals(world, "end")) {
+                            } else if (Objects.equals(world, "end"))
+                            {
                                 player.teleport(
                                         end,
                                         Double.parseDouble(location.split(" ")[1]),
@@ -244,21 +277,25 @@ public class HomeCommands {
                                     CyanSHMidnightConfig.msgToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
-                        } else {
+                        } else
+                        {
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("homeNotFound"),
                                     yellow + homeName,
                                     "cyansh.error.homeNotFound",
-                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
+                            return 0;
                         }
-                    } catch (IOException e) {
+                    } catch (IOException e)
+                    {
                         e.printStackTrace();
                     }
 
                     return Command.SINGLE_SUCCESS;
-                } else {
+                } else
+                {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
                             null,
@@ -268,7 +305,8 @@ public class HomeCommands {
                     );
                     return 0;
                 }
-            } else {
+            } else
+            {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
                         null,
@@ -281,25 +319,32 @@ public class HomeCommands {
         }
     }
 
-    public static int removeHome(@NotNull CommandContext<ServerCommandSource> context) {
+    public static int removeHome(@NotNull CommandContext<ServerCommandSource> context)
+    {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
         String homeName = StringArgumentType.getString(context, "name");
 
-        if (player == null) {
+        if (player == null)
+        {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
             return 0;
-        } else {
-            if (CyanSHMidnightConfig.allowHomes) {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHome)) {
+        } else
+        {
+            if (CyanSHMidnightConfig.allowHomes)
+            {
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
+                {
                     Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
                     Properties properties = new Properties();
 
-                    try {
+                    try
+                    {
                         properties.load(new FileInputStream(homesPath.toFile()));
 
-                        if (properties.containsKey(homeName)) {
+                        if (properties.containsKey(homeName))
+                        {
                             properties.remove(homeName);
                             properties.store(new FileOutputStream(homesPath.toFile()), null);
 
@@ -310,21 +355,25 @@ public class HomeCommands {
                                     CyanSHMidnightConfig.msgToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
-                        } else {
+                        } else
+                        {
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("homeNotFound"),
                                     yellow + homeName,
                                     "cyansh.error.homeNotFound",
-                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
+                            return 0;
                         }
-                    } catch (IOException e) {
+                    } catch (IOException e)
+                    {
                         e.printStackTrace();
                     }
 
                     return Command.SINGLE_SUCCESS;
-                } else {
+                } else
+                {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
                             null,
@@ -334,7 +383,8 @@ public class HomeCommands {
                     );
                     return 0;
                 }
-            } else {
+            } else
+            {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
                         null,
@@ -347,19 +397,25 @@ public class HomeCommands {
         }
     }
 
-    public static int getHomesList(@NotNull CommandContext<ServerCommandSource> context) {
+    public static int getHomesList(@NotNull CommandContext<ServerCommandSource> context)
+    {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null) {
+        if (player == null)
+        {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
             return 0;
-        } else {
-            if (CyanSHMidnightConfig.allowHomes) {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHome)) {
+        } else
+        {
+            if (CyanSHMidnightConfig.allowHomes)
+            {
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
+                {
                     Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
 
-                    try {
+                    try
+                    {
                         Properties properties = new Properties();
                         properties.load(new FileInputStream(homesPath.toFile()));
                         sendPlayerMessage(player,
@@ -369,16 +425,19 @@ public class HomeCommands {
                                 false,
                                 CyanSHMidnightConfig.useTranslations
                         );
-                        for (String key : properties.stringPropertyNames()) {
+                        for (String key : properties.stringPropertyNames())
+                        {
                             player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
                         }
 
-                    } catch (IOException e) {
+                    } catch (IOException e)
+                    {
                         e.printStackTrace();
                     }
 
                     return Command.SINGLE_SUCCESS;
-                } else {
+                } else
+                {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
                             null,
@@ -388,7 +447,8 @@ public class HomeCommands {
                     );
                     return 0;
                 }
-            } else {
+            } else
+            {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
                         null,
