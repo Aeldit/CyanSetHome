@@ -1,53 +1,31 @@
 package fr.aeldit.cyansh.commands.argumentTypes;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
-public class ArgumentSuggestion
-{
-    /*private static final SetHomeJSONConfig JSON_CONFIG = new SetHomeJSONConfig();
+import static fr.aeldit.cyansh.util.Constants.locationsPath;
 
-    public static @NotNull <S> CompletableFuture<Suggestions> suggestHomeName(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(JSON_CONFIG.getHomes(), builder);
-    }*/
+public final class ArgumentSuggestion {
+    public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player) {
+        List<String> locations = new ArrayList<>();
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(locationsPath + "\\" + player.getUuidAsString() + ".properties"));
 
-    public static CompletableFuture<Suggestions> getAllPlayerNames(@NotNull CommandContext<ServerCommandSource> context, @NotNull SuggestionsBuilder builder)
-    {
-        MinecraftServer server = context.getSource().getServer();
-
-        Set<String> userNames = new HashSet<>(ArgumentSuggestion.getOnlinePlayerNames(server));
-        userNames.addAll(ArgumentSuggestion.getWhitelistedNames(server));
-        /*if (!builder.getRemaining().isEmpty())
-        {
-
-        }*/
-
-        // Return the suggestion handler
-        return CommandSource.suggestMatching(userNames, builder);
+            locations.addAll(properties.stringPropertyNames());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return CommandSource.suggestMatching(locations, builder);
     }
-
-    public static @NotNull List<String> getOnlinePlayerNames(final @NotNull MinecraftServer server)
-    {
-        PlayerManager playerManager = server.getPlayerManager();
-        return Arrays.asList(playerManager.getPlayerNames());
-    }
-
-    public static @NotNull List<String> getWhitelistedNames(final @NotNull MinecraftServer server)
-    {
-        PlayerManager playerManager = server.getPlayerManager();
-        return Arrays.asList(playerManager.getWhitelistedNames());
-    }
-
 }

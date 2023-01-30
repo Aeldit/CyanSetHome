@@ -12,14 +12,14 @@
     "sources": "https://github.com/Aeldit/CyanSetHome"
   },
   "license": "CC0-1.0",
-  "icon": "assets/sethome/icon.png",
+  "icon": "assets/cyansh/icon.png",
   "environment": "*",
   "entrypoints": {
     "server": [
-      "fr.aeldit.cyansh.HomeServerCore"
+      "fr.aeldit.cyansh.CyanSHServerCore"
     ],
     "client": [
-      "fr.aeldit.cyansh.HomeClientCore"
+      "fr.aeldit.cyansh.CyanSHClientCore"
     ],
     "modmenu": [
       "fr.aeldit.cyansh.config.ModMenuApiImpl"
