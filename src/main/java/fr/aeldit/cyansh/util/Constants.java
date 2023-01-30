@@ -28,30 +28,30 @@ public class Constants
 
     private static void generateCommandsTraductionsMap()
     {
-        commandsTraductionsMap.put("sethome", "§3The §d/sethome §3command creates a home at your current location\n");
-        commandsTraductionsMap.put("home", "§3The §d/home §3command teleports you to the given home\n");
-        commandsTraductionsMap.put("removehome", "§3The §d/removehome §3command removes the given home\n");
-        commandsTraductionsMap.put("gethomes", "§3The §d/gethomes §3command lists all your homes\n");
+        commandsTraductionsMap.put("sethome", "§6- §3The §d/sethome §3command creates a home at your current location\n");
+        commandsTraductionsMap.put("home", "§6- §3The §d/home §3command teleports you to the given home\n");
+        commandsTraductionsMap.put("removehome", "§6- §3The §d/removehome §3command removes the given home\n");
+        commandsTraductionsMap.put("gethomes", "§6- §3The §d/gethomes §3command lists all your homes\n");
     }
 
     private static void generateOptionsTraductionsMap()
     {
-        optionsTraductionsMap.put("allowHomes", "§3The §dallowHomes §3option defines wether the home commands are enable or not\n");
-        optionsTraductionsMap.put("allowHomeOf", "§3The §dallowHomeOf §3option defines wether the homeOf commands are enable or not\n");
+        optionsTraductionsMap.put("allowHomes", "§6- §3The §dallowHomes §3option defines wether the home commands are enabledd or not\n");
+        optionsTraductionsMap.put("allowHomeOf", "§6- §3The §dallowHomeOf §3option defines wether the homeOf commands are enabled or not\n");
 
-        optionsTraductionsMap.put("useTranslations", "§3The §duseTranslations §3option defines wether the translation will be used or not\n");
-        optionsTraductionsMap.put("msgToActionBar", "§3The §dmsgToActionBar §3option defines wether the messages will be sent to the action bar or not\n");
-        optionsTraductionsMap.put("errorToActionBar", "§3The §derrorToActionBar §3option defines wether the error messages will be sent to the action bar or not\n");
+        optionsTraductionsMap.put("useTranslations", "§6- §3The §duseTranslations §3option defines wether the translation will be used or not\n");
+        optionsTraductionsMap.put("msgToActionBar", "§6- §3The §dmsgToActionBar §3option defines wether the messages will be sent to the action bar or not\n");
+        optionsTraductionsMap.put("errorToActionBar", "§6- §3The §derrorToActionBar §3option defines wether the error messages will be sent to the action bar or not\n");
 
-        optionsTraductionsMap.put("maxHomes", "§3The §dmaxHomes §3option defines the maximum number of homes a player can have\n");
-        optionsTraductionsMap.put("minOpLevelExeHomes", "§3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands\n");
-        optionsTraductionsMap.put("minOpLevelExeHomeOf", "§3The §dminOpLevelExeHomeOf §3option defines the OP level required to run the homeOf commands\n");
-        optionsTraductionsMap.put("minOpLevelExeEditConfig", "§3The §dminOpLevelExeEditConfig §3option defines the OP level required to edit the config");
+        optionsTraductionsMap.put("maxHomes", "§6- §3The §dmaxHomes §3option defines the maximum number of homes a player can have\n");
+        optionsTraductionsMap.put("minOpLevelExeHomes", "§6- §3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands\n");
+        optionsTraductionsMap.put("minOpLevelExeHomeOf", "§6- §3The §dminOpLevelExeHomeOf §3option defines the OP level required to run the homeOf commands\n");
+        optionsTraductionsMap.put("minOpLevelExeEditConfig", "§6- §3The §dminOpLevelExeEditConfig §3option defines the OP level required to edit the config");
     }
 
     private static void generateMiscTraductionsMap()
     {
-        miscTraductionsMap.put("headerTop", "§3------------------------------------");
+        miscTraductionsMap.put("headerTop", "§6------------------------------------");
         miscTraductionsMap.put("listHomes", "§3Homes :");
     }
 

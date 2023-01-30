@@ -419,17 +419,32 @@ public class HomeCommands
                         Properties properties = new Properties();
                         properties.load(new FileInputStream(homesPath.toFile()));
                         sendPlayerMessage(player,
+                                getMiscTraduction("headerTop"),
+                                null,
+                                "cyansh.message.getDescription.headerTop",
+                                false,
+                                CyanSHMidnightConfig.useTranslations
+                        );
+                        sendPlayerMessage(player,
                                 getMiscTraduction("listHomes"),
                                 null,
                                 "cyansh.message.listHomes",
                                 false,
                                 CyanSHMidnightConfig.useTranslations
                         );
+
                         for (String key : properties.stringPropertyNames())
                         {
                             player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
                         }
 
+                        sendPlayerMessage(player,
+                                getMiscTraduction("headerTop"),
+                                null,
+                                "cyansh.message.getDescription.headerTop",
+                                false,
+                                CyanSHMidnightConfig.useTranslations
+                        );
                     } catch (IOException e)
                     {
                         e.printStackTrace();
