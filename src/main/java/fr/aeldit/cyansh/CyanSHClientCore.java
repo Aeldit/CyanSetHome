@@ -3,6 +3,7 @@ package fr.aeldit.cyansh;
 import eu.midnightdust.lib.config.MidnightConfig;
 import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
+import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -26,6 +27,7 @@ public class CyanSHClientCore implements ClientModInitializer
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);
             HomeCommands.register(dispatcher);
+            PermissionCommands.register(dispatcher);
         });
 
         // TODO -> make work

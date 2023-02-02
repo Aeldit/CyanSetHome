@@ -4,6 +4,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.minecraft.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,10 +12,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.util.Constants.locationsPath;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public final class ArgumentSuggestion
 {
@@ -53,17 +55,53 @@ public final class ArgumentSuggestion
 
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
-        List<String> locations = new ArrayList<>();
+        List<String> homes = new ArrayList<>();
         try
         {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(locationsPath + "\\" + player.getUuidAsString() + ".properties"));
+            properties.load(new FileInputStream(homesPath + "\\" + player.getUuidAsString() + ".properties"));
 
-            locations.addAll(properties.stringPropertyNames());
+            homes.addAll(properties.stringPropertyNames());
         } catch (IOException e)
         {
             e.printStackTrace();
         }
-        return CommandSource.suggestMatching(locations, builder);
+        return CommandSource.suggestMatching(homes, builder);
+    }
+
+    public static CompletableFuture<Suggestions> getAllPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    {
+        List<String> players = new ArrayList<>();
+
+        List<ServerPlayerEntity> onlinePlayers = source.getServer().getPlayerManager().getPlayerList();
+        String[] whitelistedPlayers = source.getServer().getPlayerManager().getWhitelistedNames();
+
+        for (ServerPlayerEntity player : onlinePlayers)
+        {
+            players.add(player.getName().getString());
+        }
+
+        players.remove(Objects.requireNonNull(source.getPlayer()).getName().getString());
+
+        return CommandSource.suggestMatching(players, builder);
+    }
+
+    public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    {
+        List<String> players;
+
+        Properties properties = new Properties();
+        checkOrCreateTrustFile();
+        try
+        {
+            properties.load(new FileInputStream(trustPath.toFile()));
+            players = List.of(properties.get(Objects.requireNonNull(source.getPlayer()).getUuidAsString() + "_" + source.getPlayer().getName().getString()).toString().split(" "));
+
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        return CommandSource.suggestMatching(players, builder);
     }
 }

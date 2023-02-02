@@ -3,20 +3,21 @@ package fr.aeldit.cyansh.util;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Formatting;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Constants
+public class Utils
 {
-    public static final Path locationsPath = FabricLoader.getInstance().getConfigDir().resolve("cyansh");
+    public static final Path homesPath = FabricLoader.getInstance().getConfigDir().resolve("cyansh");
+    public static final Path trustPath = Path.of(homesPath + "\\trusted_players.properties");
 
     public static String on = Formatting.GREEN + "ON";
     public static String off = Formatting.RED + "OFF";
     public static Formatting gold = Formatting.GOLD;
     public static Formatting yellow = Formatting.YELLOW;
-    public static Formatting cyan = Formatting.DARK_AQUA;
-    public static Formatting magenta = Formatting.LIGHT_PURPLE;
 
     private static final Map<String, String> commandsTraductionsMap = new HashMap<>();
     private static final Map<String, String> optionsTraductionsMap = new HashMap<>();
@@ -101,6 +102,9 @@ public class Constants
         errorsTraductionsMap.put("homeAlreadyExists", "§cThis home alreay exists");
         errorsTraductionsMap.put("homeNotFound", "§cThis home doesn't exist (check the spelling)");
         errorsTraductionsMap.put("maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
+        errorsTraductionsMap.put("playerNotOnline", "§cThis player is not online");
+        errorsTraductionsMap.put("noTrustingPlayer", "§cNo player trusts you");
+        errorsTraductionsMap.put("playerNotTrusted", "§cThis player is not in you trust list");
     }
 
     private static void generateCmdFeedbackTraductionsMap()
@@ -109,6 +113,8 @@ public class Constants
         cmdFeedbackTraductionsMap.put("goToHome", "§3You have been teleported to the home %s");
         cmdFeedbackTraductionsMap.put("removeHome", "§3The home %s §3have been removed");
         cmdFeedbackTraductionsMap.put("listHomes", "§3Homes :");
+        cmdFeedbackTraductionsMap.put("getTrustingPlayers", "Players that trust you :%s");
+        cmdFeedbackTraductionsMap.put("getTrustedPlayers", "Players that you trust :%s");
     }
 
     public static void generateAllMaps()
@@ -164,5 +170,53 @@ public class Constants
             generateOptionsTraductionsMap();
         }
         return optionsTraductionsMap;
+    }
+
+    public static void checkOrCreateHomeFiles()
+    {
+        if (!Files.exists(Utils.homesPath))
+        {
+            try
+            {
+                Files.createDirectory(Utils.homesPath);
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!Files.exists(homesPath))
+        {
+            try
+            {
+                Files.createFile(homesPath);
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static void checkOrCreateTrustFile()
+    {
+        if (!Files.exists(Utils.homesPath))
+        {
+            try
+            {
+                Files.createDirectory(Utils.homesPath);
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!Files.exists(trustPath))
+        {
+            try
+            {
+                Files.createFile(trustPath);
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

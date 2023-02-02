@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,13 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Properties;
 
 import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
-import static fr.aeldit.cyansh.util.Constants.*;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeCommands
 {
@@ -88,7 +88,7 @@ public class HomeCommands
             return 0;
         } else
         {
-            Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
+            Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
             double x = player.getX();
             double y = player.getY();
             double z = player.getZ();
@@ -106,26 +106,7 @@ public class HomeCommands
                     Properties properties = new Properties();
                     try
                     {
-                        if (!Files.exists(locationsPath))
-                        {
-                            try
-                            {
-                                Files.createDirectory(locationsPath);
-                            } catch (IOException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        if (!Files.exists(homesPath))
-                        {
-                            try
-                            {
-                                Files.createFile(homesPath);
-                            } catch (IOException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        }
+                        checkOrCreateHomeFiles();
                         properties.load(new FileInputStream(homesPath.toFile()));
 
                         if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes)
@@ -176,10 +157,8 @@ public class HomeCommands
                         }
                     } catch (IOException e)
                     {
-                        e.printStackTrace();
-
+                        throw new RuntimeException(e);
                     }
-
                     return Command.SINGLE_SUCCESS;
                 } else
                 {
@@ -223,10 +202,12 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
+                    Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
+
+                    checkOrCreateHomeFiles();
 
                     try
                     {
@@ -292,7 +273,6 @@ public class HomeCommands
                     {
                         e.printStackTrace();
                     }
-
                     return Command.SINGLE_SUCCESS;
                 } else
                 {
@@ -336,8 +316,10 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
+                    Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
                     Properties properties = new Properties();
+
+                    checkOrCreateHomeFiles();
 
                     try
                     {
@@ -370,7 +352,6 @@ public class HomeCommands
                     {
                         e.printStackTrace();
                     }
-
                     return Command.SINGLE_SUCCESS;
                 } else
                 {
@@ -412,7 +393,9 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    Path homesPath = Path.of(locationsPath + "\\" + player.getUuidAsString() + ".properties");
+                    Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
+
+                    checkOrCreateHomeFiles();
 
                     try
                     {
@@ -449,7 +432,6 @@ public class HomeCommands
                     {
                         e.printStackTrace();
                     }
-
                     return Command.SINGLE_SUCCESS;
                 } else
                 {

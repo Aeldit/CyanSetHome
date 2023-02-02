@@ -3,8 +3,9 @@ package fr.aeldit.cyansh;
 import eu.midnightdust.lib.config.MidnightConfig;
 import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
+import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.Constants;
+import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import org.apache.logging.log4j.LogManager;
@@ -23,12 +24,13 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         MidnightConfig.init(MODID, CyanSHMidnightConfig.class);
         CyanSHServerCore.LOGGER.info("{} Successfully initialized config", MODNAME);
 
-        Constants.generateAllMaps();
+        Utils.generateAllMaps();
 
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);
             HomeCommands.register(dispatcher);
+            PermissionCommands.register(dispatcher);
         });
         CyanSHServerCore.LOGGER.info("{} Successfully initialized commands", MODNAME);
         CyanSHServerCore.LOGGER.info("{} Successfully completed initialization", MODNAME);

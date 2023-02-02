@@ -8,7 +8,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.Constants;
+import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.CommandManager;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
-import static fr.aeldit.cyansh.util.Constants.*;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class ConfigCommands
 {
@@ -241,7 +241,7 @@ public class ConfigCommands
                 Object key2 = entry.getKey();
                 if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
                 {
-                    currentTrad = Constants.getConfigTraduction(entry.getKey());
+                    currentTrad = Utils.getConfigTraduction(entry.getKey());
                 }
 
                 if (entry.getValue() instanceof Boolean value)
