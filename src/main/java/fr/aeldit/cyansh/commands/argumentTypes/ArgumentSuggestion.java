@@ -55,28 +55,24 @@ public final class ArgumentSuggestion
 
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
-        List<String> homes = new ArrayList<>();
+        List<String> homes;
         try
         {
             Properties properties = new Properties();
             properties.load(new FileInputStream(homesPath + "\\" + player.getUuidAsString() + ".properties"));
-
-            homes.addAll(properties.stringPropertyNames());
+            homes = new ArrayList<>(properties.stringPropertyNames());
         } catch (IOException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return CommandSource.suggestMatching(homes, builder);
     }
 
-    public static CompletableFuture<Suggestions> getAllPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         List<String> players = new ArrayList<>();
 
-        List<ServerPlayerEntity> onlinePlayers = source.getServer().getPlayerManager().getPlayerList();
-        String[] whitelistedPlayers = source.getServer().getPlayerManager().getWhitelistedNames();
-
-        for (ServerPlayerEntity player : onlinePlayers)
+        for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
         {
             players.add(player.getName().getString());
         }
@@ -88,20 +84,26 @@ public final class ArgumentSuggestion
 
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        List<String> players;
+        List<String> players = new ArrayList<>();
+        ServerPlayerEntity player = source.getPlayer();
 
-        Properties properties = new Properties();
         checkOrCreateTrustFile();
+        Properties properties = new Properties();
         try
         {
             properties.load(new FileInputStream(trustPath.toFile()));
-            players = List.of(properties.get(Objects.requireNonNull(source.getPlayer()).getUuidAsString() + "_" + source.getPlayer().getName().getString()).toString().split(" "));
 
+            if (player != null)
+            {
+                for (String str : List.of(properties.get(player.getUuidAsString() + "_" + player.getName().getString()).toString().split(" ")))
+                {
+                    players.add(str.split("_")[1]);
+                }
+            }
         } catch (IOException e)
         {
             throw new RuntimeException(e);
         }
-
         return CommandSource.suggestMatching(players, builder);
     }
 }

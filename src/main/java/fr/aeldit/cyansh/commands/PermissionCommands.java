@@ -17,7 +17,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.UUID;
 
 import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -28,7 +31,7 @@ public class PermissionCommands
     {
         dispatcher.register(CommandManager.literal("hometrust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getAllPlayersName(builder4, context4.getSource()))
+                        .suggests((context4, builder4) -> ArgumentSuggestion.getOnlinePlayersName(builder4, context4.getSource()))
                         .executes(PermissionCommands::trustPlayer)
                 )
         );
@@ -48,6 +51,7 @@ public class PermissionCommands
         );
     }
 
+    // TODO -> check if the player's name matches its UUID (if a player changes it pseudo)
     public static int trustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -74,8 +78,8 @@ public class PermissionCommands
             UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
             Path trustPath = Utils.trustPath;
             Properties properties = new Properties();
-            String trustingPlayerKey = player.getUuidAsString() + "_" + player.getName().getString();
-            String trustedPlayerKey = playerUUID + "_" + playerName;
+            String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+            String trustedPlayer = playerUUID + "_" + playerName;
 
             checkOrCreateTrustFile();
 
@@ -83,12 +87,12 @@ public class PermissionCommands
             {
                 properties.load(new FileInputStream(trustPath.toFile()));
 
-                if (!properties.containsKey(trustedPlayerKey))
+                if (!properties.containsKey(trustingPlayer))
                 {
-                    properties.put(trustedPlayerKey, trustingPlayerKey);
+                    properties.put(trustingPlayer, trustedPlayer);
                 } else
                 {
-                    properties.put(trustedPlayerKey, "%s %s_%s".formatted(properties.get(trustedPlayerKey), trustingPlayerKey, source.getServer().getPlayerManager().getPlayer(trustedPlayerKey)));
+                    properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
                 }
 
                 properties.store(new FileOutputStream(trustPath.toFile()), null);
@@ -113,27 +117,61 @@ public class PermissionCommands
             return 0;
         } else
         {
-            UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
             Path trustPath = Utils.trustPath;
             Properties properties = new Properties();
-            String trustingPlayerKey = player.getUuidAsString() + "_" + player.getName().getString();
-            String trustedPlayerKey = playerUUID + "_" + playerName;
-            String tmp;
+            String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+            String trustedPlayer = "";
+            List<String> tmp;
 
             checkOrCreateTrustFile();
 
             try
             {
                 properties.load(new FileInputStream(trustPath.toFile()));
+                String UUIDSearch = (String) properties.get(trustingPlayer);
+                UUIDSearch = UUIDSearch.replace("[", "").replace("]", "").replace(",", "");
 
-                if (properties.containsKey(trustedPlayerKey))
+                // Used to obtain the UUID of the player, even if it is not online
+                for (String s : UUIDSearch.split(" "))
                 {
-                    tmp = Arrays.toString(properties.get(trustedPlayerKey).toString().split(" "));
-                    if (tmp.contains(trustingPlayerKey))
+                    String[] tmpS = s.split("_");
+                    String tmpUUID = tmpS[0];
+                    String tmpName = tmpS[1];
+                    if (tmpName.equals(playerName))
                     {
-                        tmp = tmp.replace(trustingPlayerKey, "");
-                        properties.put(trustedPlayerKey, "%s".formatted(tmp));
-                        properties.store(new FileOutputStream(trustPath.toFile()), null);
+                        trustedPlayer = tmpUUID.concat("_").concat(playerName);
+                        break;
+                    }
+                }
+
+                if (properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                {
+                    tmp = List.of(properties.get(trustingPlayer).toString().split(" "));
+                    player.sendMessage(Text.of(String.valueOf(tmp.size())));
+                    player.sendMessage(Text.of(tmp.toString()));
+                    if (tmp.contains(trustedPlayer))
+                    {
+                        if (tmp.size() == 1 && Objects.equals(tmp.get(0), trustedPlayer))
+                        {
+                            properties.remove(trustingPlayer);
+                            properties.store(new FileOutputStream(trustPath.toFile()), null);
+                            return Command.SINGLE_SUCCESS;
+                        } else
+                        {
+                            String replace = tmp.toString()
+                                    .replace("[", "")
+                                    .replace(",", "")
+                                    .replace("]", "");
+
+                            if (tmp.indexOf(trustedPlayer) == tmp.size() - 1)
+                            {
+                                properties.put(trustingPlayer, "%s".formatted(replace.replace(" " + trustedPlayer, "")));
+                            } else
+                            {
+                                properties.put(trustingPlayer, "%s".formatted(replace.replace(trustedPlayer + " ", "")));
+                            }
+                            properties.store(new FileOutputStream(trustPath.toFile()), null);
+                        }
                     } else
                     {
                         sendPlayerMessage(player,

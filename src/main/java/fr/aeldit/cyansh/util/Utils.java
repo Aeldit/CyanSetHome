@@ -27,6 +27,7 @@ public class Utils
     private static final Map<String, String> errorsTraductionsMap = new HashMap<>();
     private static final Map<String, String> cmdFeedbackTraductionsMap = new HashMap<>();
 
+    // Generates
     private static void generateCommandsTraductionsMap()
     {
         commandsTraductionsMap.put("sethome", "§6- §3The §d/sethome §3command creates a home at your current location\n");
@@ -128,6 +129,7 @@ public class Utils
         generateCmdFeedbackTraductionsMap();
     }
 
+    // Gets
     public static String getCommandTraduction(String command)
     {
         return commandsTraductionsMap.get(command) != null ? commandsTraductionsMap.get(command) : "null";
@@ -172,6 +174,7 @@ public class Utils
         return optionsTraductionsMap;
     }
 
+    // Files
     public static void checkOrCreateHomeFiles()
     {
         if (!Files.exists(Utils.homesPath))
