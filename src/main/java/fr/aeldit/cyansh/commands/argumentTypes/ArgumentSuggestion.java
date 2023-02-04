@@ -26,7 +26,7 @@ public final class ArgumentSuggestion
      * Called for the commands {@code /cyansh config booleanOption} and {@code /cyansh description options booleanOption}
      *
      * @param builder the suggestion builder
-     * @return a suggestion with all the boolean options
+     * @return A suggestion with all the boolean options
      */
     public static CompletableFuture<Suggestions> getBoolOptions(@NotNull SuggestionsBuilder builder)
     {
@@ -37,7 +37,7 @@ public final class ArgumentSuggestion
      * Called for the commands {@code /cyansh config integerOption} and {@code /cyansh description options integerOption}
      *
      * @param builder the suggestion builder
-     * @return a suggestion with all the integer options
+     * @return A suggestion with all the integer options
      */
     public static CompletableFuture<Suggestions> getIntegerOptions(@NotNull SuggestionsBuilder builder)
     {
@@ -45,16 +45,23 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called for the command {@code /cyansh getConfig}
+     * Called for the command {@code /cyansh description commands}
      *
      * @param builder the suggestion builder
-     * @return a suggestion with all the available commands
+     * @return A suggestion with all the available commands
      */
     public static CompletableFuture<Suggestions> getCommands(@NotNull SuggestionsBuilder builder)
     {
         return CommandSource.suggestMatching(CyanSHMidnightConfig.generateCommandsList(), builder);
     }
 
+    /**
+     * Called for the command {@code /gethomes}
+     *
+     * @param builder - the suggestion builder
+     * @param player  - player typing the command
+     * @return A suggestion with all the player's homes
+     */
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
         List<String> homes = new ArrayList<>();
@@ -73,6 +80,13 @@ public final class ArgumentSuggestion
         return CommandSource.suggestMatching(homes, builder);
     }
 
+    /**
+     * Called by the command {@code /hometrust}
+     *
+     * @param builder - the suggestion builder
+     * @param source  - the source of the command
+     * @return A suggestion with all the online players
+     */
     public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         List<String> players = new ArrayList<>();
@@ -87,6 +101,13 @@ public final class ArgumentSuggestion
         return CommandSource.suggestMatching(players, builder);
     }
 
+    /**
+     * Called by the command {@code /homeuntrust}
+     *
+     * @param builder - the suggestion builder
+     * @param source  - the source of the command
+     * @return A suggestion with all the trusted players
+     */
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         List<String> players = new ArrayList<>();

@@ -72,7 +72,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         LOGGER.info("{} Successfully initialized commands", MODNAME);
 
         // Check if the players names matches the UUID in the trust file, and renames them if needed
-        // Same but with the homes file name (UUID_playerName)
+        // Does the same with the homes file name (UUID_playerName)
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
             String playerKey = player.getUuidAsString() + "_" + player.getName().getString();

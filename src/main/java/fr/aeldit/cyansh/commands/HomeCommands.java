@@ -30,37 +30,37 @@ public class HomeCommands
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("sethome")
-                .then(CommandManager.argument("name", StringArgumentType.string())
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .executes(HomeCommands::setHome)
                 )
         );
         dispatcher.register(CommandManager.literal("sh")
-                .then(CommandManager.argument("name", StringArgumentType.string())
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .executes(HomeCommands::setHome)
                 )
         );
 
         dispatcher.register(CommandManager.literal("home")
-                .then(CommandManager.argument("name", StringArgumentType.string())
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                         .executes(HomeCommands::goToHome)
                 )
         );
         dispatcher.register(CommandManager.literal("h")
-                .then(CommandManager.argument("name", StringArgumentType.string())
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                         .executes(HomeCommands::goToHome)
                 )
         );
 
         dispatcher.register(CommandManager.literal("removehome")
-                .then(CommandManager.argument("name", StringArgumentType.string())
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
                 )
         );
         dispatcher.register(CommandManager.literal("rh")
-                .then(CommandManager.argument("name", StringArgumentType.string())
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
                 )
@@ -75,12 +75,17 @@ public class HomeCommands
         );
     }
 
+    /**
+     * Called by the command {@code /sethome <home_name>} or {@code /sh <home_name>}
+     * <p>
+     * Creates a home with the player current position (dimension, x, y, z, yaw, pitch)
+     */
     public static int setHome(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "name");
+        String homeName = StringArgumentType.getString(context, "home_name");
 
         if (player == null)
         {
@@ -181,12 +186,17 @@ public class HomeCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /home <home_name>} or {@code /h <home_name>}
+     * <p>
+     * Teleports the player to the given home
+     */
     public static int goToHome(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "name");
+        String homeName = StringArgumentType.getString(context, "home_name");
 
         if (player == null)
         {
@@ -291,12 +301,17 @@ public class HomeCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /removehome <home_name>} or {@code /rh <home_name>}
+     * <p>
+     * Removes the given home
+     */
     public static int removeHome(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "name");
+        String homeName = StringArgumentType.getString(context, "home_name");
 
         if (player == null)
         {
@@ -366,6 +381,11 @@ public class HomeCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /gethomes} or {@code /gh}
+     * <p>
+     * Sends a message in the player's chat with all her/his homes
+     */
     public static int getHomesList(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();

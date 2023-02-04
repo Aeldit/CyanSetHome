@@ -21,6 +21,8 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry
     public static boolean allowHomeOf = true;
     @Entry
+    public static boolean allowOPHomeOf = true;
+    @Entry
     public static boolean useTranslations = true;
     @Entry
     public static boolean msgToActionBar = true;
@@ -30,7 +32,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Comment
     public static Comment intOptions;
     @Entry(min = 1, max = 128)
-    public static int maxHomes = 2;
+    public static int maxHomes = 10;
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeHomes = 0;
     @Entry(isSlider = true, min = 0, max = 4)
@@ -42,6 +44,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     {
         boolOptionsMap.put("allowHomes", allowHomes);
         boolOptionsMap.put("allowHomeOf", allowHomeOf);
+        boolOptionsMap.put("allowOPHomeOf", allowOPHomeOf);
 
         boolOptionsMap.put("useTranslations", useTranslations);
         boolOptionsMap.put("msgToActionBar", msgToActionBar);
@@ -85,6 +88,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
         {
             case "allowHomes" -> allowHomes = value;
             case "allowHomeOf" -> allowHomeOf = value;
+            case "allowOPHomeOf" -> allowOPHomeOf = value;
             case "useTranslations" -> useTranslations = value;
             case "msgToActionBar" -> msgToActionBar = value;
             case "errorToActionBar" -> errorToActionBar = value;

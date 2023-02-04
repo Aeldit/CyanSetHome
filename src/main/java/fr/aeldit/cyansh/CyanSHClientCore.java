@@ -30,7 +30,6 @@ public class CyanSHClientCore implements ClientModInitializer
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final String MODNAME = "[CyanSetHome]";
 
-
     @Override
     // Initialize the differents instances (here commands) when lauched on client (used when in singleplayer)
     public void onInitializeClient()
@@ -73,7 +72,7 @@ public class CyanSHClientCore implements ClientModInitializer
         LOGGER.info("{} Successfully initialized commands", MODNAME);
 
         // Check if the players names matches the UUID in the trust file, and renames them if needed
-        // Same but with the homes file name (UUID_playerName)
+        // Does the same with the homes file name (UUID_playerName)
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
             String playerKey = player.getUuidAsString() + "_" + player.getName().getString();

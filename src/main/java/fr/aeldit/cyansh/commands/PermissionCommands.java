@@ -49,6 +49,11 @@ public class PermissionCommands
         );
     }
 
+    /**
+     * Called by the command {@code /hometrust <player>}
+     * <p>
+     * Used to define which players can use the homes of the trusting player
+     */
     public static int trustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -80,43 +85,47 @@ public class PermissionCommands
                 Properties properties = new Properties();
                 properties.load(new FileInputStream(trustPath.toFile()));
 
-                if (!properties.containsKey(trustingPlayer))
+                if (!trustedPlayer.equals(trustingPlayer))
                 {
-                    properties.put(trustingPlayer, trustedPlayer);
-                } else
-                {
-                    if (!properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                    if (!properties.containsKey(trustingPlayer))
                     {
-                        properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
-
+                        properties.put(trustingPlayer, trustedPlayer);
                         properties.store(new FileOutputStream(trustPath.toFile()), null);
-
-                        sendPlayerMessage(player,
-                                getCmdFeedbackTraduction("playerTrusted"),
-                                null,
-                                "cyansh.message.playerTrusted",
-                                CyanSHMidnightConfig.msgToActionBar,
-                                CyanSHMidnightConfig.useTranslations
-                        );
-                    } else if (trustedPlayer.equals(trustingPlayer))
-                    {
-                        sendPlayerMessage(player,
-                                getErrorTraduction("selfTrust"),
-                                playerName,
-                                "cyansh.error.selfTrust",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations
-                        );
                     } else
                     {
-                        sendPlayerMessage(player,
-                                getErrorTraduction("playerAlreadyTrusted"),
-                                playerName,
-                                "cyansh.error.playerAlreadyTrusted",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations
-                        );
+                        if (!properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                        {
+                            properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
+
+                            properties.store(new FileOutputStream(trustPath.toFile()), null);
+
+                            sendPlayerMessage(player,
+                                    getCmdFeedbackTraduction("playerTrusted"),
+                                    null,
+                                    "cyansh.message.playerTrusted",
+                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.useTranslations
+                            );
+                        } else
+                        {
+                            sendPlayerMessage(player,
+                                    getErrorTraduction("playerAlreadyTrusted"),
+                                    playerName,
+                                    "cyansh.error.playerAlreadyTrusted",
+                                    CyanSHMidnightConfig.errorToActionBar,
+                                    CyanSHMidnightConfig.useTranslations
+                            );
+                        }
                     }
+                } else
+                {
+                    sendPlayerMessage(player,
+                            getErrorTraduction("selfTrust"),
+                            playerName,
+                            "cyansh.error.selfTrust",
+                            CyanSHMidnightConfig.errorToActionBar,
+                            CyanSHMidnightConfig.useTranslations
+                    );
                 }
             } catch (IOException e)
             {
@@ -126,6 +135,11 @@ public class PermissionCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /homeuntrust <player>}
+     * <p>
+     * Used to remove a player from the trust list
+     */
     public static int untrustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -216,6 +230,11 @@ public class PermissionCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /gettrustingplayers}
+     * <p>
+     * Send a message to the player with all the players that trust her/him
+     */
     public static int getTrustingPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -269,6 +288,11 @@ public class PermissionCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /gettrustedplayers}
+     * <p>
+     * Send a message to the player with all the players that she/he trusts
+     */
     public static int getTrustedPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
