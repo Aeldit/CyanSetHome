@@ -75,7 +75,6 @@ public class HomeCommands
         );
     }
 
-    // TODO -> Rename files to UUID_PlayerName
     public static int setHome(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();

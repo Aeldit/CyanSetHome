@@ -8,8 +8,19 @@ import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Properties;
+
+import static fr.aeldit.cyansh.util.Utils.checkOrCreateTrustFile;
+import static fr.aeldit.cyansh.util.Utils.trustPath;
 
 public class CyanSHServerCore implements DedicatedServerModInitializer
 {
@@ -22,7 +33,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
     public void onInitializeServer()
     {
         MidnightConfig.init(MODID, CyanSHMidnightConfig.class);
-        CyanSHServerCore.LOGGER.info("{} Successfully initialized config", MODNAME);
+        LOGGER.info("{} Successfully initialized config", MODNAME);
 
         Utils.generateAllMaps();
 
@@ -32,7 +43,45 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
             HomeCommands.register(dispatcher);
             PermissionCommands.register(dispatcher);
         });
-        CyanSHServerCore.LOGGER.info("{} Successfully initialized commands", MODNAME);
-        CyanSHServerCore.LOGGER.info("{} Successfully completed initialization", MODNAME);
+        LOGGER.info("{} Successfully initialized commands", MODNAME);
+
+        // Check if the players names matches the UUID in the trust file, and renames them if needed
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayerEntity player = handler.getPlayer();
+            String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+
+            checkOrCreateTrustFile();
+            Properties properties = new Properties();
+            try
+            {
+                properties.load(new FileInputStream(trustPath.toFile()));
+                String prevName;
+                if (properties.stringPropertyNames().size() != 0)
+                {
+                    if (!properties.containsKey(playerKey))
+                    {
+                        for (String key : properties.stringPropertyNames())
+                        {
+                            if (Objects.equals(key.split("_")[0], player.getUuidAsString()))
+                            {
+                                prevName = key.split("_")[1];
+                                if (!Objects.equals(key.split("_")[1], player.getName().getString()))
+                                {
+                                    properties.put(playerKey, properties.get(key));
+                                    properties.remove(key);
+                                    properties.store(new FileOutputStream(trustPath.toFile()), null);
+                                    LOGGER.info("{} Updated {}'s pseudo in the trust file, because the player changed its name (previously {})", MODNAME, player.getName().getString(), prevName);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        });
+
+        LOGGER.info("{} Successfully completed initialization", MODNAME);
     }
 }

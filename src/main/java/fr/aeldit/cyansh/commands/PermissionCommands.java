@@ -49,7 +49,6 @@ public class PermissionCommands
         );
     }
 
-    // TODO -> check if the player's name matches its UUID (if a player changes it pseudo)
     public static int trustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -60,7 +59,6 @@ public class PermissionCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
         {
             sendPlayerMessage(player,
@@ -70,7 +68,6 @@ public class PermissionCommands
                     CyanSHMidnightConfig.errorToActionBar,
                     CyanSHMidnightConfig.useTranslations
             );
-            return 0;
         } else
         {
             UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
@@ -88,10 +85,39 @@ public class PermissionCommands
                     properties.put(trustingPlayer, trustedPlayer);
                 } else
                 {
-                    properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
-                }
+                    if (!properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                    {
+                        properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
 
-                properties.store(new FileOutputStream(trustPath.toFile()), null);
+                        properties.store(new FileOutputStream(trustPath.toFile()), null);
+
+                        sendPlayerMessage(player,
+                                getCmdFeedbackTraduction("playerTrusted"),
+                                null,
+                                "cyansh.message.playerTrusted",
+                                CyanSHMidnightConfig.msgToActionBar,
+                                CyanSHMidnightConfig.useTranslations
+                        );
+                    } else if (trustedPlayer.equals(trustingPlayer))
+                    {
+                        sendPlayerMessage(player,
+                                getErrorTraduction("selfTrust"),
+                                playerName,
+                                "cyansh.error.selfTrust",
+                                CyanSHMidnightConfig.errorToActionBar,
+                                CyanSHMidnightConfig.useTranslations
+                        );
+                    } else
+                    {
+                        sendPlayerMessage(player,
+                                getErrorTraduction("playerAlreadyTrusted"),
+                                playerName,
+                                "cyansh.error.playerAlreadyTrusted",
+                                CyanSHMidnightConfig.errorToActionBar,
+                                CyanSHMidnightConfig.useTranslations
+                        );
+                    }
+                }
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
@@ -110,7 +136,6 @@ public class PermissionCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
@@ -199,7 +224,6 @@ public class PermissionCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             checkOrCreateTrustFile();
@@ -253,7 +277,6 @@ public class PermissionCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             checkOrCreateTrustFile();
@@ -278,7 +301,7 @@ public class PermissionCommands
                                 getCmdFeedbackTraduction("noTrustedPlayer"),
                                 trustedPlayers,
                                 "cyansh.message.noTrustedPlayer",
-                                false,
+                                CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
                         );
                     } else
@@ -294,10 +317,10 @@ public class PermissionCommands
                 } else
                 {
                     sendPlayerMessage(player,
-                            getCmdFeedbackTraduction("getTrustedPlayers"),
+                            getCmdFeedbackTraduction("noTrustedPlayer"),
                             trustedPlayers,
-                            "cyansh.message.getTrustedPlayers",
-                            false,
+                            "cyansh.message.noTrustedPlayer",
+                            CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
                     );
                 }

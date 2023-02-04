@@ -95,7 +95,7 @@ public class Utils
 
     public static void generateErrorsTraductionsMap()
     {
-        errorsTraductionsMap.put("playerOnlyCmd", "§cThis command can only be executed by a player");
+        errorsTraductionsMap.put("playerOnlyCmd", "This command can only be executed by a player");
         errorsTraductionsMap.put("notOp", "§cYou don't have the required permission to do that");
         errorsTraductionsMap.put("incorrectIntOp", "§cThe OP level must be in [0;4]");
         errorsTraductionsMap.put("incorrectIntMaxHomes", "§cThe number must be in [1;128]");
@@ -105,6 +105,8 @@ public class Utils
         errorsTraductionsMap.put("maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
         errorsTraductionsMap.put("playerNotOnline", "§cThis player is not online");
         errorsTraductionsMap.put("playerNotTrusted", "§cThis player is not in you trust list");
+        errorsTraductionsMap.put("playerAlreadyTrusted", "§cYou already trust this player");
+        errorsTraductionsMap.put("selfTrust", "§cYou can't trust yourself");
     }
 
     private static void generateCmdFeedbackTraductionsMap()
@@ -117,6 +119,7 @@ public class Utils
         cmdFeedbackTraductionsMap.put("getTrustedPlayers", "§3Players that you trust :%s");
         cmdFeedbackTraductionsMap.put("noTrustingPlayer", "§3No player trusts you");
         cmdFeedbackTraductionsMap.put("noTrustedPlayer", "§3You don't trust any player");
+        cmdFeedbackTraductionsMap.put("playerTrusted", "§3You now trust %s");
     }
 
     public static void generateAllMaps()
