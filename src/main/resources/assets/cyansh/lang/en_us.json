@@ -14,6 +14,7 @@
   "cyansh.error.playerNotTrusted": "§cThis player is not in you trust list",
   "cyansh.error.playerAlreadyTrusted": "§cYou already trust this player",
   "cyansh.error.selfTrust": "§cYou can't trust yourself",
+  "cyansh.error.noHomes": "§cYou don't have any home",
   "---------------------------------------------------MESSAGES----------------------------------------------------": "",
   "cyansh.message.setHome": "§3The home %s §3have been created",
   "cyansh.message.goToHome": "§3You have been teleported to the home %s",

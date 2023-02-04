@@ -107,6 +107,7 @@ public class Utils
         errorsTraductionsMap.put("playerNotTrusted", "§cThis player is not in you trust list");
         errorsTraductionsMap.put("playerAlreadyTrusted", "§cYou already trust this player");
         errorsTraductionsMap.put("selfTrust", "§cYou can't trust yourself");
+        errorsTraductionsMap.put("noHomes", "§cYou don't have any home");
     }
 
     private static void generateCmdFeedbackTraductionsMap()

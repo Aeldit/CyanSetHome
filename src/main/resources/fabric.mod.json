@@ -3,9 +3,9 @@
   "id": "cyansh",
   "version": "${version}",
   "name": "CyanSetHome",
-  "description": "This mod adds the /sethome commands to minecraft",
+  "description": "This mod adds the /sethome command and everything that goes with",
   "authors": [
-    "Raphoulfifou"
+    "Aeldit"
   ],
   "contact": {
     "homepage": "https://modrinth.com/user/lRyDhyWM",
@@ -26,7 +26,7 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.14.10",
+    "fabricloader": ">=0.14.14",
     "fabric": "*",
     "minecraft": "1.19.x",
     "java": ">=17"

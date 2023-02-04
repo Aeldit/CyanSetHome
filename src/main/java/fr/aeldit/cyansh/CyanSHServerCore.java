@@ -39,6 +39,30 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
 
         Utils.generateAllMaps();
 
+        // Deletes home files that are empty
+        File homesDir = new File(homesPath.toUri());
+        File[] filesList = homesDir.listFiles();
+        if (filesList != null)
+        {
+            for (File file : filesList)
+            {
+                if (file.isFile())
+                {
+                    try
+                    {
+                        if (!file.getName().equals("trusted_players.properties") && Files.readAllLines(file.toPath()).size() <= 1)
+                        {
+                            LOGGER.info("{} Deleted the file '{}' because it was empty", MODNAME, file.getName());
+                            Files.delete(file.toPath());
+                        }
+                    } catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);

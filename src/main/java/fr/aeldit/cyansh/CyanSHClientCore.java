@@ -5,6 +5,7 @@ import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -29,12 +30,39 @@ public class CyanSHClientCore implements ClientModInitializer
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final String MODNAME = "[CyanSetHome]";
 
+
     @Override
     // Initialize the differents instances (here commands) when lauched on client (used when in singleplayer)
     public void onInitializeClient()
     {
         MidnightConfig.init(CyanSHServerCore.MODID, CyanSHMidnightConfig.class);
         LOGGER.info("{} Successfully initialized config", MODNAME);
+
+        Utils.generateAllMaps();
+
+        // Deletes home files that are empty
+        File homesDir = new File(homesPath.toUri());
+        File[] filesList = homesDir.listFiles();
+        if (filesList != null)
+        {
+            for (File file : filesList)
+            {
+                if (file.isFile())
+                {
+                    try
+                    {
+                        if (!file.getName().equals("trusted_players.properties") && Files.readAllLines(file.toPath()).size() <= 1)
+                        {
+                            LOGGER.info("{} Deleted the file '{}' because it was empty", MODNAME, file.getName());
+                            Files.delete(file.toPath());
+                        }
+                    } catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
 
         // Register all the commands
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {

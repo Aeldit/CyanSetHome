@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Properties;
@@ -382,41 +383,64 @@ public class HomeCommands
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
                     Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
 
-                    checkOrCreateHomesFiles(currentHomesPath);
-                    try
+                    if (Files.exists(currentHomesPath))
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(currentHomesPath.toFile()));
-                        sendPlayerMessage(player,
-                                getMiscTraduction("headerTop"),
-                                null,
-                                "cyansh.message.getDescription.headerTop",
-                                false,
-                                CyanSHMidnightConfig.useTranslations
-                        );
-                        sendPlayerMessage(player,
-                                getMiscTraduction("listHomes"),
-                                null,
-                                "cyansh.message.listHomes",
-                                false,
-                                CyanSHMidnightConfig.useTranslations
-                        );
-
-                        for (String key : properties.stringPropertyNames())
+                        try
                         {
-                            player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
-                        }
+                            Properties properties = new Properties();
+                            properties.load(new FileInputStream(currentHomesPath.toFile()));
+                            if (!(properties.size() == 0))
+                            {
+                                sendPlayerMessage(player,
+                                        getMiscTraduction("headerTop"),
+                                        null,
+                                        "cyansh.message.getDescription.headerTop",
+                                        false,
+                                        CyanSHMidnightConfig.useTranslations
+                                );
+                                sendPlayerMessage(player,
+                                        getMiscTraduction("listHomes"),
+                                        null,
+                                        "cyansh.message.listHomes",
+                                        false,
+                                        CyanSHMidnightConfig.useTranslations
+                                );
 
+                                for (String key : properties.stringPropertyNames())
+                                {
+                                    player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
+                                }
+
+                                sendPlayerMessage(player,
+                                        getMiscTraduction("headerTop"),
+                                        null,
+                                        "cyansh.message.getDescription.headerTop",
+                                        false,
+                                        CyanSHMidnightConfig.useTranslations
+                                );
+                            } else
+                            {
+                                sendPlayerMessage(player,
+                                        getErrorTraduction("noHomes"),
+                                        null,
+                                        "cyansh.error.noHomes",
+                                        CyanSHMidnightConfig.errorToActionBar,
+                                        CyanSHMidnightConfig.useTranslations
+                                );
+                            }
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    } else
+                    {
                         sendPlayerMessage(player,
-                                getMiscTraduction("headerTop"),
+                                getErrorTraduction("noHomes"),
                                 null,
-                                "cyansh.message.getDescription.headerTop",
-                                false,
+                                "cyansh.error.noHomes",
+                                CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
                         );
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
                     }
                 } else
                 {
