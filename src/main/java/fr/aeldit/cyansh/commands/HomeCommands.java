@@ -85,7 +85,6 @@ public class HomeCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
@@ -103,10 +102,10 @@ public class HomeCommands
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
 
-                    Properties properties = new Properties();
+                    checkOrCreateHomeFiles();
                     try
                     {
-                        checkOrCreateHomeFiles();
+                        Properties properties = new Properties();
                         properties.load(new FileInputStream(homesPath.toFile()));
 
                         if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes)
@@ -142,7 +141,6 @@ public class HomeCommands
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useTranslations
                                 );
-                                return 0;
                             }
                         } else
                         {
@@ -153,13 +151,11 @@ public class HomeCommands
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
-                            return 0;
                         }
                     } catch (IOException e)
                     {
                         throw new RuntimeException(e);
                     }
-                    return Command.SINGLE_SUCCESS;
                 } else
                 {
                     sendPlayerMessage(player,
@@ -169,7 +165,6 @@ public class HomeCommands
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
                     );
-                    return 0;
                 }
             } else
             {
@@ -180,9 +175,9 @@ public class HomeCommands
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
                 );
-                return 0;
             }
         }
+        return Command.SINGLE_SUCCESS;
     }
 
     public static int goToHome(@NotNull CommandContext<ServerCommandSource> context)
@@ -195,7 +190,6 @@ public class HomeCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             if (CyanSHMidnightConfig.allowHomes)
@@ -208,7 +202,6 @@ public class HomeCommands
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
 
                     checkOrCreateHomeFiles();
-
                     try
                     {
                         Properties properties = new Properties();
@@ -267,13 +260,11 @@ public class HomeCommands
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
-                            return 0;
                         }
                     } catch (IOException e)
                     {
                         e.printStackTrace();
                     }
-                    return Command.SINGLE_SUCCESS;
                 } else
                 {
                     sendPlayerMessage(player,
@@ -283,7 +274,6 @@ public class HomeCommands
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
                     );
-                    return 0;
                 }
             } else
             {
@@ -294,9 +284,9 @@ public class HomeCommands
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
                 );
-                return 0;
             }
         }
+        return Command.SINGLE_SUCCESS;
     }
 
     public static int removeHome(@NotNull CommandContext<ServerCommandSource> context)
@@ -309,7 +299,6 @@ public class HomeCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             if (CyanSHMidnightConfig.allowHomes)
@@ -317,12 +306,11 @@ public class HomeCommands
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
-                    Properties properties = new Properties();
 
                     checkOrCreateHomeFiles();
-
                     try
                     {
+                        Properties properties = new Properties();
                         properties.load(new FileInputStream(homesPath.toFile()));
 
                         if (properties.containsKey(homeName))
@@ -346,13 +334,11 @@ public class HomeCommands
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
                             );
-                            return 0;
                         }
                     } catch (IOException e)
                     {
                         e.printStackTrace();
                     }
-                    return Command.SINGLE_SUCCESS;
                 } else
                 {
                     sendPlayerMessage(player,
@@ -362,7 +348,6 @@ public class HomeCommands
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
                     );
-                    return 0;
                 }
             } else
             {
@@ -373,9 +358,9 @@ public class HomeCommands
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
                 );
-                return 0;
             }
         }
+        return Command.SINGLE_SUCCESS;
     }
 
     public static int getHomesList(@NotNull CommandContext<ServerCommandSource> context)
@@ -386,7 +371,6 @@ public class HomeCommands
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
-            return 0;
         } else
         {
             if (CyanSHMidnightConfig.allowHomes)
@@ -396,7 +380,6 @@ public class HomeCommands
                     Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
 
                     checkOrCreateHomeFiles();
-
                     try
                     {
                         Properties properties = new Properties();
@@ -432,7 +415,6 @@ public class HomeCommands
                     {
                         e.printStackTrace();
                     }
-                    return Command.SINGLE_SUCCESS;
                 } else
                 {
                     sendPlayerMessage(player,
@@ -442,7 +424,6 @@ public class HomeCommands
                             false,
                             CyanSHMidnightConfig.useTranslations
                     );
-                    return 0;
                 }
             } else
             {
@@ -453,8 +434,8 @@ public class HomeCommands
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
                 );
-                return 0;
             }
         }
+        return Command.SINGLE_SUCCESS;
     }
 }

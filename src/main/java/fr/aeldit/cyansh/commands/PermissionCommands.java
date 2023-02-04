@@ -75,9 +75,9 @@ public class PermissionCommands
             String trustedPlayer = playerUUID + "_" + playerName;
 
             checkOrCreateTrustFile();
-            Properties properties = new Properties();
             try
             {
+                Properties properties = new Properties();
                 properties.load(new FileInputStream(trustPath.toFile()));
 
                 if (!properties.containsKey(trustingPlayer))
@@ -143,9 +143,9 @@ public class PermissionCommands
             List<String> tmp;
 
             checkOrCreateTrustFile();
-            Properties properties = new Properties();
             try
             {
+                Properties properties = new Properties();
                 properties.load(new FileInputStream(trustPath.toFile()));
                 String UUIDSearch = (String) properties.get(trustingPlayer);
                 UUIDSearch = UUIDSearch.replace("[", "").replace("]", "").replace(",", "");
@@ -227,9 +227,9 @@ public class PermissionCommands
         } else
         {
             checkOrCreateTrustFile();
-            Properties properties = new Properties();
             try
             {
+                Properties properties = new Properties();
                 properties.load(new FileInputStream(trustPath.toFile()));
                 String trustedPlayer = player.getUuidAsString() + "_" + player.getName().getString();
                 String trustingPlayers = "";
@@ -280,9 +280,9 @@ public class PermissionCommands
         } else
         {
             checkOrCreateTrustFile();
-            Properties properties = new Properties();
             try
             {
+                Properties properties = new Properties();
                 properties.load(new FileInputStream(trustPath.toFile()));
                 String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
                 String trustedPlayers = "";
