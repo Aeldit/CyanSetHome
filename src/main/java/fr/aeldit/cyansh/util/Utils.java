@@ -104,7 +104,6 @@ public class Utils
         errorsTraductionsMap.put("homeNotFound", "§cThis home doesn't exist (check the spelling)");
         errorsTraductionsMap.put("maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
         errorsTraductionsMap.put("playerNotOnline", "§cThis player is not online");
-        errorsTraductionsMap.put("noTrustingPlayer", "§cNo player trusts you");
         errorsTraductionsMap.put("playerNotTrusted", "§cThis player is not in you trust list");
     }
 
@@ -114,8 +113,10 @@ public class Utils
         cmdFeedbackTraductionsMap.put("goToHome", "§3You have been teleported to the home %s");
         cmdFeedbackTraductionsMap.put("removeHome", "§3The home %s §3have been removed");
         cmdFeedbackTraductionsMap.put("listHomes", "§3Homes :");
-        cmdFeedbackTraductionsMap.put("getTrustingPlayers", "Players that trust you :%s");
-        cmdFeedbackTraductionsMap.put("getTrustedPlayers", "Players that you trust :%s");
+        cmdFeedbackTraductionsMap.put("getTrustingPlayers", "§3Players that trust you :%s");
+        cmdFeedbackTraductionsMap.put("getTrustedPlayers", "§3Players that you trust :%s");
+        cmdFeedbackTraductionsMap.put("noTrustingPlayer", "§3No player trusts you");
+        cmdFeedbackTraductionsMap.put("noTrustedPlayer", "§3You don't trust any player");
     }
 
     public static void generateAllMaps()

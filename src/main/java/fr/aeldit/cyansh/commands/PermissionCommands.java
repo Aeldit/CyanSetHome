@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -76,13 +74,11 @@ public class PermissionCommands
         } else
         {
             UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
-            Path trustPath = Utils.trustPath;
-            Properties properties = new Properties();
             String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
             String trustedPlayer = playerUUID + "_" + playerName;
 
             checkOrCreateTrustFile();
-
+            Properties properties = new Properties();
             try
             {
                 properties.load(new FileInputStream(trustPath.toFile()));
@@ -117,14 +113,12 @@ public class PermissionCommands
             return 0;
         } else
         {
-            Path trustPath = Utils.trustPath;
-            Properties properties = new Properties();
             String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
             String trustedPlayer = "";
             List<String> tmp;
 
             checkOrCreateTrustFile();
-
+            Properties properties = new Properties();
             try
             {
                 properties.load(new FileInputStream(trustPath.toFile()));
@@ -147,15 +141,12 @@ public class PermissionCommands
                 if (properties.get(trustingPlayer).toString().contains(trustedPlayer))
                 {
                     tmp = List.of(properties.get(trustingPlayer).toString().split(" "));
-                    player.sendMessage(Text.of(String.valueOf(tmp.size())));
-                    player.sendMessage(Text.of(tmp.toString()));
                     if (tmp.contains(trustedPlayer))
                     {
                         if (tmp.size() == 1 && Objects.equals(tmp.get(0), trustedPlayer))
                         {
                             properties.remove(trustingPlayer);
                             properties.store(new FileOutputStream(trustPath.toFile()), null);
-                            return Command.SINGLE_SUCCESS;
                         } else
                         {
                             String replace = tmp.toString()
@@ -211,32 +202,23 @@ public class PermissionCommands
             return 0;
         } else
         {
-            Path trustPath = Utils.trustPath;
-            Properties properties = new Properties();
-
             checkOrCreateTrustFile();
-
+            Properties properties = new Properties();
             try
             {
                 properties.load(new FileInputStream(trustPath.toFile()));
-                String trustingPlayersString = "";
-                String trustedPlayerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                String trustedPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                String trustingPlayers = "";
 
-                if (properties.containsKey(trustedPlayerKey))
+                for (String p : properties.stringPropertyNames())
                 {
-                    for (String p : properties.get(trustedPlayerKey).toString().split(" "))
+                    if (properties.get(p).toString().contains(trustedPlayer))
                     {
-                        trustingPlayersString = trustingPlayersString.concat(" ").concat(p.split("_")[1]);
+                        trustingPlayers = trustingPlayers.concat(" ").concat(p.split("_")[1]);
                     }
+                }
 
-                    sendPlayerMessage(player,
-                            getCmdFeedbackTraduction("getTrustingPlayers"),
-                            trustingPlayersString,
-                            "cyansh.message.getTrustingPlayers",
-                            false,
-                            CyanSHMidnightConfig.useTranslations
-                    );
-                } else
+                if (trustingPlayers.equals(""))
                 {
                     sendPlayerMessage(player,
                             getCmdFeedbackTraduction("noTrustingPlayer"),
@@ -245,7 +227,15 @@ public class PermissionCommands
                             CyanSHMidnightConfig.msgToActionBar,
                             CyanSHMidnightConfig.useTranslations
                     );
-                    return 0;
+                } else
+                {
+                    sendPlayerMessage(player,
+                            getCmdFeedbackTraduction("getTrustingPlayers"),
+                            trustingPlayers,
+                            "cyansh.message.getTrustingPlayers",
+                            false,
+                            CyanSHMidnightConfig.useTranslations
+                    );
                 }
             } catch (IOException e)
             {
@@ -266,40 +256,51 @@ public class PermissionCommands
             return 0;
         } else
         {
-            Path trustPath = Utils.trustPath;
-            Properties properties = new Properties();
-
             checkOrCreateTrustFile();
-
+            Properties properties = new Properties();
             try
             {
                 properties.load(new FileInputStream(trustPath.toFile()));
-                String trustedPlayersString = "";
-                String[] tmp;
-                List<String> stringList;
+                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                String trustedPlayers = "";
 
-                for (String p : properties.stringPropertyNames())
+                if (properties.containsKey(trustingPlayer))
                 {
-                    stringList = List.of(properties.get(p).toString().split(" "));
-
-                    for (String str : stringList)
+                    for (String p : properties.get(trustingPlayer).toString().split(" "))
                     {
-                        tmp = str.split("_");
-                        if (tmp[0].equals(player.getUuidAsString()))
-                        {
-                            trustedPlayersString = trustedPlayersString.concat(" ").concat(p.split("_")[1]);
-                            break;
-                        }
+                        player.sendMessage(Text.of(p));
+                        trustedPlayers = trustedPlayers.concat(" ").concat(p.split("_")[1]);
                     }
-                }
 
-                sendPlayerMessage(player,
-                        getCmdFeedbackTraduction("getTrustedPlayers"),
-                        trustedPlayersString,
-                        "cyansh.message.getTrustedPlayers",
-                        false,
-                        CyanSHMidnightConfig.useTranslations
-                );
+                    if (trustedPlayers.equals(""))
+                    {
+                        sendPlayerMessage(player,
+                                getCmdFeedbackTraduction("noTrustedPlayer"),
+                                trustedPlayers,
+                                "cyansh.message.noTrustedPlayer",
+                                false,
+                                CyanSHMidnightConfig.useTranslations
+                        );
+                    } else
+                    {
+                        sendPlayerMessage(player,
+                                getCmdFeedbackTraduction("getTrustedPlayers"),
+                                trustedPlayers,
+                                "cyansh.message.getTrustedPlayers",
+                                false,
+                                CyanSHMidnightConfig.useTranslations
+                        );
+                    }
+                } else
+                {
+                    sendPlayerMessage(player,
+                            getCmdFeedbackTraduction("getTrustedPlayers"),
+                            trustedPlayers,
+                            "cyansh.message.getTrustedPlayers",
+                            false,
+                            CyanSHMidnightConfig.useTranslations
+                    );
+                }
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
