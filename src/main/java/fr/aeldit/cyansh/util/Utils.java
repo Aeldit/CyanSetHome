@@ -179,23 +179,37 @@ public class Utils
     }
 
     // Files
-    public static void checkOrCreateHomeFiles()
+    public static void checkOrCreateHomesDir()
     {
-        if (!Files.exists(Utils.homesPath))
+        if (!Files.exists(homesPath))
         {
             try
             {
-                Files.createDirectory(Utils.homesPath);
+                Files.createDirectory(homesPath);
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static void checkOrCreateHomesFiles(Path filePath)
+    {
         if (!Files.exists(homesPath))
         {
             try
             {
-                Files.createFile(homesPath);
+                Files.createDirectory(homesPath);
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!Files.exists(filePath))
+        {
+            try
+            {
+                Files.createFile(filePath);
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
@@ -205,11 +219,11 @@ public class Utils
 
     public static void checkOrCreateTrustFile()
     {
-        if (!Files.exists(Utils.homesPath))
+        if (!Files.exists(homesPath))
         {
             try
             {
-                Files.createDirectory(Utils.homesPath);
+                Files.createDirectory(homesPath);
             } catch (IOException e)
             {
                 throw new RuntimeException(e);

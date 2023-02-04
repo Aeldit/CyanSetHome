@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -55,15 +57,18 @@ public final class ArgumentSuggestion
 
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
-        List<String> homes;
-        try
+        List<String> homes = new ArrayList<>();
+        if (Files.exists(Path.of(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".properties")))
         {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(homesPath + "\\" + player.getUuidAsString() + ".properties"));
-            homes = new ArrayList<>(properties.stringPropertyNames());
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
+            try
+            {
+                Properties properties = new Properties();
+                properties.load(new FileInputStream(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".properties"));
+                homes = new ArrayList<>(properties.stringPropertyNames());
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
         return CommandSource.suggestMatching(homes, builder);
     }
@@ -88,9 +93,9 @@ public final class ArgumentSuggestion
         ServerPlayerEntity player = source.getPlayer();
 
         checkOrCreateTrustFile();
-        Properties properties = new Properties();
         try
         {
+            Properties properties = new Properties();
             properties.load(new FileInputStream(trustPath.toFile()));
 
             if (player != null)

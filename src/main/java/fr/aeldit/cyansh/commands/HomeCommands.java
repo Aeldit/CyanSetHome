@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -87,7 +86,8 @@ public class HomeCommands
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
         } else
         {
-            Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
+            String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+            Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
             double x = player.getX();
             double y = player.getY();
             double z = player.getZ();
@@ -102,11 +102,11 @@ public class HomeCommands
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
 
-                    checkOrCreateHomeFiles();
+                    checkOrCreateHomesFiles(currentHomesPath);
                     try
                     {
                         Properties properties = new Properties();
-                        properties.load(new FileInputStream(homesPath.toFile()));
+                        properties.load(new FileInputStream(currentHomesPath.toFile()));
 
                         if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes)
                         {
@@ -123,7 +123,7 @@ public class HomeCommands
                                     properties.put(homeName, "%s %f %f %f %f %f".formatted("end", x, y, z, yaw, pitch));
                                 }
 
-                                properties.store(new FileOutputStream(homesPath.toFile()), null);
+                                properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
 
                                 sendPlayerMessage(player,
                                         getCmdFeedbackTraduction("setHome"),
@@ -196,51 +196,52 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
 
-                    checkOrCreateHomeFiles();
+                    checkOrCreateHomesFiles(currentHomesPath);
                     try
                     {
                         Properties properties = new Properties();
-                        properties.load(new FileInputStream(homesPath.toFile()));
+                        properties.load(new FileInputStream(currentHomesPath.toFile()));
 
                         if (properties.containsKey(homeName))
                         {
-                            String location = (String) properties.get(homeName);
-                            String world = location.split(" ")[0];
+                            String home = (String) properties.get(homeName);
+                            String world = home.split(" ")[0];
 
                             if (Objects.equals(world, "overworld"))
                             {
                                 player.teleport(
                                         overworld,
-                                        Double.parseDouble(location.split(" ")[1]),
-                                        Double.parseDouble(location.split(" ")[2]),
-                                        Double.parseDouble(location.split(" ")[3]),
-                                        Float.parseFloat(location.split(" ")[4]),
-                                        Float.parseFloat(location.split(" ")[5])
+                                        Double.parseDouble(home.split(" ")[1]),
+                                        Double.parseDouble(home.split(" ")[2]),
+                                        Double.parseDouble(home.split(" ")[3]),
+                                        Float.parseFloat(home.split(" ")[4]),
+                                        Float.parseFloat(home.split(" ")[5])
                                 );
                             } else if (Objects.equals(world, "nether"))
                             {
                                 player.teleport(
                                         nether,
-                                        Double.parseDouble(location.split(" ")[1]),
-                                        Double.parseDouble(location.split(" ")[2]),
-                                        Double.parseDouble(location.split(" ")[3]),
-                                        Float.parseFloat(location.split(" ")[4]),
-                                        Float.parseFloat(location.split(" ")[5])
+                                        Double.parseDouble(home.split(" ")[1]),
+                                        Double.parseDouble(home.split(" ")[2]),
+                                        Double.parseDouble(home.split(" ")[3]),
+                                        Float.parseFloat(home.split(" ")[4]),
+                                        Float.parseFloat(home.split(" ")[5])
                                 );
                             } else if (Objects.equals(world, "end"))
                             {
                                 player.teleport(
                                         end,
-                                        Double.parseDouble(location.split(" ")[1]),
-                                        Double.parseDouble(location.split(" ")[2]),
-                                        Double.parseDouble(location.split(" ")[3]),
-                                        Float.parseFloat(location.split(" ")[4]),
-                                        Float.parseFloat(location.split(" ")[5])
+                                        Double.parseDouble(home.split(" ")[1]),
+                                        Double.parseDouble(home.split(" ")[2]),
+                                        Double.parseDouble(home.split(" ")[3]),
+                                        Float.parseFloat(home.split(" ")[4]),
+                                        Float.parseFloat(home.split(" ")[5])
                                 );
                             }
 
@@ -305,18 +306,19 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
 
-                    checkOrCreateHomeFiles();
+                    checkOrCreateHomesFiles(currentHomesPath);
                     try
                     {
                         Properties properties = new Properties();
-                        properties.load(new FileInputStream(homesPath.toFile()));
+                        properties.load(new FileInputStream(currentHomesPath.toFile()));
 
                         if (properties.containsKey(homeName))
                         {
                             properties.remove(homeName);
-                            properties.store(new FileOutputStream(homesPath.toFile()), null);
+                            properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
 
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("removeHome"),
@@ -377,13 +379,14 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    Path homesPath = Path.of(Utils.homesPath + "\\" + player.getUuidAsString() + ".properties");
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
 
-                    checkOrCreateHomeFiles();
+                    checkOrCreateHomesFiles(currentHomesPath);
                     try
                     {
                         Properties properties = new Properties();
-                        properties.load(new FileInputStream(homesPath.toFile()));
+                        properties.load(new FileInputStream(currentHomesPath.toFile()));
                         sendPlayerMessage(player,
                                 getMiscTraduction("headerTop"),
                                 null,
