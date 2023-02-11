@@ -81,7 +81,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called by the command {@code /hometrust}
+     * Called for the command {@code /hometrust}
      *
      * @param builder - the suggestion builder
      * @param source  - the source of the command
@@ -102,7 +102,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called by the command {@code /homeuntrust}
+     * Called for the command {@code /homeuntrust}
      *
      * @param builder - the suggestion builder
      * @param source  - the source of the command
@@ -132,4 +132,43 @@ public final class ArgumentSuggestion
         }
         return CommandSource.suggestMatching(players, builder);
     }
+
+    /**
+     * Called for the homeOf commands
+     *
+     * @param builder - the suggestion builder
+     * @param source  - the source of the command
+     * @return A suggestion with all the trusting players
+     */
+    /*public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    {
+        List<String> players = new ArrayList<>();
+        ServerPlayerEntity player = source.getPlayer();
+
+        File currentHomesDir = new File(homesPath.toUri());
+        checkOrCreateHomesDir();
+        File[] listOfFiles = currentHomesDir.listFiles();
+
+        if (listOfFiles != null)
+        {
+            for (File file : listOfFiles)
+            {
+                if (file.isFile())
+                {
+                    if (Objects.equals(file.getName().split("_")[0], player.getUuidAsString()) && !Objects.equals(file.getName().split("_")[1], player.getName().getString()))
+                    {
+                        try
+                        {
+                            Files.move(file.toPath(), currentHomesPath.resolveSibling(playerKey + ".properties"));
+                        } catch (IOException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }
+
+        return CommandSource.suggestMatching(players, builder);
+    }*/
 }
