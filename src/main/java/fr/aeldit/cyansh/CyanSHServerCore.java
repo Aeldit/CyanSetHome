@@ -3,6 +3,8 @@ package fr.aeldit.cyansh;
 import eu.midnightdust.lib.config.MidnightConfig;
 import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
+import fr.aeldit.cyansh.commands.HomeOfCommands;
+import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -66,8 +68,8 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);
             HomeCommands.register(dispatcher);
-            //HomeOfCommands.register(dispatcher);
-            //PermissionCommands.register(dispatcher);
+            HomeOfCommands.register(dispatcher);
+            PermissionCommands.register(dispatcher);
         });
         LOGGER.info("{} Successfully initialized commands", MODNAME);
 

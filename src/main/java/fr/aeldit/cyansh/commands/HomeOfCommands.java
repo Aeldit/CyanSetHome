@@ -1,20 +1,24 @@
 package fr.aeldit.cyansh.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Properties;
@@ -24,13 +28,12 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
 {
-    /*public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
+    public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("homeof")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getTrustingPlayersName(builder4, context4.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                                 .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
@@ -39,7 +42,6 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getTrustingPlayersName(builder4, context4.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                                 .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
@@ -49,7 +51,6 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getTrustingPlayersName(builder4, context4.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                                 .executes(HomeOfCommands::removeHomeOf)
                         )
                 )
@@ -58,7 +59,6 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getTrustingPlayersName(builder4, context4.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                                 .executes(HomeOfCommands::removeHomeOf)
                         )
                 )
@@ -76,7 +76,7 @@ public class HomeOfCommands
                         .executes(HomeOfCommands::getHomesOfList)
                 )
         );
-    }*/
+    }
 
     /**
      * Called by the command {@code /homeof <player_name> <home_name>} or {@code /ho <player_name> <home_name>}
@@ -283,6 +283,13 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        String trustingPlayer = StringArgumentType.getString(context, "player_name");
+
+        File currentHomesDir = new File(homesPath.toUri());
+        checkOrCreateHomesDir();
+        File[] listOfFiles = currentHomesDir.listFiles();
+        boolean isTrusted = false;
+
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
@@ -292,64 +299,81 @@ public class HomeOfCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
-
-                    if (Files.exists(currentHomesPath))
+                    if (listOfFiles != null)
                     {
-                        try
+                        for (File file : listOfFiles)
                         {
-                            Properties properties = new Properties();
-                            properties.load(new FileInputStream(currentHomesPath.toFile()));
-                            if (!(properties.size() == 0))
+                            if (file.isFile())
                             {
-                                sendPlayerMessage(player,
-                                        getMiscTraduction("headerTop"),
-                                        null,
-                                        "cyansh.message.getDescription.headerTop",
-                                        false,
-                                        CyanSHMidnightConfig.useTranslations
-                                );
-                                sendPlayerMessage(player,
-                                        getMiscTraduction("listHomes"),
-                                        null,
-                                        "cyansh.message.listHomes",
-                                        false,
-                                        CyanSHMidnightConfig.useTranslations
-                                );
-
-                                for (String key : properties.stringPropertyNames())
+                                if (file.getName().contains(trustingPlayer))
                                 {
-                                    player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
-                                }
+                                    isTrusted = true;
+                                    try
+                                    {
+                                        Properties properties = new Properties();
+                                        properties.load(new FileInputStream(file));
+                                        if (!(properties.size() == 0))
+                                        {
+                                            sendPlayerMessage(player,
+                                                    getMiscTraduction("dashSeparation"),
+                                                    null,
+                                                    "cyansh.message.getDescription.dashSeparation",
+                                                    false,
+                                                    CyanSHMidnightConfig.useTranslations
+                                            );
+                                            sendPlayerMessage(player,
+                                                    getMiscTraduction("listHomesOf"),
+                                                    Formatting.AQUA + trustingPlayer,
+                                                    "cyansh.message.listHomesOf",
+                                                    false,
+                                                    CyanSHMidnightConfig.useTranslations
+                                            );
 
-                                sendPlayerMessage(player,
-                                        getMiscTraduction("headerTop"),
-                                        null,
-                                        "cyansh.message.getDescription.headerTop",
-                                        false,
-                                        CyanSHMidnightConfig.useTranslations
-                                );
-                            } else
-                            {
-                                sendPlayerMessage(player,
-                                        getErrorTraduction("noHomes"),
-                                        null,
-                                        "cyansh.error.noHomes",
-                                        CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useTranslations
-                                );
+                                            for (String key : properties.stringPropertyNames())
+                                            {
+                                                player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
+                                            }
+
+                                            sendPlayerMessage(player,
+                                                    getMiscTraduction("dashSeparation"),
+                                                    null,
+                                                    "cyansh.message.getDescription.dashSeparation",
+                                                    false,
+                                                    CyanSHMidnightConfig.useTranslations
+                                            );
+                                        } else
+                                        {
+                                            sendPlayerMessage(player,
+                                                    getErrorTraduction("noHomes"),
+                                                    null,
+                                                    "cyansh.error.noHomes",
+                                                    CyanSHMidnightConfig.errorToActionBar,
+                                                    CyanSHMidnightConfig.useTranslations
+                                            );
+                                        }
+                                    } catch (IOException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
-                        } catch (IOException e)
+                        }
+                        if (!isTrusted)
                         {
-                            e.printStackTrace();
+                            sendPlayerMessage(player,
+                                    getErrorTraduction("noHomesOf"),
+                                    null,
+                                    "cyansh.error.noHomesOf",
+                                    CyanSHMidnightConfig.errorToActionBar,
+                                    CyanSHMidnightConfig.useTranslations
+                            );
                         }
                     } else
                     {
                         sendPlayerMessage(player,
-                                getErrorTraduction("noHomes"),
+                                getErrorTraduction("noHomesOf"),
                                 null,
-                                "cyansh.error.noHomes",
+                                "cyansh.error.noHomesOf",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
                         );
@@ -367,9 +391,9 @@ public class HomeOfCommands
             } else
             {
                 sendPlayerMessage(player,
-                        getErrorTraduction("disabled.homes"),
+                        getErrorTraduction("disabled.homesOf"),
                         null,
-                        "cyansh.error.disabled.homes",
+                        "cyansh.error.disabled.homesOf",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
                 );

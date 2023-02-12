@@ -140,35 +140,31 @@ public final class ArgumentSuggestion
      * @param source  - the source of the command
      * @return A suggestion with all the trusting players
      */
-    /*public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         List<String> players = new ArrayList<>();
         ServerPlayerEntity player = source.getPlayer();
 
-        File currentHomesDir = new File(homesPath.toUri());
         checkOrCreateHomesDir();
-        File[] listOfFiles = currentHomesDir.listFiles();
 
-        if (listOfFiles != null)
+        if (player != null)
         {
-            for (File file : listOfFiles)
+            try
             {
-                if (file.isFile())
+                Properties properties = new Properties();
+                properties.load(new FileInputStream(trustPath.toFile()));
+                for (String key : properties.stringPropertyNames())
                 {
-                    if (Objects.equals(file.getName().split("_")[0], player.getUuidAsString()) && !Objects.equals(file.getName().split("_")[1], player.getName().getString()))
+                    if (properties.get(key).toString().contains(player.getUuidAsString()))
                     {
-                        try
-                        {
-                            Files.move(file.toPath(), currentHomesPath.resolveSibling(playerKey + ".properties"));
-                        } catch (IOException e)
-                        {
-                            throw new RuntimeException(e);
-                        }
+                        players.add(key.split("_")[1]);
                     }
                 }
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
             }
         }
-
         return CommandSource.suggestMatching(players, builder);
-    }*/
+    }
 }

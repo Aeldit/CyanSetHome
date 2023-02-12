@@ -53,8 +53,9 @@ public class Utils
 
     private static void generateMiscTraductionsMap()
     {
-        miscTraductionsMap.put("headerTop", "§6------------------------------------");
+        miscTraductionsMap.put("dashSeparation", "§6------------------------------------");
         miscTraductionsMap.put("listHomes", "§3Homes :");
+        miscTraductionsMap.put("listHomesOf", "§3Homes of %s §3:");
     }
 
     private static void generateConfigTraductionsMap()
@@ -108,6 +109,7 @@ public class Utils
         errorsTraductionsMap.put("playerAlreadyTrusted", "§cYou already trust this player");
         errorsTraductionsMap.put("selfTrust", "§cYou can't trust yourself");
         errorsTraductionsMap.put("noHomes", "§cYou don't have any home");
+        errorsTraductionsMap.put("noHomesOf", "§cThis player doesn't have any home");
     }
 
     private static void generateCmdFeedbackTraductionsMap()

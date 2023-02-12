@@ -36,7 +36,7 @@
   "cyansh.message.set.minOpLevelExeHomeOf": "§3The minimum OP level required to use the homeOf commands is now %s",
   "cyansh.message.set.minOpLevelExeEditConfig": "§3The minimum OP level required to edit the config is now %s",
   "---------------------------------------------------GET_DESC----------------------------------------------------": "",
-  "cyansh.message.getDescription.headerTop": "§6------------------------------------",
+  "cyansh.message.getDescription.dashSeparation": "§6------------------------------------",
   "---------------------------------------------------COMMANDS----------------------------------------------------": "",
   "cyansh.message.getDescription.command.sethome": "§6- §3The §d/sethome <homeName> §3command creates a home with the given name",
   "cyansh.message.getDescription.command.home": "§6- §3The §d/home <homeName> §3command teleports you to the given home",
