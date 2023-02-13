@@ -36,9 +36,11 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeHomes = 0;
     @Entry(isSlider = true, min = 0, max = 4)
-    public static int minOpLevelExeHomeOf = 4;
+    public static int minOpLevelExeHomeOf = 0;
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeEditConfig = 4;
+    @Entry(isSlider = true, min = 0, max = 4)
+    public static int minOpLevelExeRemoveHomeOf = 4;
 
     public static Map<String, Object> generateBoolOptionsMap()
     {
@@ -60,11 +62,12 @@ public class CyanSHMidnightConfig extends MidnightConfig
         integerOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
         integerOptionsMap.put("minOpLevelExeHomeOf", minOpLevelExeHomeOf);
         integerOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
+        integerOptionsMap.put("minOpLevelExeRemoveHomeOf", minOpLevelExeRemoveHomeOf);
 
         return integerOptionsMap;
     }
 
-    public static Map<String, Object> generateAllOptionsMap()
+    public static Map<String, Object> getAllOptionsMap()
     {
         allOptionsMap.putAll(generateBoolOptionsMap());
         allOptionsMap.putAll(generateIntegerOptionsMap());
@@ -78,6 +81,10 @@ public class CyanSHMidnightConfig extends MidnightConfig
         commandsList.add("home");
         commandsList.add("removehome");
         commandsList.add("gethomes");
+
+        commandsList.add("homeof");
+        commandsList.add("removehomeof");
+        commandsList.add("gethomesof");
 
         return commandsList;
     }

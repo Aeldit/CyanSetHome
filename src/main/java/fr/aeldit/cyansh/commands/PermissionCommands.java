@@ -68,10 +68,10 @@ public class PermissionCommands
         {
             sendPlayerMessage(player,
                     getErrorTraduction("playerNotOnline"),
-                    playerName,
                     "cyansh.error.playerNotOnline",
                     CyanSHMidnightConfig.errorToActionBar,
-                    CyanSHMidnightConfig.useTranslations
+                    CyanSHMidnightConfig.useTranslations,
+                    playerName
             );
         } else
         {
@@ -101,7 +101,6 @@ public class PermissionCommands
 
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("playerTrusted"),
-                                    null,
                                     "cyansh.message.playerTrusted",
                                     CyanSHMidnightConfig.msgToActionBar,
                                     CyanSHMidnightConfig.useTranslations
@@ -110,10 +109,10 @@ public class PermissionCommands
                         {
                             sendPlayerMessage(player,
                                     getErrorTraduction("playerAlreadyTrusted"),
-                                    playerName,
                                     "cyansh.error.playerAlreadyTrusted",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useTranslations,
+                                    playerName
                             );
                         }
                     }
@@ -121,10 +120,10 @@ public class PermissionCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("selfTrust"),
-                            playerName,
                             "cyansh.error.selfTrust",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useTranslations,
+                            playerName
                     );
                 }
             } catch (IOException e)
@@ -145,13 +144,12 @@ public class PermissionCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String playerName = StringArgumentType.getString(context, "player");
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
         } else
         {
+            String playerName = StringArgumentType.getString(context, "player");
             String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
             String trustedPlayer = "";
             List<String> tmp;
@@ -206,7 +204,6 @@ public class PermissionCommands
                     {
                         sendPlayerMessage(player,
                                 getErrorTraduction("playerNotTrusted"),
-                                null,
                                 "cyansh.error.playerNotTrusted",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
@@ -216,7 +213,6 @@ public class PermissionCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("playerNotTrusted"),
-                            null,
                             "cyansh.error.playerNotTrusted",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -265,7 +261,6 @@ public class PermissionCommands
                 {
                     sendPlayerMessage(player,
                             getCmdFeedbackTraduction("noTrustingPlayer"),
-                            null,
                             "cyansh.message.noTrustingPlayer",
                             CyanSHMidnightConfig.msgToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -274,10 +269,10 @@ public class PermissionCommands
                 {
                     sendPlayerMessage(player,
                             getCmdFeedbackTraduction("getTrustingPlayers"),
-                            trustingPlayers,
                             "cyansh.message.getTrustingPlayers",
                             false,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useTranslations,
+                            trustingPlayers
                     );
                 }
             } catch (IOException e)
@@ -323,29 +318,29 @@ public class PermissionCommands
                     {
                         sendPlayerMessage(player,
                                 getCmdFeedbackTraduction("noTrustedPlayer"),
-                                trustedPlayers,
                                 "cyansh.message.noTrustedPlayer",
                                 CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations
+                                CyanSHMidnightConfig.useTranslations,
+                                trustedPlayers
                         );
                     } else
                     {
                         sendPlayerMessage(player,
                                 getCmdFeedbackTraduction("getTrustedPlayers"),
-                                trustedPlayers,
                                 "cyansh.message.getTrustedPlayers",
                                 false,
-                                CyanSHMidnightConfig.useTranslations
+                                CyanSHMidnightConfig.useTranslations,
+                                trustedPlayers
                         );
                     }
                 } else
                 {
                     sendPlayerMessage(player,
                             getCmdFeedbackTraduction("noTrustedPlayer"),
-                            trustedPlayers,
                             "cyansh.message.noTrustedPlayer",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useTranslations,
+                            trustedPlayers
                     );
                 }
             } catch (IOException e)

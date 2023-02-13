@@ -90,7 +90,8 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
                 {
                     if (file.isFile())
                     {
-                        if (Objects.equals(file.getName().split("_")[0], player.getUuidAsString()) && !Objects.equals(file.getName().split("_")[1], player.getName().getString()))
+                        String[] splitedFileName = file.getName().split("_");
+                        if (Objects.equals(splitedFileName[0], player.getUuidAsString()) && !Objects.equals(splitedFileName[1], player.getName().getString()))
                         {
                             try
                             {

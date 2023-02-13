@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -88,9 +87,6 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String playerName = StringArgumentType.getString(context, "player_name");
-        String homeName = StringArgumentType.getString(context, "home_name");
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
@@ -100,6 +96,11 @@ public class HomeOfCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
+
+                    String playerName = StringArgumentType.getString(context, "player_name");
+                    String homeName = StringArgumentType.getString(context, "home_name");
+                    boolean fileFound = false;
+
                     File currentHomesDir = new File(homesPath.toUri());
                     checkOrCreateHomesDir();
                     File[] listOfFiles = currentHomesDir.listFiles();
@@ -109,8 +110,9 @@ public class HomeOfCommands
                         {
                             if (file.isFile())
                             {
-                                if (file.getName().contains(playerName))
+                                if (file.getName().split("_")[1].equals(playerName + ".properties"))
                                 {
+                                    fileFound = true;
                                     try
                                     {
                                         Properties properties = new Properties();
@@ -159,19 +161,19 @@ public class HomeOfCommands
 
                                             sendPlayerMessage(player,
                                                     getCmdFeedbackTraduction("goToHome"),
-                                                    yellow + homeName,
                                                     "cyansh.message.goToHome",
                                                     CyanSHMidnightConfig.msgToActionBar,
-                                                    CyanSHMidnightConfig.useTranslations
+                                                    CyanSHMidnightConfig.useTranslations,
+                                                    yellow + homeName
                                             );
                                         } else
                                         {
                                             sendPlayerMessage(player,
                                                     getCmdFeedbackTraduction("homeNotFound"),
-                                                    yellow + homeName,
                                                     "cyansh.error.homeNotFound",
                                                     CyanSHMidnightConfig.errorToActionBar,
-                                                    CyanSHMidnightConfig.useTranslations
+                                                    CyanSHMidnightConfig.useTranslations,
+                                                    yellow + homeName
                                             );
                                         }
                                     } catch (IOException e)
@@ -181,12 +183,20 @@ public class HomeOfCommands
                                 }
                             }
                         }
+                        if (!fileFound)
+                        {
+                            sendPlayerMessage(player,
+                                    getErrorTraduction("noHomesOf"),
+                                    "cyansh.error.noHomesOf",
+                                    CyanSHMidnightConfig.errorToActionBar,
+                                    CyanSHMidnightConfig.useTranslations
+                            );
+                        }
                     }
                 } else
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -196,7 +206,6 @@ public class HomeOfCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
-                        null,
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
@@ -216,8 +225,6 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "home_name");
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
@@ -225,48 +232,71 @@ public class HomeOfCommands
         {
             if (CyanSHMidnightConfig.allowHomes)
             {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeRemoveHomeOf))
                 {
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    String homeName = StringArgumentType.getString(context, "home_name");
+                    String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                    checkOrCreateHomesFiles(currentHomesPath);
-                    try
+                    File currentHomesDir = new File(homesPath.toUri());
+                    checkOrCreateHomesDir();
+                    File[] listOfFiles = currentHomesDir.listFiles();
+                    boolean isTrusted = false;
+                    if (listOfFiles != null)
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(currentHomesPath.toFile()));
-
-                        if (properties.containsKey(homeName))
+                        for (File file : listOfFiles)
                         {
-                            properties.remove(homeName);
-                            properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
+                            if (file.isFile())
+                            {
+                                try
+                                {
+                                    Properties properties = new Properties();
+                                    properties.load(new FileInputStream(file));
 
-                            sendPlayerMessage(player,
-                                    getCmdFeedbackTraduction("removeHome"),
-                                    yellow + homeName,
-                                    "cyansh.message.removeHome",
-                                    CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
-                            );
-                        } else
-                        {
-                            sendPlayerMessage(player,
-                                    getCmdFeedbackTraduction("homeNotFound"),
-                                    yellow + homeName,
-                                    "cyansh.error.homeNotFound",
-                                    CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
-                            );
+                                    if (file.getName().split("_")[1].equals(trustingPlayer + ".properties"))
+                                    {
+                                        isTrusted = true;
+                                        if (properties.remove(homeName) != null)
+                                        {
+                                            properties.store(new FileOutputStream(file), null);
+                                            sendPlayerMessage(player,
+                                                    getCmdFeedbackTraduction("removeHomeOf"),
+                                                    "cyansh.message.removeHomeOf",
+                                                    CyanSHMidnightConfig.msgToActionBar,
+                                                    CyanSHMidnightConfig.useTranslations,
+                                                    yellow + homeName,
+                                                    Formatting.AQUA + trustingPlayer
+                                            );
+                                        } else
+                                        {
+                                            sendPlayerMessage(player,
+                                                    getCmdFeedbackTraduction("homeNotFound"),
+                                                    "cyansh.error.homeNotFound",
+                                                    CyanSHMidnightConfig.errorToActionBar,
+                                                    CyanSHMidnightConfig.useTranslations,
+                                                    yellow + homeName
+                                            );
+                                        }
+                                    }
+                                    if (!isTrusted)
+                                    {
+                                        sendPlayerMessage(player,
+                                                getErrorTraduction("noHomesOf"),
+                                                "cyansh.error.noHomesOf",
+                                                CyanSHMidnightConfig.errorToActionBar,
+                                                CyanSHMidnightConfig.useTranslations
+                                        );
+                                    }
+                                } catch (IOException e)
+                                {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                         }
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
                     }
                 } else
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -276,7 +306,6 @@ public class HomeOfCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
-                        null,
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
@@ -296,13 +325,6 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String trustingPlayer = StringArgumentType.getString(context, "player_name");
-
-        File currentHomesDir = new File(homesPath.toUri());
-        checkOrCreateHomesDir();
-        File[] listOfFiles = currentHomesDir.listFiles();
-        boolean isTrusted = false;
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
@@ -312,13 +334,19 @@ public class HomeOfCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
+                    String trustingPlayer = StringArgumentType.getString(context, "player_name");
+
+                    File currentHomesDir = new File(homesPath.toUri());
+                    checkOrCreateHomesDir();
+                    File[] listOfFiles = currentHomesDir.listFiles();
+                    boolean isTrusted = false;
                     if (listOfFiles != null)
                     {
                         for (File file : listOfFiles)
                         {
                             if (file.isFile())
                             {
-                                if (file.getName().contains(trustingPlayer))
+                                if (file.getName().split("_")[1].equals(trustingPlayer + ".properties"))
                                 {
                                     isTrusted = true;
                                     try
@@ -329,17 +357,17 @@ public class HomeOfCommands
                                         {
                                             sendPlayerMessage(player,
                                                     getMiscTraduction("dashSeparation"),
-                                                    null,
                                                     "cyansh.message.getDescription.dashSeparation",
                                                     false,
                                                     CyanSHMidnightConfig.useTranslations
                                             );
+
                                             sendPlayerMessage(player,
                                                     getMiscTraduction("listHomesOf"),
-                                                    Formatting.AQUA + trustingPlayer,
                                                     "cyansh.message.listHomesOf",
                                                     false,
-                                                    CyanSHMidnightConfig.useTranslations
+                                                    CyanSHMidnightConfig.useTranslations,
+                                                    Formatting.AQUA + trustingPlayer
                                             );
 
                                             for (String key : properties.stringPropertyNames())
@@ -349,7 +377,6 @@ public class HomeOfCommands
 
                                             sendPlayerMessage(player,
                                                     getMiscTraduction("dashSeparation"),
-                                                    null,
                                                     "cyansh.message.getDescription.dashSeparation",
                                                     false,
                                                     CyanSHMidnightConfig.useTranslations
@@ -358,7 +385,6 @@ public class HomeOfCommands
                                         {
                                             sendPlayerMessage(player,
                                                     getErrorTraduction("noHomes"),
-                                                    null,
                                                     "cyansh.error.noHomes",
                                                     CyanSHMidnightConfig.errorToActionBar,
                                                     CyanSHMidnightConfig.useTranslations
@@ -375,7 +401,6 @@ public class HomeOfCommands
                         {
                             sendPlayerMessage(player,
                                     getErrorTraduction("noHomesOf"),
-                                    null,
                                     "cyansh.error.noHomesOf",
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
@@ -385,7 +410,6 @@ public class HomeOfCommands
                     {
                         sendPlayerMessage(player,
                                 getErrorTraduction("noHomesOf"),
-                                null,
                                 "cyansh.error.noHomesOf",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
@@ -395,7 +419,6 @@ public class HomeOfCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             false,
                             CyanSHMidnightConfig.useTranslations
@@ -405,7 +428,6 @@ public class HomeOfCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homesOf"),
-                        null,
                         "cyansh.error.disabled.homesOf",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations

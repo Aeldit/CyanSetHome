@@ -85,25 +85,23 @@ public class HomeCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "home_name");
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
         } else
         {
-            String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-            Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
-            double x = player.getX();
-            double y = player.getY();
-            double z = player.getZ();
-            float yaw = player.getYaw();
-            float pitch = player.getPitch();
-
             if (CyanSHMidnightConfig.allowHomes)
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
+                    String homeName = StringArgumentType.getString(context, "home_name");
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    double x = player.getX();
+                    double y = player.getY();
+                    double z = player.getZ();
+                    float yaw = player.getYaw();
+                    float pitch = player.getPitch();
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
@@ -133,16 +131,15 @@ public class HomeCommands
 
                                 sendPlayerMessage(player,
                                         getCmdFeedbackTraduction("setHome"),
-                                        yellow + homeName,
                                         "cyansh.message.setHome",
                                         CyanSHMidnightConfig.msgToActionBar,
-                                        CyanSHMidnightConfig.useTranslations
+                                        CyanSHMidnightConfig.useTranslations,
+                                        yellow + homeName
                                 );
                             } else
                             {
                                 sendPlayerMessage(player,
                                         getCmdFeedbackTraduction("homeAlreadyExists"),
-                                        null,
                                         "cyansh.error.homeAlreadyExists",
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useTranslations
@@ -152,10 +149,10 @@ public class HomeCommands
                         {
                             sendPlayerMessage(player,
                                     getErrorTraduction("maxHomesReached"),
-                                    gold + String.valueOf(CyanSHMidnightConfig.maxHomes),
                                     "cyansh.error.maxHomesReached",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useTranslations,
+                                    gold + String.valueOf(CyanSHMidnightConfig.maxHomes)
                             );
                         }
                     } catch (IOException e)
@@ -166,7 +163,6 @@ public class HomeCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -176,7 +172,6 @@ public class HomeCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
-                        null,
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
@@ -196,8 +191,6 @@ public class HomeCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "home_name");
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
@@ -207,6 +200,7 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
+                    String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
                     Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
@@ -258,19 +252,19 @@ public class HomeCommands
 
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("goToHome"),
-                                    yellow + homeName,
                                     "cyansh.message.goToHome",
                                     CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useTranslations,
+                                    yellow + homeName
                             );
                         } else
                         {
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("homeNotFound"),
-                                    yellow + homeName,
                                     "cyansh.error.homeNotFound",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useTranslations,
+                                    yellow + homeName
                             );
                         }
                     } catch (IOException e)
@@ -281,7 +275,6 @@ public class HomeCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -291,7 +284,6 @@ public class HomeCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
-                        null,
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
@@ -311,8 +303,6 @@ public class HomeCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        String homeName = StringArgumentType.getString(context, "home_name");
-
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
@@ -322,6 +312,7 @@ public class HomeCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
+                    String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
                     Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
 
@@ -338,19 +329,19 @@ public class HomeCommands
 
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("removeHome"),
-                                    yellow + homeName,
                                     "cyansh.message.removeHome",
                                     CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useTranslations,
+                                    yellow + homeName
                             );
                         } else
                         {
                             sendPlayerMessage(player,
                                     getCmdFeedbackTraduction("homeNotFound"),
-                                    yellow + homeName,
                                     "cyansh.error.homeNotFound",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useTranslations,
+                                    yellow + homeName
                             );
                         }
                     } catch (IOException e)
@@ -361,7 +352,6 @@ public class HomeCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -371,7 +361,6 @@ public class HomeCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
-                        null,
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
@@ -412,15 +401,13 @@ public class HomeCommands
                             if (!(properties.size() == 0))
                             {
                                 sendPlayerMessage(player,
-                                        getMiscTraduction("headerTop"),
-                                        null,
-                                        "cyansh.message.getDescription.headerTop",
+                                        getMiscTraduction("dashSeparation"),
+                                        "cyansh.message.getDescription.dashSeparation",
                                         false,
                                         CyanSHMidnightConfig.useTranslations
                                 );
                                 sendPlayerMessage(player,
                                         getMiscTraduction("listHomes"),
-                                        null,
                                         "cyansh.message.listHomes",
                                         false,
                                         CyanSHMidnightConfig.useTranslations
@@ -432,9 +419,8 @@ public class HomeCommands
                                 }
 
                                 sendPlayerMessage(player,
-                                        getMiscTraduction("headerTop"),
-                                        null,
-                                        "cyansh.message.getDescription.headerTop",
+                                        getMiscTraduction("dashSeparation"),
+                                        "cyansh.message.getDescription.dashSeparation",
                                         false,
                                         CyanSHMidnightConfig.useTranslations
                                 );
@@ -442,7 +428,6 @@ public class HomeCommands
                             {
                                 sendPlayerMessage(player,
                                         getErrorTraduction("noHomes"),
-                                        null,
                                         "cyansh.error.noHomes",
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useTranslations
@@ -456,7 +441,6 @@ public class HomeCommands
                     {
                         sendPlayerMessage(player,
                                 getErrorTraduction("noHomes"),
-                                null,
                                 "cyansh.error.noHomes",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
@@ -466,7 +450,6 @@ public class HomeCommands
                 {
                     sendPlayerMessage(player,
                             getErrorTraduction("notOp"),
-                            null,
                             "cyansh.error.notOp",
                             false,
                             CyanSHMidnightConfig.useTranslations
@@ -476,7 +459,6 @@ public class HomeCommands
             {
                 sendPlayerMessage(player,
                         getErrorTraduction("disabled.homes"),
-                        null,
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
