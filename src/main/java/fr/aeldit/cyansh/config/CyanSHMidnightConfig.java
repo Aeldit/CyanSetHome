@@ -19,7 +19,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry
     public static boolean allowHomes = true;
     @Entry
-    public static boolean allowHomeOf = true;
+    public static boolean allowHomesOf = true;
     @Entry
     public static boolean allowOPHomeOf = true;
     @Entry
@@ -45,7 +45,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     public static Map<String, Object> generateBoolOptionsMap()
     {
         boolOptionsMap.put("allowHomes", allowHomes);
-        boolOptionsMap.put("allowHomeOf", allowHomeOf);
+        boolOptionsMap.put("allowHomeOf", allowHomesOf);
         boolOptionsMap.put("allowOPHomeOf", allowOPHomeOf);
 
         boolOptionsMap.put("useTranslations", useTranslations);
@@ -75,7 +75,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     }
 
     // For the ArgumentSuggestions
-    public static List<String> generateCommandsList()
+    public static void generateCommandsList()
     {
         commandsList.add("sethome");
         commandsList.add("home");
@@ -85,8 +85,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
         commandsList.add("homeof");
         commandsList.add("removehomeof");
         commandsList.add("gethomesof");
-
-        return commandsList;
     }
 
     public static void setBoolOption(@NotNull String optionName, boolean value)
@@ -94,7 +92,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
         switch (optionName)
         {
             case "allowHomes" -> allowHomes = value;
-            case "allowHomeOf" -> allowHomeOf = value;
+            case "allowHomeOf" -> allowHomesOf = value;
             case "allowOPHomeOf" -> allowOPHomeOf = value;
             case "useTranslations" -> useTranslations = value;
             case "msgToActionBar" -> msgToActionBar = value;
@@ -113,5 +111,10 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
         write("cyansh");
+    }
+
+    public static List<String> getCommandsList()
+    {
+        return commandsList;
     }
 }

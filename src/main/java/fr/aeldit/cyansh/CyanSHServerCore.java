@@ -39,6 +39,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         LOGGER.info("{} Successfully initialized config", MODNAME);
 
         Utils.generateAllMaps();
+        CyanSHMidnightConfig.generateCommandsList();
 
         // Deletes home files that are empty
         File homesDir = new File(homesPath.toUri());
@@ -91,7 +92,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
                     if (file.isFile())
                     {
                         String[] splitedFileName = file.getName().split("_");
-                        if (Objects.equals(splitedFileName[0], player.getUuidAsString()) && !Objects.equals(splitedFileName[1], player.getName().getString()))
+                        if (Objects.equals(splitedFileName[0], player.getUuidAsString()) && !Objects.equals(splitedFileName[1], player.getName().getString() + ".properties"))
                         {
                             try
                             {

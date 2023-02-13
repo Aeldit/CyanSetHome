@@ -52,7 +52,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getCommands(@NotNull SuggestionsBuilder builder)
     {
-        return CommandSource.suggestMatching(CyanSHMidnightConfig.generateCommandsList(), builder);
+        return CommandSource.suggestMatching(CyanSHMidnightConfig.getCommandsList(), builder);
     }
 
     /**
@@ -155,11 +155,12 @@ public final class ArgumentSuggestion
                 properties.load(new FileInputStream(trustPath.toFile()));
                 for (String key : properties.stringPropertyNames())
                 {
-                    if (properties.get(key).toString().contains(player.getUuidAsString()))
+                    if (properties.get(key).toString().contains(player.getUuidAsString()) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeRemoveHomeOf))
                     {
                         players.add(key.split("_")[1]);
                     }
                 }
+                players.remove(player.getName().getString());
             } catch (IOException e)
             {
                 throw new RuntimeException(e);

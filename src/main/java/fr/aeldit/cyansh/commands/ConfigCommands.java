@@ -317,7 +317,7 @@ public class ConfigCommands
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
         } else
         {
-            List<String> commands = CyanSHMidnightConfig.generateCommandsList();
+            List<String> commands = CyanSHMidnightConfig.getCommandsList();
             sendPlayerMessage(player,
                     getMiscTraduction("dashSeparation"),
                     "cyansh.message.getDescription.dashSeparation",

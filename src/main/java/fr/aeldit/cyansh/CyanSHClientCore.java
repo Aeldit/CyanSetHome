@@ -39,6 +39,7 @@ public class CyanSHClientCore implements ClientModInitializer
         LOGGER.info("{} Successfully initialized config", MODNAME);
 
         Utils.generateAllMaps();
+        CyanSHMidnightConfig.generateCommandsList();
 
         // Deletes home files that are empty
         File homesDir = new File(homesPath.toUri());
@@ -90,7 +91,8 @@ public class CyanSHClientCore implements ClientModInitializer
                 {
                     if (file.isFile())
                     {
-                        if (Objects.equals(file.getName().split("_")[0], player.getUuidAsString()) && !Objects.equals(file.getName().split("_")[1], player.getName().getString()))
+                        String[] splitedFileName = file.getName().split("_");
+                        if (Objects.equals(splitedFileName[0], player.getUuidAsString()) && !Objects.equals(splitedFileName[1], player.getName().getString() + ".properties"))
                         {
                             try
                             {

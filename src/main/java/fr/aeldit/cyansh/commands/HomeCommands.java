@@ -139,7 +139,7 @@ public class HomeCommands
                             } else
                             {
                                 sendPlayerMessage(player,
-                                        getCmdFeedbackTraduction("homeAlreadyExists"),
+                                        getErrorTraduction("homeAlreadyExists"),
                                         "cyansh.error.homeAlreadyExists",
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useTranslations
