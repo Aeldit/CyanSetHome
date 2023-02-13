@@ -88,6 +88,7 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        String playerName = StringArgumentType.getString(context, "player_name");
         String homeName = StringArgumentType.getString(context, "home_name");
 
         if (player == null)
@@ -99,75 +100,87 @@ public class HomeOfCommands
             {
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
-                    ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
-                    ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
-                    ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
-
-                    checkOrCreateHomesFiles(currentHomesPath);
-                    try
+                    File currentHomesDir = new File(homesPath.toUri());
+                    checkOrCreateHomesDir();
+                    File[] listOfFiles = currentHomesDir.listFiles();
+                    if (listOfFiles != null)
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(currentHomesPath.toFile()));
-
-                        if (properties.containsKey(homeName))
+                        for (File file : listOfFiles)
                         {
-                            String home = (String) properties.get(homeName);
-                            String world = home.split(" ")[0];
+                            if (file.isFile())
+                            {
+                                if (file.getName().contains(playerName))
+                                {
+                                    try
+                                    {
+                                        Properties properties = new Properties();
+                                        properties.load(new FileInputStream(file));
 
-                            if (Objects.equals(world, "overworld"))
-                            {
-                                player.teleport(
-                                        overworld,
-                                        Double.parseDouble(home.split(" ")[1]),
-                                        Double.parseDouble(home.split(" ")[2]),
-                                        Double.parseDouble(home.split(" ")[3]),
-                                        Float.parseFloat(home.split(" ")[4]),
-                                        Float.parseFloat(home.split(" ")[5])
-                                );
-                            } else if (Objects.equals(world, "nether"))
-                            {
-                                player.teleport(
-                                        nether,
-                                        Double.parseDouble(home.split(" ")[1]),
-                                        Double.parseDouble(home.split(" ")[2]),
-                                        Double.parseDouble(home.split(" ")[3]),
-                                        Float.parseFloat(home.split(" ")[4]),
-                                        Float.parseFloat(home.split(" ")[5])
-                                );
-                            } else if (Objects.equals(world, "end"))
-                            {
-                                player.teleport(
-                                        end,
-                                        Double.parseDouble(home.split(" ")[1]),
-                                        Double.parseDouble(home.split(" ")[2]),
-                                        Double.parseDouble(home.split(" ")[3]),
-                                        Float.parseFloat(home.split(" ")[4]),
-                                        Float.parseFloat(home.split(" ")[5])
-                                );
+                                        if (properties.containsKey(homeName))
+                                        {
+                                            ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
+                                            ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
+                                            ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
+
+                                            String home = (String) properties.get(homeName);
+                                            String world = home.split(" ")[0];
+
+                                            if (Objects.equals(world, "overworld"))
+                                            {
+                                                player.teleport(
+                                                        overworld,
+                                                        Double.parseDouble(home.split(" ")[1]),
+                                                        Double.parseDouble(home.split(" ")[2]),
+                                                        Double.parseDouble(home.split(" ")[3]),
+                                                        Float.parseFloat(home.split(" ")[4]),
+                                                        Float.parseFloat(home.split(" ")[5])
+                                                );
+                                            } else if (Objects.equals(world, "nether"))
+                                            {
+                                                player.teleport(
+                                                        nether,
+                                                        Double.parseDouble(home.split(" ")[1]),
+                                                        Double.parseDouble(home.split(" ")[2]),
+                                                        Double.parseDouble(home.split(" ")[3]),
+                                                        Float.parseFloat(home.split(" ")[4]),
+                                                        Float.parseFloat(home.split(" ")[5])
+                                                );
+                                            } else if (Objects.equals(world, "end"))
+                                            {
+                                                player.teleport(
+                                                        end,
+                                                        Double.parseDouble(home.split(" ")[1]),
+                                                        Double.parseDouble(home.split(" ")[2]),
+                                                        Double.parseDouble(home.split(" ")[3]),
+                                                        Float.parseFloat(home.split(" ")[4]),
+                                                        Float.parseFloat(home.split(" ")[5])
+                                                );
+                                            }
+
+                                            sendPlayerMessage(player,
+                                                    getCmdFeedbackTraduction("goToHome"),
+                                                    yellow + homeName,
+                                                    "cyansh.message.goToHome",
+                                                    CyanSHMidnightConfig.msgToActionBar,
+                                                    CyanSHMidnightConfig.useTranslations
+                                            );
+                                        } else
+                                        {
+                                            sendPlayerMessage(player,
+                                                    getCmdFeedbackTraduction("homeNotFound"),
+                                                    yellow + homeName,
+                                                    "cyansh.error.homeNotFound",
+                                                    CyanSHMidnightConfig.errorToActionBar,
+                                                    CyanSHMidnightConfig.useTranslations
+                                            );
+                                        }
+                                    } catch (IOException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
-
-                            sendPlayerMessage(player,
-                                    getCmdFeedbackTraduction("goToHome"),
-                                    yellow + homeName,
-                                    "cyansh.message.goToHome",
-                                    CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
-                            );
-                        } else
-                        {
-                            sendPlayerMessage(player,
-                                    getCmdFeedbackTraduction("homeNotFound"),
-                                    yellow + homeName,
-                                    "cyansh.error.homeNotFound",
-                                    CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
-                            );
                         }
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
                     }
                 } else
                 {
