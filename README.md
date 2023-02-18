@@ -39,13 +39,15 @@
 |            `/home <home_name>`            |          Teleports you to the given home          |         `/h <home_name>`         |
 |         `/removehome <home_name>`         |              Removes the given home               |        `/rh <home_name>`         |
 |                `/gethomes`                |        Displays all your homes in the chat        |              `/gh`               |
-|    `/homeof <player_name> <home_name>`    |   Teleports you to the home of the given player   | `/ho <player_name> <home_name>`  |
-| `/removehomeof <player_name> <home_name>` |       Removes the home of the given player        | `/rho <player_name> <home_name>` |
-|        `/gethomesof <player_name>`        | Displays all the given player's homes in the chat |       `/gho <player_name>`       |
+|                                           |                                                   |                                  |
 |               `/hometrust`                |     Adds the given player to your trust list      |                ❌                 |
 |              `/homeuntrust`               |   Removes the given player from your trust list   |                ❌                 |
 |           `/gettrustingplayers`           | Displays in the chat every player that trusts you |                ❌                 |
 |           `/gettrustedplayers`            | Displays in the chat every player that you trust  |                ❌                 |
+|                                           |                                                   |                                  |
+|    `/homeof <player_name> <home_name>`    |   Teleports you to the home of the given player   | `/ho <player_name> <home_name>`  |
+| `/removehomeof <player_name> <home_name>` |       Removes the home of the given player        | `/rho <player_name> <home_name>` |
+|        `/gethomesof <player_name>`        | Displays all the given player's homes in the chat |       `/gho <player_name>`       |
 
 For a more detailed explanation on how to use the cyansh commands,
 see [COMMANDS.md](https://github.com/Aeldit/Cyan/blob/1.19.x/docs/COMMANDS.md)
