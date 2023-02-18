@@ -226,9 +226,9 @@ public class HomeOfCommands
     }
 
     /**
-     * Called by the command {@code /removehome <home_name>} or {@code /rh <home_name>}
+     * Called by the command {@code /removehomeof <home_name>} or {@code /rho <home_name>}
      * <p>
-     * Removes the given home
+     * Removes the given home of the given player
      */
     public static int removeHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
@@ -326,9 +326,9 @@ public class HomeOfCommands
     }
 
     /**
-     * Called by the command {@code /gethomes} or {@code /gh}
+     * Called by the command {@code /gethomesof} or {@code /gho}
      * <p>
-     * Sends a message in the player's chat with all her/his homes
+     * Sends a message in the player's chat with all the given player's homes
      */
     public static int getHomesOfList(@NotNull CommandContext<ServerCommandSource> context)
     {

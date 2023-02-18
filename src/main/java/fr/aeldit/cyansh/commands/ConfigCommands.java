@@ -77,7 +77,7 @@ public class ConfigCommands
     // Set functions
 
     /**
-     * <p>Called when a player execute the command <code>/cyan config booleanOptions [optionName] [true|false]</code></p>
+     * <p>Called when a player execute the command {@code /cyansh config booleanOptions [optionName] [true|false]}</p>
      *
      * <ul>If the player has a permission level equal to the option MinOpLevelExeModifConfig (see {@link CyanSHMidnightConfig})
      *      <li>-> Set the options to the given value</li>
@@ -123,7 +123,7 @@ public class ConfigCommands
     }
 
     /**
-     * <p>Called when a player execute the command <code>/cyan config integerOptions [optionName] [int]</code></p>
+     * <p>Called when a player execute the command {@code /cyansh config integerOptions [optionName] [int]}</p>
      *
      * <ul>If the player has a permission level equal to the option MinOpLevelExeModifConfig (see {@link CyanSHMidnightConfig})
      *      <li>-> Set the options to the given value</li>
@@ -189,7 +189,7 @@ public class ConfigCommands
     // Get functions
 
     /**
-     * <p>Called when a player execute the command <code>/cyan config</code></p>
+     * <p>Called when a player execute the command {@code /cyansh config}</p>
      * <p>Send a player in the player's chat with all the mod's options and their values</p>
      */
     public static int getConfigOptions(@NotNull CommandContext<ServerCommandSource> context)
@@ -254,7 +254,7 @@ public class ConfigCommands
     }
 
     /**
-     * <p>Called when a player execute the command <code>/cyan description commands [commandName]</code></p>
+     * <p>Called when a player execute the command {@code /cyansh description commands [commandName]}</p>
      * <p>Send a message in the player's chat with the description of the command given as argument</p>
      */
     public static int getCommandDescription(@NotNull CommandContext<ServerCommandSource> context)
@@ -279,7 +279,7 @@ public class ConfigCommands
     }
 
     /**
-     * <p>Called when a player execute the command <code>/cyan description [booleanOption|integerOption] [option]</code></p>
+     * <p>Called when a player execute the command {@code /cyansh description [booleanOption|integerOption] [option]}</p>
      * <p>Send a message in the player's chat with the description of the option given as argument</p>
      */
     public static int getOptionDescription(@NotNull CommandContext<ServerCommandSource> context)
@@ -304,7 +304,7 @@ public class ConfigCommands
     }
 
     /**
-     * <p>Called when a player execute the command <code>/cyan description commands</code></p>
+     * <p>Called when a player execute the command {@code /cyansh description commands}</p>
      * <p>Send a player in the player's chat with all the mod's commands and their description</p>
      */
     public static int getAllCommandsDescription(@NotNull CommandContext<ServerCommandSource> context)
@@ -352,7 +352,7 @@ public class ConfigCommands
     }
 
     /**
-     * <p>Called when a player execute the command <code>/cyansh description options</code></p>
+     * <p>Called when a player execute the command {@code /cyansh description options}</p>
      * <p>Send a player in the player's chat with all the mod's options description</p>
      */
     public static int getAllOptionsDescription(@NotNull CommandContext<ServerCommandSource> context)
