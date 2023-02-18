@@ -3,11 +3,13 @@ package fr.aeldit.cyansh.util;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Formatting;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class Utils
 {
@@ -35,9 +37,9 @@ public class Utils
         commandsTraductionsMap.put("removehome", "§6- §3The §d/removehome §3command removes the given home");
         commandsTraductionsMap.put("gethomes", "§6- §3The §d/gethomes §3command lists all your homes");
 
-        commandsTraductionsMap.put("homeof", "§6- §3The §d/homeOf §3command teleports you to the given home of the given player");
-        commandsTraductionsMap.put("removehomeof", "§6- §3The §d/removehome §3command removes the given home of the given player");
-        commandsTraductionsMap.put("gethomesof", "§6- §3The §d/gethomes §3command lists all the given player's homes");
+        commandsTraductionsMap.put("homeof", "§6- §3The §d/homeof <player_name> <home_name> §3command teleports you to the given home of the given player");
+        commandsTraductionsMap.put("removehomeof", "§6- §3The §d/removehomeof <player_name> §3command removes the given home of the given player");
+        commandsTraductionsMap.put("gethomesof", "§6- §3The §d/gethomesof <player_name> §3command lists all the given player's homes");
     }
 
     private static void generateOptionsTraductionsMap()
@@ -60,8 +62,10 @@ public class Utils
     private static void generateMiscTraductionsMap()
     {
         miscTraductionsMap.put("dashSeparation", "§6------------------------------------");
-        miscTraductionsMap.put("listHomes", "§3Homes :");
+        miscTraductionsMap.put("listHomes", "§3Your homes :");
         miscTraductionsMap.put("listHomesOf", "§3Homes of %s §3:");
+        miscTraductionsMap.put("headerDescCmd", "§6CyanSetHome - DESCRIPTION:COMMANDS\n");
+        miscTraductionsMap.put("headerDescOptions", "§6CyanSetHome - DESCRIPTION:OPTIONS\n");
     }
 
     private static void generateConfigTraductionsMap()
@@ -92,10 +96,10 @@ public class Utils
         configSetTraductionsMap.put("errorToActionBar", "§3Toogled error messages to action bar %s");
 
         configSetTraductionsMap.put("maxHomes", "§3The maximum number of homes per player is now %s");
-        configSetTraductionsMap.put("minOpLevelExeHomes", "§3The OP level required to use the home commands is now %s");
-        configSetTraductionsMap.put("minOpLevelExeHomeOf", "§3The OP level required to use the homeOf commands is now %s");
+        configSetTraductionsMap.put("minOpLevelExeHomes", "§3The OP level required to use the §dhome §3commands is now %s");
+        configSetTraductionsMap.put("minOpLevelExeHomeOf", "§3The OP level required to use the §dhomeOf §3commands is now %s");
         configSetTraductionsMap.put("minOpLevelExeEditConfig", "§3The minimum OP level to edit the config is now %s");
-        configSetTraductionsMap.put("minOpLevelExeRemoveHomeOf", "§3The OP level required to use the homeOf commands (OP) is now %s");
+        configSetTraductionsMap.put("minOpLevelExeRemoveHomeOf", "§3The minimum OP level required to remove the home of another player is now %s");
     }
 
     public static void generateErrorsTraductionsMap()
@@ -109,9 +113,10 @@ public class Utils
         errorsTraductionsMap.put("homeNotFound", "§cThis home doesn't exist (check the spelling)");
         errorsTraductionsMap.put("maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
         errorsTraductionsMap.put("playerNotOnline", "§cThis player is not online");
-        errorsTraductionsMap.put("playerNotTrusted", "§cThis player is not in you trust list");
+        errorsTraductionsMap.put("playerNotTrusted", "§cYou don't trust this player");
+        errorsTraductionsMap.put("playerNotTrusting", "§cThis player doesn't trust you");
         errorsTraductionsMap.put("playerAlreadyTrusted", "§cYou already trust this player");
-        errorsTraductionsMap.put("selfTrust", "§cYou can't trust yourself");
+        errorsTraductionsMap.put("selfTrust", "§cYou can't trust/untrust yourself");
         errorsTraductionsMap.put("noHomes", "§cYou don't have any home");
         errorsTraductionsMap.put("noHomesOf", "§cThis player doesn't have any home");
     }
@@ -128,6 +133,7 @@ public class Utils
         cmdFeedbackTraductionsMap.put("noTrustingPlayer", "§3No player trusts you");
         cmdFeedbackTraductionsMap.put("noTrustedPlayer", "§3You don't trust any player");
         cmdFeedbackTraductionsMap.put("playerTrusted", "§3You now trust %s");
+        cmdFeedbackTraductionsMap.put("playerUnTrusted", "§3You no longer trust %s");
     }
 
     public static void generateAllMaps()
@@ -247,5 +253,35 @@ public class Utils
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static boolean playerTrust(String trustingPlayer, String trustedPlayer)
+    {
+        if (Files.exists(trustPath))
+        {
+            try
+            {
+                Properties properties = new Properties();
+                properties.load(new FileInputStream(trustPath.toFile()));
+
+                for (String key : properties.stringPropertyNames())
+                {
+                    if (key.split("_")[1].equals(trustingPlayer))
+                    {
+                        for (String playerName : properties.get(key).toString().split(" "))
+                        {
+                            if (playerName.split("_")[1].equals(trustedPlayer))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
     }
 }

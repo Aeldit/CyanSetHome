@@ -324,6 +324,12 @@ public class ConfigCommands
                     false,
                     CyanSHMidnightConfig.useTranslations
             );
+            sendPlayerMessage(player,
+                    getMiscTraduction("headerDescCmd"),
+                    "cyansh.message.getDescription.headerDescCmd",
+                    false,
+                    CyanSHMidnightConfig.useTranslations
+            );
 
             for (String command : commands)
             {
@@ -346,7 +352,7 @@ public class ConfigCommands
     }
 
     /**
-     * <p>Called when a player execute the command <code>/cyan description options</code></p>
+     * <p>Called when a player execute the command <code>/cyansh description options</code></p>
      * <p>Send a player in the player's chat with all the mod's options description</p>
      */
     public static int getAllOptionsDescription(@NotNull CommandContext<ServerCommandSource> context)
@@ -362,6 +368,12 @@ public class ConfigCommands
             sendPlayerMessage(player,
                     getMiscTraduction("dashSeparation"),
                     "cyansh.message.getDescription.dashSeparation",
+                    false,
+                    CyanSHMidnightConfig.useTranslations
+            );
+            sendPlayerMessage(player,
+                    getMiscTraduction("headerDescOptions"),
+                    "cyansh.message.getDescription.headerDescOptions",
                     false,
                     CyanSHMidnightConfig.useTranslations
             );

@@ -36,41 +36,37 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeHomes = 0;
     @Entry(isSlider = true, min = 0, max = 4)
-    public static int minOpLevelExeHomeOf = 0;
+    public static int minOpLevelExeHomesOf = 0;
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeEditConfig = 4;
     @Entry(isSlider = true, min = 0, max = 4)
-    public static int minOpLevelExeRemoveHomeOf = 4;
+    public static int minOpLevelExeOPHomeOf = 4;
 
-    public static Map<String, Object> generateBoolOptionsMap()
+    public static void generateBoolOptionsMap()
     {
         boolOptionsMap.put("allowHomes", allowHomes);
-        boolOptionsMap.put("allowHomeOf", allowHomesOf);
-        boolOptionsMap.put("allowOPHomeOf", allowOPHomeOf);
+        boolOptionsMap.put("allowHomesOf", allowHomesOf);
+        boolOptionsMap.put("allowOPHomesOf", allowOPHomeOf);
 
         boolOptionsMap.put("useTranslations", useTranslations);
         boolOptionsMap.put("msgToActionBar", msgToActionBar);
         boolOptionsMap.put("errorToActionBar", errorToActionBar);
-
-        return boolOptionsMap;
     }
 
-    public static Map<String, Object> generateIntegerOptionsMap()
+    public static void generateIntegerOptionsMap()
     {
         integerOptionsMap.put("maxHomes", maxHomes);
 
         integerOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
-        integerOptionsMap.put("minOpLevelExeHomeOf", minOpLevelExeHomeOf);
+        integerOptionsMap.put("minOpLevelExeHomesOf", minOpLevelExeHomesOf);
         integerOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
-        integerOptionsMap.put("minOpLevelExeRemoveHomeOf", minOpLevelExeRemoveHomeOf);
-
-        return integerOptionsMap;
+        integerOptionsMap.put("minOpLevelExeRemoveHomeOf", minOpLevelExeOPHomeOf);
     }
 
     public static Map<String, Object> getAllOptionsMap()
     {
-        allOptionsMap.putAll(generateBoolOptionsMap());
-        allOptionsMap.putAll(generateIntegerOptionsMap());
+        allOptionsMap.putAll(getBoolOptionsMap());
+        allOptionsMap.putAll(getIntegerOptionsMap());
         return allOptionsMap;
     }
 
@@ -92,8 +88,8 @@ public class CyanSHMidnightConfig extends MidnightConfig
         switch (optionName)
         {
             case "allowHomes" -> allowHomes = value;
-            case "allowHomeOf" -> allowHomesOf = value;
-            case "allowOPHomeOf" -> allowOPHomeOf = value;
+            case "allowHomesOf" -> allowHomesOf = value;
+            case "allowOPHomesOf" -> allowOPHomeOf = value;
             case "useTranslations" -> useTranslations = value;
             case "msgToActionBar" -> msgToActionBar = value;
             case "errorToActionBar" -> errorToActionBar = value;
@@ -107,7 +103,8 @@ public class CyanSHMidnightConfig extends MidnightConfig
         {
             case "maxHomes" -> maxHomes = value;
             case "minOpLevelExeHomes" -> minOpLevelExeHomes = value;
-            case "minOpLevelExeHomeOf" -> minOpLevelExeHomeOf = value;
+            case "minOpLevelExeHomesOf" -> minOpLevelExeHomesOf = value;
+            case "minOpLevelExeOPHomeOf" -> minOpLevelExeOPHomeOf = value;
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
         write("cyansh");
@@ -116,5 +113,23 @@ public class CyanSHMidnightConfig extends MidnightConfig
     public static List<String> getCommandsList()
     {
         return commandsList;
+    }
+
+    public static Map<String, Object> getBoolOptionsMap()
+    {
+        if (boolOptionsMap.isEmpty())
+        {
+            generateBoolOptionsMap();
+        }
+        return boolOptionsMap;
+    }
+
+    public static Map<String, Object> getIntegerOptionsMap()
+    {
+        if (integerOptionsMap.isEmpty())
+        {
+            generateIntegerOptionsMap();
+        }
+        return integerOptionsMap;
     }
 }

@@ -30,7 +30,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getBoolOptions(@NotNull SuggestionsBuilder builder)
     {
-        return CommandSource.suggestMatching(CyanSHMidnightConfig.generateBoolOptionsMap().keySet(), builder);
+        return CommandSource.suggestMatching(CyanSHMidnightConfig.getBoolOptionsMap().keySet(), builder);
     }
 
     /**
@@ -41,7 +41,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getIntegerOptions(@NotNull SuggestionsBuilder builder)
     {
-        return CommandSource.suggestMatching(CyanSHMidnightConfig.generateIntegerOptionsMap().keySet(), builder);
+        return CommandSource.suggestMatching(CyanSHMidnightConfig.getIntegerOptionsMap().keySet(), builder);
     }
 
     /**
@@ -155,7 +155,7 @@ public final class ArgumentSuggestion
                 properties.load(new FileInputStream(trustPath.toFile()));
                 for (String key : properties.stringPropertyNames())
                 {
-                    if (properties.get(key).toString().contains(player.getUuidAsString()) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeRemoveHomeOf))
+                    if (properties.get(key).toString().contains(player.getUuidAsString()) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomeOf))
                     {
                         players.add(key.split("_")[1]);
                     }
