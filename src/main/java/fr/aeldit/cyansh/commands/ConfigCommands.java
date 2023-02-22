@@ -15,7 +15,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
@@ -317,7 +316,6 @@ public class ConfigCommands
             source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
         } else
         {
-            List<String> commands = CyanSHMidnightConfig.getCommandsList();
             sendPlayerMessage(player,
                     getMiscTraduction("dashSeparation"),
                     "cyansh.message.getDescription.dashSeparation",
@@ -331,7 +329,7 @@ public class ConfigCommands
                     CyanSHMidnightConfig.useTranslations
             );
 
-            for (String command : commands)
+            for (String command : CyanSHMidnightConfig.getCommandsList())
             {
                 sendPlayerMessage(player,
                         getCommandTraduction(command),

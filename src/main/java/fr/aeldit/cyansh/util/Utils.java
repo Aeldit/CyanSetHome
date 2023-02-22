@@ -62,10 +62,10 @@ public class Utils
     private static void generateMiscTraductionsMap()
     {
         miscTraductionsMap.put("dashSeparation", "§6------------------------------------");
-        miscTraductionsMap.put("listHomes", "§3Your homes :");
-        miscTraductionsMap.put("listHomesOf", "§3Homes of %s §3:");
-        miscTraductionsMap.put("headerDescCmd", "§6CyanSetHome - DESCRIPTION:COMMANDS\n");
-        miscTraductionsMap.put("headerDescOptions", "§6CyanSetHome - DESCRIPTION:OPTIONS\n");
+        miscTraductionsMap.put("listHomes", "§66CyanSetHome - YOUR HOMES :");
+        miscTraductionsMap.put("listHomesOf", "§66CyanSetHome - HOMES OF %s :");
+        miscTraductionsMap.put("headerDescCmd", "§6CyanSetHome - DESCRIPTION (commands)\n");
+        miscTraductionsMap.put("headerDescOptions", "§6CyanSetHome - DESCRIPTION (options)\n");
     }
 
     private static void generateConfigTraductionsMap()
