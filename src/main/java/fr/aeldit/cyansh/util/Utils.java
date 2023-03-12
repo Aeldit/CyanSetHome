@@ -30,62 +30,6 @@ public class Utils
     private static final Map<String, String> cmdFeedbackTraductionsMap = new HashMap<>();
 
     // Generates
-    private static void generateCommandsTraductionsMap()
-    {
-        commandsTraductionsMap.put("sethome", "§6- §3The §d/sethome §3command creates a home at your current location");
-        commandsTraductionsMap.put("home", "§6- §3The §d/home §3command teleports you to the given home");
-        commandsTraductionsMap.put("removehome", "§6- §3The §d/removehome §3command removes the given home");
-        commandsTraductionsMap.put("gethomes", "§6- §3The §d/gethomes §3command lists all your homes");
-
-        commandsTraductionsMap.put("homeof", "§6- §3The §d/homeof <player_name> <home_name> §3command teleports you to the given home of the given player");
-        commandsTraductionsMap.put("removehomeof", "§6- §3The §d/removehomeof <player_name> §3command removes the given home of the given player");
-        commandsTraductionsMap.put("gethomesof", "§6- §3The §d/gethomesof <player_name> §3command lists all the given player's homes");
-    }
-
-    private static void generateOptionsTraductionsMap()
-    {
-        optionsTraductionsMap.put("allowHomes", "§6- §3The §dallowHomes §3option defines wether the home commands are enabledd or not");
-        optionsTraductionsMap.put("allowHomeOf", "§6- §3The §dallowHomeOf §3option defines wether the homeOf commands are enabled or not");
-        optionsTraductionsMap.put("allowOPHomeOf", "§6- §3The §dallowHomeOf (OP) §3option defines wether the homeOf commands can be used by OP players, independently of the trust system");
-
-        optionsTraductionsMap.put("useTranslations", "§6- §3The §duseTranslations §3option defines wether the translation will be used or not");
-        optionsTraductionsMap.put("msgToActionBar", "§6- §3The §dmsgToActionBar §3option defines wether the messages will be sent to the action bar or not");
-        optionsTraductionsMap.put("errorToActionBar", "§6- §3The §derrorToActionBar §3option defines wether the error messages will be sent to the action bar or not");
-
-        optionsTraductionsMap.put("maxHomes", "§6- §3The §dmaxHomes §3option defines the maximum number of homes a player can have");
-        optionsTraductionsMap.put("minOpLevelExeHomes", "§6- §3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands");
-        optionsTraductionsMap.put("minOpLevelExeHomeOf", "§6- §3The §dminOpLevelExeHomeOf §3option defines the OP level required to run the homeOf commands");
-        optionsTraductionsMap.put("minOpLevelExeEditConfig", "§6- §3The §dminOpLevelExeEditConfig §3option defines the OP level required to edit the config");
-        optionsTraductionsMap.put("minOpLevelExeRemoveHomeOf", "§6- §3The §dminOpLevelExeRemoveHomeOf §3option defines the OP level required to remove the home of another player");
-    }
-
-    private static void generateMiscTraductionsMap()
-    {
-        miscTraductionsMap.put("dashSeparation", "§6------------------------------------");
-        miscTraductionsMap.put("listHomes", "§66CyanSetHome - YOUR HOMES :");
-        miscTraductionsMap.put("listHomesOf", "§66CyanSetHome - HOMES OF %s :");
-        miscTraductionsMap.put("headerDescCmd", "§6CyanSetHome - DESCRIPTION (commands)\n");
-        miscTraductionsMap.put("headerDescOptions", "§6CyanSetHome - DESCRIPTION (options)\n");
-        miscTraductionsMap.put("dateCreated", "created on the ");
-    }
-
-    private static void generateConfigTraductionsMap()
-    {
-        configTraductionsMap.put("header", "§6CyanSetHome - OPTIONS\n");
-        configTraductionsMap.put("allowHomes", "§3home commands : %s");
-        configTraductionsMap.put("allowHomeOf", "§3homeOf commands : %s");
-        configTraductionsMap.put("allowOPHomeOf", "§3homeOf commands for OP : %s");
-        configTraductionsMap.put("useTranslations", "§3Use translations : %s");
-        configTraductionsMap.put("msgToActionBar", "§3Messages to action bar : %s");
-        configTraductionsMap.put("errorToActionBar", "§3Error messages to action bar : %s");
-
-        configTraductionsMap.put("maxHomes", "§3Max homes per player : %s");
-
-        configTraductionsMap.put("minOpLevelExeEditConfig", "§3Minimum OP level to edit config : %s");
-        configTraductionsMap.put("minOpLevelExeHomes", "§3Minimum OP level for §dhome §3commands : %s");
-        configTraductionsMap.put("minOpLevelExeHomeOf", "§3Minimum OP level for §dhomeOf §3commands : %s");
-        configTraductionsMap.put("minOpLevelExeRemoveHomeOf", "§3Minimum OP level for §d/removehomeof §3: %s");
-    }
 
     private static void generateConfigSetTraductionsMap()
     {

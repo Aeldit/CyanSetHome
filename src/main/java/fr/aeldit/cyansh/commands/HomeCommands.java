@@ -84,7 +84,7 @@ public class HomeCommands
     /**
      * Called by the command {@code /sethome <home_name>} or {@code /sh <home_name>}
      * <p>
-     * Creates a home with the player current position (dimension, x, y, z, yaw, pitch)
+     * Creates a home with the player current position (dimension, x, y, z, yaw, pitch, date)
      */
     public static int setHome(@NotNull CommandContext<ServerCommandSource> context)
     {
@@ -452,7 +452,7 @@ public class HomeCommands
     /**
      * Called by the command {@code /gethomes} or {@code /gh}
      * <p>
-     * Sends a message in the player's chat with all her/his homes
+     * Sends a message in the player's chat with all its homes
      */
     public static int getHomesList(@NotNull CommandContext<ServerCommandSource> context)
     {
