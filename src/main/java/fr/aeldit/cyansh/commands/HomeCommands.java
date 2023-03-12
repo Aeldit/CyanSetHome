@@ -11,6 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -65,6 +68,9 @@ public class HomeCommands
                         .executes(HomeCommands::removeHome)
                 )
         );
+        dispatcher.register(CommandManager.literal("removeallhomes")
+                .executes(HomeCommands::removeAllHomes)
+        );
 
         dispatcher.register(CommandManager.literal("gethomes")
                 .executes(HomeCommands::getHomesList)
@@ -105,6 +111,7 @@ public class HomeCommands
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
+                    String date = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
 
                     checkOrCreateHomesFiles(currentHomesPath);
                     try
@@ -118,13 +125,13 @@ public class HomeCommands
                             {
                                 if (player.getWorld() == overworld)
                                 {
-                                    properties.put(homeName, "%s %f %f %f %f %f".formatted("overworld", x, y, z, yaw, pitch));
+                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("overworld", x, y, z, yaw, pitch, date));
                                 } else if (player.getWorld() == nether)
                                 {
-                                    properties.put(homeName, "%s %f %f %f %f %f".formatted("nether", x, y, z, yaw, pitch));
+                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("nether", x, y, z, yaw, pitch, date));
                                 } else if (player.getWorld() == end)
                                 {
-                                    properties.put(homeName, "%s %f %f %f %f %f".formatted("end", x, y, z, yaw, pitch));
+                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("end", x, y, z, yaw, pitch, date));
                                 }
 
                                 properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
@@ -269,7 +276,7 @@ public class HomeCommands
                         }
                     } catch (IOException e)
                     {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 } else
                 {
@@ -346,7 +353,79 @@ public class HomeCommands
                         }
                     } catch (IOException e)
                     {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    }
+                } else
+                {
+                    sendPlayerMessage(player,
+                            getErrorTraduction("notOp"),
+                            "cyansh.error.notOp",
+                            CyanSHMidnightConfig.errorToActionBar,
+                            CyanSHMidnightConfig.useTranslations
+                    );
+                }
+            } else
+            {
+                sendPlayerMessage(player,
+                        getErrorTraduction("disabled.homes"),
+                        "cyansh.error.disabled.homes",
+                        CyanSHMidnightConfig.errorToActionBar,
+                        CyanSHMidnightConfig.useTranslations
+                );
+            }
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Called by the command {@code /removeallhomes}
+     * <p>
+     * Removes all the homes
+     */
+    public static int removeAllHomes(@NotNull CommandContext<ServerCommandSource> context)
+    {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null)
+        {
+            source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
+        } else
+        {
+            if (CyanSHMidnightConfig.allowHomes)
+            {
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
+                {
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+
+                    if (Files.exists(currentHomesPath))
+                    {
+                        try
+                        {
+                            Properties properties = new Properties();
+                            properties.load(new FileInputStream(currentHomesPath.toFile()));
+                            properties.clear();
+                            properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
+
+                            sendPlayerMessage(player,
+                                    getCmdFeedbackTraduction("removeAllHomes"),
+                                    "cyansh.message.removeAllHomes",
+                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.useTranslations
+                            );
+                        } catch (IOException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+                    } else
+                    {
+                        sendPlayerMessage(player,
+                                getErrorTraduction("noHomes"),
+                                "cyansh.error.noHomes",
+                                CyanSHMidnightConfig.errorToActionBar,
+                                CyanSHMidnightConfig.useTranslations
+                        );
                     }
                 } else
                 {
@@ -415,7 +494,12 @@ public class HomeCommands
 
                                 for (String key : properties.stringPropertyNames())
                                 {
-                                    player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
+                                    String[] items = properties.get(key).toString().split(" ");
+                                    player.sendMessage(Text.of(yellow + key
+                                            + Formatting.DARK_AQUA + " (" + items[0] + ", "
+                                            + getMiscTraduction("dateCreated") + items[6]
+                                            + ")"
+                                    ));
                                 }
 
                                 sendPlayerMessage(player,
@@ -435,7 +519,7 @@ public class HomeCommands
                             }
                         } catch (IOException e)
                         {
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                     } else
                     {

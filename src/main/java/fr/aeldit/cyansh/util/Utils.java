@@ -66,6 +66,7 @@ public class Utils
         miscTraductionsMap.put("listHomesOf", "§66CyanSetHome - HOMES OF %s :");
         miscTraductionsMap.put("headerDescCmd", "§6CyanSetHome - DESCRIPTION (commands)\n");
         miscTraductionsMap.put("headerDescOptions", "§6CyanSetHome - DESCRIPTION (options)\n");
+        miscTraductionsMap.put("dateCreated", "created on the ");
     }
 
     private static void generateConfigTraductionsMap()
@@ -126,6 +127,7 @@ public class Utils
         cmdFeedbackTraductionsMap.put("setHome", "§3The home %s §3have been created");
         cmdFeedbackTraductionsMap.put("goToHome", "§3You have been teleported to the home %s");
         cmdFeedbackTraductionsMap.put("removeHome", "§3The home %s §3have been removed");
+        cmdFeedbackTraductionsMap.put("removeAllHomes", "§3The home %s §3have been removed");
         cmdFeedbackTraductionsMap.put("removeHomeOf", "§3The home %s §3have been removed from %s§3's homes");
         cmdFeedbackTraductionsMap.put("listHomes", "§3Homes :");
         cmdFeedbackTraductionsMap.put("getTrustingPlayers", "§3Players that trust you :%s");
