@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
+import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.*;
 import static fr.aeldit.cyansh.util.Utils.*;
 

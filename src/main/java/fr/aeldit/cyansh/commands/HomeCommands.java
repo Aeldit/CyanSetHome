@@ -25,7 +25,7 @@ import java.util.Calendar;
 import java.util.Objects;
 import java.util.Properties;
 
-import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
+import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
 
