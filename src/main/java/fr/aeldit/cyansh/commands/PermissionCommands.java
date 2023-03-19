@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static fr.aeldit.cyanlib.util.ChatUtil.sendPlayerMessage;
+import static fr.aeldit.cyanlib.util.Constants.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class PermissionCommands
@@ -64,11 +65,11 @@ public class PermissionCommands
 
         if (player == null)
         {
-            source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
+            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
         {
             sendPlayerMessage(player,
-                    getErrorTraduction("playerNotOnline"),
+                    CyanSHLanguageUtils.getTranslation(ERROR + "playerNotOnline"),
                     "cyansh.error.playerNotOnline",
                     CyanSHMidnightConfig.errorToActionBar,
                     CyanSHMidnightConfig.useTranslations,
@@ -94,7 +95,7 @@ public class PermissionCommands
                         properties.store(new FileOutputStream(trustPath.toFile()), null);
 
                         sendPlayerMessage(player,
-                                getCmdFeedbackTraduction("playerTrusted"),
+                                CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                 "cyansh.message.playerTrusted",
                                 CyanSHMidnightConfig.msgToActionBar,
                                 CyanSHMidnightConfig.useTranslations,
@@ -108,7 +109,7 @@ public class PermissionCommands
                             properties.store(new FileOutputStream(trustPath.toFile()), null);
 
                             sendPlayerMessage(player,
-                                    getCmdFeedbackTraduction("playerTrusted"),
+                                    CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                     "cyansh.message.playerTrusted",
                                     CyanSHMidnightConfig.msgToActionBar,
                                     CyanSHMidnightConfig.useTranslations,
@@ -117,7 +118,7 @@ public class PermissionCommands
                         } else
                         {
                             sendPlayerMessage(player,
-                                    getErrorTraduction("playerAlreadyTrusted"),
+                                    CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
                                     "cyansh.error.playerAlreadyTrusted",
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
@@ -127,7 +128,7 @@ public class PermissionCommands
                 } else
                 {
                     sendPlayerMessage(player,
-                            getErrorTraduction("selfTrust"),
+                            CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
                             "cyansh.error.selfTrust",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -153,7 +154,7 @@ public class PermissionCommands
 
         if (player == null)
         {
-            source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
+            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
             String playerName = StringArgumentType.getString(context, "player");
@@ -210,7 +211,7 @@ public class PermissionCommands
                             }
                             properties.store(new FileOutputStream(trustPath.toFile()), null);
                             sendPlayerMessage(player,
-                                    getCmdFeedbackTraduction("playerUnTrusted"),
+                                    CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
                                     "cyansh.message.playerUnTrusted",
                                     CyanSHMidnightConfig.msgToActionBar,
                                     CyanSHMidnightConfig.useTranslations,
@@ -219,7 +220,7 @@ public class PermissionCommands
                         } else
                         {
                             sendPlayerMessage(player,
-                                    getErrorTraduction("playerNotTrusted"),
+                                    CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
                                     "cyansh.error.playerNotTrusted",
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useTranslations
@@ -228,7 +229,7 @@ public class PermissionCommands
                     } else
                     {
                         sendPlayerMessage(player,
-                                getErrorTraduction("playerNotTrusted"),
+                                CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
                                 "cyansh.error.playerNotTrusted",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations
@@ -241,7 +242,7 @@ public class PermissionCommands
             } else
             {
                 sendPlayerMessage(player,
-                        getErrorTraduction("selfTrust"),
+                        CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
                         "cyansh.error.selfTrust",
                         CyanSHMidnightConfig.errorToActionBar,
                         CyanSHMidnightConfig.useTranslations
@@ -263,7 +264,7 @@ public class PermissionCommands
 
         if (player == null)
         {
-            source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
+            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
             checkOrCreateTrustFile();
@@ -285,7 +286,7 @@ public class PermissionCommands
                 if (trustingPlayers.equals(""))
                 {
                     sendPlayerMessage(player,
-                            getCmdFeedbackTraduction("noTrustingPlayer"),
+                            CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
                             "cyansh.message.noTrustingPlayer",
                             CyanSHMidnightConfig.msgToActionBar,
                             CyanSHMidnightConfig.useTranslations
@@ -293,7 +294,7 @@ public class PermissionCommands
                 } else
                 {
                     sendPlayerMessage(player,
-                            getCmdFeedbackTraduction("getTrustingPlayers"),
+                            CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
                             "cyansh.message.getTrustingPlayers",
                             false,
                             CyanSHMidnightConfig.useTranslations,
@@ -320,7 +321,7 @@ public class PermissionCommands
 
         if (player == null)
         {
-            source.getServer().sendMessage(Text.of(getErrorTraduction("playerOnlyCmd")));
+            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
             checkOrCreateTrustFile();
@@ -342,7 +343,7 @@ public class PermissionCommands
                     if (trustedPlayers.equals(""))
                     {
                         sendPlayerMessage(player,
-                                getCmdFeedbackTraduction("noTrustedPlayer"),
+                                CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
                                 "cyansh.message.noTrustedPlayer",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useTranslations,
@@ -351,7 +352,7 @@ public class PermissionCommands
                     } else
                     {
                         sendPlayerMessage(player,
-                                getCmdFeedbackTraduction("getTrustedPlayers"),
+                                CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
                                 "cyansh.message.getTrustedPlayers",
                                 false,
                                 CyanSHMidnightConfig.useTranslations,
@@ -361,7 +362,7 @@ public class PermissionCommands
                 } else
                 {
                     sendPlayerMessage(player,
-                            getCmdFeedbackTraduction("noTrustedPlayer"),
+                            CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
                             "cyansh.message.noTrustedPlayer",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useTranslations,

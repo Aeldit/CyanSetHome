@@ -6,7 +6,6 @@ import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -27,7 +26,6 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHServerCore implements DedicatedServerModInitializer
 {
-    public static final String MODID = "cyansh";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static final String MODNAME = "[CyanSetHome]";
 
@@ -38,7 +36,6 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         MidnightConfig.init(MODID, CyanSHMidnightConfig.class);
         LOGGER.info("{} Successfully initialized config", MODNAME);
 
-        Utils.generateAllMaps();
         CyanSHMidnightConfig.generateCommandsList();
 
         // Deletes home files that are empty

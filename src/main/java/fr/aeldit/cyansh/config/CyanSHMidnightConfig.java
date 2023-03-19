@@ -40,7 +40,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeEditConfig = 4;
     @Entry(isSlider = true, min = 0, max = 4)
-    public static int minOpLevelExeOPHomeOf = 4;
+    public static int minOpLevelExeOPHomesOf = 4;
 
     public static void generateBoolOptionsMap()
     {
@@ -60,7 +60,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
         integerOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
         integerOptionsMap.put("minOpLevelExeHomesOf", minOpLevelExeHomesOf);
         integerOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
-        integerOptionsMap.put("minOpLevelExeRemoveHomeOf", minOpLevelExeOPHomeOf);
+        integerOptionsMap.put("minOpLevelExeOPHomesOf", minOpLevelExeOPHomesOf);
     }
 
     public static Map<String, Object> getAllOptionsMap()
@@ -95,6 +95,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "errorToActionBar" -> errorToActionBar = value;
         }
         write("cyansh");
+        generateBoolOptionsMap();
     }
 
     public static void setIntOption(@NotNull String optionName, int value)
@@ -104,10 +105,11 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "maxHomes" -> maxHomes = value;
             case "minOpLevelExeHomes" -> minOpLevelExeHomes = value;
             case "minOpLevelExeHomesOf" -> minOpLevelExeHomesOf = value;
-            case "minOpLevelExeOPHomeOf" -> minOpLevelExeOPHomeOf = value;
+            case "minOpLevelExeOPHomesOf" -> minOpLevelExeOPHomesOf = value;
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
         write("cyansh");
+        generateIntegerOptionsMap();
     }
 
     public static List<String> getCommandsList()

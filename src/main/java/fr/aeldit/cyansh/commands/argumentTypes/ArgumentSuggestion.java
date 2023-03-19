@@ -155,7 +155,7 @@ public final class ArgumentSuggestion
                 properties.load(new FileInputStream(trustPath.toFile()));
                 for (String key : properties.stringPropertyNames())
                 {
-                    if (properties.get(key).toString().contains(player.getUuidAsString()) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomeOf))
+                    if (properties.get(key).toString().contains(player.getUuidAsString()) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomesOf))
                     {
                         players.add(key.split("_")[1]);
                     }
