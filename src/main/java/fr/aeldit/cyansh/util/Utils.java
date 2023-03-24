@@ -17,7 +17,7 @@ public class Utils
 {
     public static final String MODID = "cyansh";
     public static final Path homesPath = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    public static final Path trustPath = Path.of(homesPath + "\\trusted_players.properties");
+    public static final Path trustPath = Path.of(homesPath + "/trusted_players.properties");
 
     public static String on = Formatting.GREEN + "ON";
     public static String off = Formatting.RED + "OFF";
@@ -63,16 +63,7 @@ public class Utils
 
     public static void checkOrCreateHomesFiles(Path filePath)
     {
-        if (!Files.exists(homesPath))
-        {
-            try
-            {
-                Files.createDirectory(homesPath);
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
+        checkOrCreateHomesDir();
         if (!Files.exists(filePath))
         {
             try
@@ -87,16 +78,7 @@ public class Utils
 
     public static void checkOrCreateTrustFile()
     {
-        if (!Files.exists(homesPath))
-        {
-            try
-            {
-                Files.createDirectory(homesPath);
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
+        checkOrCreateHomesDir();
         if (!Files.exists(trustPath))
         {
             try
