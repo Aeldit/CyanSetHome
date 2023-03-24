@@ -103,7 +103,7 @@ public class HomeCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
                     double x = player.getX();
                     double y = player.getY();
                     double z = player.getZ();
@@ -210,7 +210,7 @@ public class HomeCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
@@ -322,7 +322,7 @@ public class HomeCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
 
                     checkOrCreateHomesFiles(currentHomesPath);
                     try
@@ -398,7 +398,7 @@ public class HomeCommands
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
 
                     if (Files.exists(currentHomesPath))
                     {
@@ -470,7 +470,7 @@ public class HomeCommands
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "\\" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
 
                     if (Files.exists(currentHomesPath))
                     {
