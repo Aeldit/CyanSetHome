@@ -26,17 +26,22 @@ import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.util.Utils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.*;
-import static fr.aeldit.cyansh.util.Utils.*;
+import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
 
 public class ConfigCommands
 {
@@ -44,45 +49,18 @@ public class ConfigCommands
     {
         dispatcher.register(CommandManager.literal("cyansh")
                 .then(CommandManager.literal("config")
-                        .then(CommandManager.literal("booleanOption")
-                                .then(CommandManager.argument("option", StringArgumentType.string())
-                                        .suggests((context4, builder4) -> ArgumentSuggestion.getBoolOptions(builder4))
-                                        .then(CommandManager.argument("value", BoolArgumentType.bool())
+                        .then(CommandManager.argument("optionName", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getOptions(builder))
+                                .then(CommandManager.literal("set")
+                                        .then(CommandManager.argument("booleanValue", BoolArgumentType.bool())
                                                 .executes(ConfigCommands::setBoolOption)
                                         )
-                                )
-                        )
-                        .then(CommandManager.literal("integerOption")
-                                .then(CommandManager.argument("option", StringArgumentType.string())
-                                        .suggests((context4, builder4) -> ArgumentSuggestion.getIntegerOptions(builder4))
-                                        .then(CommandManager.argument("value", IntegerArgumentType.integer())
-                                                .executes(ConfigCommands::setIntegerOption)
+                                        .then(CommandManager.argument("integerValue", IntegerArgumentType.integer())
+                                                .suggests((context, builder) -> ArgumentSuggestion.getInts(builder))
+                                                .executes(ConfigCommands::setIntOption)
                                         )
                                 )
-                        )
-                )
-                .then(CommandManager.literal("description")
-                        .then(CommandManager.literal("commands")
-                                .then(CommandManager.argument("commandName", StringArgumentType.string())
-                                        .suggests((context2, builder2) -> ArgumentSuggestion.getCommands(builder2))
-                                        .executes(ConfigCommands::getCommandDescription)
-                                )
-                                .executes(ConfigCommands::getAllCommandsDescription)
-                        )
-                        .then(CommandManager.literal("options")
-                                .then(CommandManager.literal("booleanOption")
-                                        .then(CommandManager.argument("option", StringArgumentType.string())
-                                                .suggests((context4, builder4) -> ArgumentSuggestion.getBoolOptions(builder4))
-                                                .executes(ConfigCommands::getOptionDescription)
-                                        )
-                                )
-                                .then(CommandManager.literal("integerOption")
-                                        .then(CommandManager.argument("option", StringArgumentType.string())
-                                                .suggests((context4, builder4) -> ArgumentSuggestion.getIntegerOptions(builder4))
-                                                .executes(ConfigCommands::getOptionDescription)
-                                        )
-                                )
-                                .executes(ConfigCommands::getAllOptionsDescription)
+                                .executes(ConfigCommands::getOptionChatConfig)
                         )
                 )
                 .then(CommandManager.literal("getConfig")
@@ -104,12 +82,12 @@ public class ConfigCommands
             source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
-            CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations());
+            CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations(true));
             sendPlayerMessage(player,
                     CyanSHLanguageUtils.getTranslation("translationsReloaded"),
                     "cyansh.message.translationsReloaded",
                     CyanSHMidnightConfig.msgToActionBar,
-                    CyanSHMidnightConfig.useTranslations
+                    CyanSHMidnightConfig.useCustomTranslations
             );
         }
         return Command.SINGLE_SUCCESS;
@@ -117,16 +95,6 @@ public class ConfigCommands
 
     // Set functions
 
-    /**
-     * <p>Called when a player execute the command {@code /cyansh config booleanOptions [optionName] [true|false]}</p>
-     *
-     * <ul>If the player has a permission level equal to the option MinOpLevelExeModifConfig (see {@link CyanSHMidnightConfig})
-     *      <li>-> Set the options to the given value</li>
-     * </ul>
-     * <ul>Else:
-     *      <li>-> The player receive a message saying that it doesn't have the required permission</li>
-     * </ul>
-     */
     public static int setBoolOption(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -139,41 +107,44 @@ public class ConfigCommands
         {
             if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
-                String option = StringArgumentType.getString(context, "option");
-                boolean value = BoolArgumentType.getBool(context, "value");
+                String option = StringArgumentType.getString(context, "optionName");
+                boolean value = BoolArgumentType.getBool(context, "booleanValue");
 
-                CyanSHMidnightConfig.setBoolOption(option, value);
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(SET + option),
-                        "cyansh.message.set.%s".formatted(option),
-                        CyanSHMidnightConfig.msgToActionBar,
-                        CyanSHMidnightConfig.useTranslations,
-                        value ? on : off
-                );
+                if (Utils.getOptionsList().get("booleans").contains(option))
+                {
+                    CyanSHMidnightConfig.setBoolOption(option, value);
+
+                    source.getServer().getCommandManager().executeWithPrefix(source, "/cyansh config %s".formatted(option));
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation(SET + option),
+                            "cyansh.message.set.%s".formatted(option),
+                            CyanSHMidnightConfig.msgToActionBar,
+                            CyanSHMidnightConfig.useCustomTranslations,
+                            value ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"
+                    );
+                } else
+                {
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation(ERROR + "optionNotFound"),
+                            "cyansh.message.error.optionNotFound",
+                            CyanSHMidnightConfig.msgToActionBar,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
+                }
             } else
             {
                 sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                        "cyansh.error.notOp",
+                        "cyansh.message.notOp",
                         CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
+                        CyanSHMidnightConfig.useCustomTranslations
                 );
             }
         }
         return Command.SINGLE_SUCCESS;
     }
 
-    /**
-     * <p>Called when a player execute the command {@code /cyansh config integerOptions [optionName] [int]}</p>
-     *
-     * <ul>If the player has a permission level equal to the option MinOpLevelExeModifConfig (see {@link CyanSHMidnightConfig})
-     *      <li>-> Set the options to the given value</li>
-     * </ul>
-     * <ul>Else:
-     *      <li>-> The player receive a message saying that it doesn't have the required permission</li>
-     * </ul>
-     */
-    public static int setIntegerOption(@NotNull CommandContext<ServerCommandSource> context)
+    public static int setIntOption(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
@@ -183,257 +154,242 @@ public class ConfigCommands
             source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
-            String option = StringArgumentType.getString(context, "option");
-            int value = IntegerArgumentType.getInteger(context, "value");
-            if (option.startsWith("minOpLevelExe") && (value < 0 || value > 4))
+            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "incorrectIntOp"),
-                        "cyansh.error.incorrectIntOp",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
-                );
-            } else if (option.startsWith("maxHomes") && (value < 1 || value > 128))
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "incorrectIntMaxHomes"),
-                        "cyansh.error.incorrectIntMaxHomes",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
-                );
-            } else
-            {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
+                String option = StringArgumentType.getString(context, "optionName");
+                int value = IntegerArgumentType.getInteger(context, "integerValue");
+
+                if (Utils.getOptionsList().get("integers").contains(option))
                 {
                     CyanSHMidnightConfig.setIntOption(option, value);
+
+                    source.getServer().getCommandManager().executeWithPrefix(source, "/cyansh config %s".formatted(option));
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(SET + option),
                             "cyansh.message.set.%s".formatted(option),
                             CyanSHMidnightConfig.msgToActionBar,
-                            CyanSHMidnightConfig.useTranslations,
-                            gold + String.valueOf(value)
+                            CyanSHMidnightConfig.useCustomTranslations,
+                            Formatting.GOLD + String.valueOf(value)
                     );
                 } else
                 {
                     sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                            "cyansh.error.notOp",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHLanguageUtils.getTranslation(ERROR + "optionNotFound"),
+                            "cyansh.message.error.optionNotFound",
+                            CyanSHMidnightConfig.msgToActionBar,
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
+            } else
+            {
+                sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
+                        "cyansh.message.notOp",
+                        CyanSHMidnightConfig.errorToActionBar,
+                        CyanSHMidnightConfig.useCustomTranslations
+                );
             }
         }
         return Command.SINGLE_SUCCESS;
     }
 
     // Get functions
+    public static int getOptionChatConfig(@NotNull CommandContext<ServerCommandSource> context)
+    {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null)
+        {
+            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
+        } else
+        {
+            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
+            {
+                String optionName = StringArgumentType.getString(context, "optionName");
+                if (Utils.getOptionsList().get("booleans").contains(optionName) || Utils.getOptionsList().get("integers").contains(optionName))
+                {
+                    Object key = CyanSHMidnightConfig.getAllOptionsMap().get(optionName);
+
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation("dashSeparation"),
+                            "cyansh.message.getDescription.dashSeparation",
+                            false,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
+
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation(DESC + optionName),
+                            "cyansh.message.getDescription.%s".formatted(optionName),
+                            false,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
+
+                    if (key instanceof Boolean currentValue)
+                    {
+                        sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation("currentValue"),
+                                "cyansh.message.currentValue",
+                                false,
+                                CyanSHMidnightConfig.useCustomTranslations,
+                                currentValue ? Text.literal(Formatting.GREEN + "ON (click to change)").
+                                        setStyle(Style.EMPTY.withClickEvent(
+                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set false".formatted(optionName)))
+                                        ) : Text.literal(Formatting.RED + "OFF (click to change)").
+                                        setStyle(Style.EMPTY.withClickEvent(
+                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set true".formatted(optionName)))
+                                        )
+                        );
+                    } else if (key instanceof Integer currentValue)
+                    {
+                        sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation("currentValue"),
+                                "cyansh.message.currentValue",
+                                false,
+                                CyanSHMidnightConfig.useCustomTranslations,
+                                Formatting.GOLD + String.valueOf(currentValue)
+                        );
+                        if (optionName.startsWith("minOpLevelExe"))
+                        {
+                            sendPlayerMessage(player,
+                                    CyanSHLanguageUtils.getTranslation("setValue"),
+                                    "cyansh.message.setValue",
+                                    false,
+                                    CyanSHMidnightConfig.useCustomTranslations,
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "0")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 0".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "1")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 1".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "2")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 2".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "3")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 3".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "4")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 4".formatted(optionName)))
+                                            )
+                            );
+                        } else
+                        {
+                            sendPlayerMessage(player,
+                                    CyanSHLanguageUtils.getTranslation("setValue"),
+                                    "cyansh.message.setValue",
+                                    false,
+                                    CyanSHMidnightConfig.useCustomTranslations,
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "8")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 8".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "16")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 16".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "32")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 32".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "64")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 64".formatted(optionName)))
+                                            ),
+                                    Text.literal(Formatting.DARK_GREEN + (Formatting.BOLD + "128")).
+                                            setStyle(Style.EMPTY.withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 128".formatted(optionName)))
+                                            )
+                            );
+                        }
+                    }
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation("dashSeparation"),
+                            "cyansh.message.getDescription.dashSeparation",
+                            false,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
+                }
+            }
+        }
+        return Command.SINGLE_SUCCESS;
+    }
 
     /**
-     * <p>Called when a player execute the command {@code /cyansh config}</p>
-     * <p>Send a player in the player's chat with all the mod's options and their values</p>
+     * Called when a player execute the command {@code /cyansh config}
+     * Send a player in the player's chat with all the mod's options and their values
      */
     public static int getConfigOptions(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        String currentTrad = null;
 
         if (player == null)
         {
             source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
-            String currentTrad;
-            Map<String, Object> options = CyanSHMidnightConfig.getAllOptionsMap();
-
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("dashSeparation"),
-                    "cyansh.message.getDescription.dashSeparation",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("header"),
-                    "cyansh.message.getCfgOptions.header",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-
-            for (Map.Entry<String, Object> entry : options.entrySet())
+            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
-                Object key2 = entry.getKey();
-                currentTrad = CyanSHLanguageUtils.getTranslation(GETCFG + entry.getKey());
+                sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("dashSeparation"),
+                        "cyansh.message.getDescription.dashSeparation",
+                        false,
+                        CyanSHMidnightConfig.useCustomTranslations
+                );
+                sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation(GETCFG + "header"),
+                        "cyansh.message.getCfg.header",
+                        false,
+                        CyanSHMidnightConfig.useCustomTranslations
+                );
 
-                if (entry.getValue() instanceof Boolean value)
+                for (Map.Entry<String, Object> entry : CyanSHMidnightConfig.getAllOptionsMap().entrySet())
                 {
-                    sendPlayerMessage(player,
-                            currentTrad,
-                            "cyansh.message.getCfgOptions.%s".formatted(key2),
-                            false,
-                            CyanSHMidnightConfig.useTranslations,
-                            value ? on : off
-                    );
-                } else if (entry.getValue() instanceof Integer value)
-                {
-                    sendPlayerMessage(player,
-                            currentTrad,
-                            "cyansh.message.getCfgOptions.%s".formatted(key2),
-                            false,
-                            CyanSHMidnightConfig.useTranslations,
-                            gold + Integer.toString(value)
-                    );
+                    Object key2 = entry.getKey();
+                    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
+                    {
+                        currentTrad = CyanSHLanguageUtils.getTranslation(GETCFG + key2);
+                    }
+
+                    if (entry.getValue() instanceof Boolean value)
+                    {
+                        sendPlayerMessage(player,
+                                currentTrad,
+                                "cyansh.message.getCfg.%s".formatted(key2),
+                                false,
+                                CyanSHMidnightConfig.useCustomTranslations,
+                                value ? Text.literal(Formatting.GREEN + "ON").
+                                        setStyle(Style.EMPTY.withClickEvent(
+                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set false".formatted(key2)))
+                                        ) : Text.literal(Formatting.RED + "OFF").
+                                        setStyle(Style.EMPTY.withClickEvent(
+                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set true".formatted(key2)))
+                                        )
+                        );
+                    } else if (entry.getValue() instanceof Integer value)
+                    {
+                        sendPlayerMessage(player,
+                                currentTrad,
+                                "cyansh.message.getCfg.%s".formatted(key2),
+                                false,
+                                CyanSHMidnightConfig.useCustomTranslations,
+                                Formatting.GOLD + Integer.toString(value)
+                        );
+                    }
                 }
-            }
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("dashSeparation"),
-                    "cyansh.message.getDescription.dashSeparation",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-        }
-        return Command.SINGLE_SUCCESS;
-    }
-
-    /**
-     * <p>Called when a player execute the command {@code /cyansh description commands [commandName]}</p>
-     * <p>Send a message in the player's chat with the description of the command given as argument</p>
-     */
-    public static int getCommandDescription(@NotNull CommandContext<ServerCommandSource> context)
-    {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
-
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            String option = StringArgumentType.getString(context, "commandName");
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation(DESC + option),
-                    "cyansh.message.getDescription.command.%s".formatted(option),
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-        }
-        return Command.SINGLE_SUCCESS;
-    }
-
-    /**
-     * <p>Called when a player execute the command {@code /cyansh description [booleanOption|integerOption] [option]}</p>
-     * <p>Send a message in the player's chat with the description of the option given as argument</p>
-     */
-    public static int getOptionDescription(@NotNull CommandContext<ServerCommandSource> context)
-    {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
-
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            String option = StringArgumentType.getString(context, "option");
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation(DESC + option),
-                    "cyansh.message.getDescription.options.%s".formatted(option),
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-        }
-        return Command.SINGLE_SUCCESS;
-    }
-
-    /**
-     * <p>Called when a player execute the command {@code /cyansh description commands}</p>
-     * <p>Send a player in the player's chat with all the mod's commands and their description</p>
-     */
-    public static int getAllCommandsDescription(@NotNull CommandContext<ServerCommandSource> context)
-    {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
-
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("dashSeparation"),
-                    "cyansh.message.getDescription.dashSeparation",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("headerDescCmd"),
-                    "cyansh.message.getDescription.headerDescCmd",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-
-            for (String command : CyanSHMidnightConfig.getCommandsList())
-            {
                 sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(DESC + command),
-                        "cyansh.message.getDescription.command.%s".formatted(command),
+                        CyanSHLanguageUtils.getTranslation("dashSeparation"),
+                        "cyansh.message.getDescription.dashSeparation",
                         false,
-                        CyanSHMidnightConfig.useTranslations
+                        CyanSHMidnightConfig.useCustomTranslations
                 );
             }
-
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("dashSeparation"),
-                    "cyansh.message.getDescription.dashSeparation",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-        }
-        return Command.SINGLE_SUCCESS;
-    }
-
-    /**
-     * <p>Called when a player execute the command {@code /cyansh description options}</p>
-     * <p>Send a player in the player's chat with all the mod's options description</p>
-     */
-    public static int getAllOptionsDescription(@NotNull CommandContext<ServerCommandSource> context)
-    {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
-
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("dashSeparation"),
-                    "cyansh.message.getDescription.dashSeparation",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("headerDescOptions"),
-                    "cyansh.message.getDescription.headerDescOptions",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
-
-            for (String option : getOptionsList())
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(DESC + option),
-                        "cyansh.message.getDescription.options.%s".formatted(option),
-                        false,
-                        CyanSHMidnightConfig.useTranslations
-                );
-            }
-
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation("dashSeparation"),
-                    "cyansh.message.getDescription.dashSeparation",
-                    false,
-                    CyanSHMidnightConfig.useTranslations
-            );
         }
         return Command.SINGLE_SUCCESS;
     }

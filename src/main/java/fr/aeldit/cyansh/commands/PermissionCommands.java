@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -89,7 +90,7 @@ public class PermissionCommands
                     CyanSHLanguageUtils.getTranslation(ERROR + "playerNotOnline"),
                     "cyansh.error.playerNotOnline",
                     CyanSHMidnightConfig.errorToActionBar,
-                    CyanSHMidnightConfig.useTranslations,
+                    CyanSHMidnightConfig.useCustomTranslations,
                     playerName
             );
         } else
@@ -98,7 +99,7 @@ public class PermissionCommands
             String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
             String trustedPlayer = playerUUID + "_" + playerName;
 
-            checkOrCreateTrustFile();
+            checkOrCreateFile(trustPath);
             try
             {
                 Properties properties = new Properties();
@@ -115,7 +116,7 @@ public class PermissionCommands
                                 CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                 "cyansh.message.playerTrusted",
                                 CyanSHMidnightConfig.msgToActionBar,
-                                CyanSHMidnightConfig.useTranslations,
+                                CyanSHMidnightConfig.useCustomTranslations,
                                 Formatting.AQUA + playerName
                         );
                     } else
@@ -129,7 +130,7 @@ public class PermissionCommands
                                     CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                     "cyansh.message.playerTrusted",
                                     CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useTranslations,
+                                    CyanSHMidnightConfig.useCustomTranslations,
                                     Formatting.AQUA + playerName
                             );
                         } else
@@ -138,7 +139,7 @@ public class PermissionCommands
                                     CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
                                     "cyansh.error.playerAlreadyTrusted",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useCustomTranslations
                             );
                         }
                     }
@@ -148,7 +149,7 @@ public class PermissionCommands
                             CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
                             "cyansh.error.selfTrust",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
             } catch (IOException e)
@@ -181,80 +182,90 @@ public class PermissionCommands
                 String trustedPlayer = "";
                 List<String> tmp;
 
-                checkOrCreateTrustFile();
-                try
+                if (Files.exists(trustPath))
                 {
-                    Properties properties = new Properties();
-                    properties.load(new FileInputStream(trustPath.toFile()));
-                    String UUIDSearch = (String) properties.get(trustingPlayer);
-                    UUIDSearch = UUIDSearch.replace("[", "").replace("]", "").replace(",", "");
-
-                    // Used to obtain the UUID of the player, even if it is not online
-                    for (String s : UUIDSearch.split(" "))
+                    try
                     {
-                        String[] tmpS = s.split("_");
-                        String tmpUUID = tmpS[0];
-                        String tmpName = tmpS[1];
-                        if (tmpName.equals(playerName))
+                        Properties properties = new Properties();
+                        properties.load(new FileInputStream(trustPath.toFile()));
+                        String UUIDSearch = (String) properties.get(trustingPlayer);
+                        UUIDSearch = UUIDSearch.replace("[", "").replace("]", "").replace(",", "");
+
+                        // Used to obtain the UUID of the player, even if it is not online
+                        for (String s : UUIDSearch.split(" "))
                         {
-                            trustedPlayer = tmpUUID.concat("_").concat(playerName);
-                            break;
+                            String[] tmpS = s.split("_");
+                            String tmpUUID = tmpS[0];
+                            String tmpName = tmpS[1];
+                            if (tmpName.equals(playerName))
+                            {
+                                trustedPlayer = tmpUUID.concat("_").concat(playerName);
+                                break;
+                            }
                         }
-                    }
 
-                    if (properties.get(trustingPlayer).toString().contains(trustedPlayer))
-                    {
-                        tmp = List.of(properties.get(trustingPlayer).toString().split(" "));
-
-                        if (tmp.contains(trustedPlayer))
+                        if (properties.get(trustingPlayer).toString().contains(trustedPlayer))
                         {
-                            if (tmp.size() == 1 && Objects.equals(tmp.get(0), trustedPlayer))
-                            {
-                                properties.remove(trustingPlayer);
-                            } else
-                            {
-                                String replace = tmp.toString()
-                                        .replace("[", "")
-                                        .replace(",", "")
-                                        .replace("]", "");
+                            tmp = List.of(properties.get(trustingPlayer).toString().split(" "));
 
-                                if (tmp.indexOf(trustedPlayer) == tmp.size() - 1)
+                            if (tmp.contains(trustedPlayer))
+                            {
+                                if (tmp.size() == 1 && Objects.equals(tmp.get(0), trustedPlayer))
                                 {
-                                    properties.put(trustingPlayer, "%s".formatted(replace.replace(" " + trustedPlayer, "")));
+                                    properties.remove(trustingPlayer);
                                 } else
                                 {
-                                    properties.put(trustingPlayer, "%s".formatted(replace.replace(trustedPlayer + " ", "")));
+                                    String replace = tmp.toString()
+                                            .replace("[", "")
+                                            .replace(",", "")
+                                            .replace("]", "");
+
+                                    if (tmp.indexOf(trustedPlayer) == tmp.size() - 1)
+                                    {
+                                        properties.put(trustingPlayer, "%s".formatted(replace.replace(" " + trustedPlayer, "")));
+                                    } else
+                                    {
+                                        properties.put(trustingPlayer, "%s".formatted(replace.replace(trustedPlayer + " ", "")));
+                                    }
                                 }
+                                properties.store(new FileOutputStream(trustPath.toFile()), null);
+                                sendPlayerMessage(player,
+                                        CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
+                                        "cyansh.message.playerUnTrusted",
+                                        CyanSHMidnightConfig.msgToActionBar,
+                                        CyanSHMidnightConfig.useCustomTranslations,
+                                        Formatting.AQUA + playerName
+                                );
+                            } else
+                            {
+                                sendPlayerMessage(player,
+                                        CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
+                                        "cyansh.error.playerNotTrusted",
+                                        CyanSHMidnightConfig.errorToActionBar,
+                                        CyanSHMidnightConfig.useCustomTranslations
+                                );
                             }
-                            properties.store(new FileOutputStream(trustPath.toFile()), null);
-                            sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
-                                    "cyansh.message.playerUnTrusted",
-                                    CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useTranslations,
-                                    Formatting.AQUA + playerName
-                            );
                         } else
                         {
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
                                     "cyansh.error.playerNotTrusted",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useCustomTranslations
                             );
                         }
-                    } else
+                    } catch (IOException e)
                     {
-                        sendPlayerMessage(player,
-                                CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                                "cyansh.error.playerNotTrusted",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations
-                        );
+                        throw new RuntimeException(e);
                     }
-                } catch (IOException e)
+                } else
                 {
-                    throw new RuntimeException(e);
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
+                            "cyansh.error.playerNotTrusted",
+                            CyanSHMidnightConfig.errorToActionBar,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
                 }
             } else
             {
@@ -262,7 +273,7 @@ public class PermissionCommands
                         CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
                         "cyansh.error.selfTrust",
                         CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
+                        CyanSHMidnightConfig.useCustomTranslations
                 );
             }
         }
@@ -284,7 +295,7 @@ public class PermissionCommands
             source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
-            checkOrCreateTrustFile();
+            checkOrCreateFile(trustPath);
             try
             {
                 Properties properties = new Properties();
@@ -306,7 +317,7 @@ public class PermissionCommands
                             CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
                             "cyansh.message.noTrustingPlayer",
                             CyanSHMidnightConfig.msgToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 } else
                 {
@@ -314,7 +325,7 @@ public class PermissionCommands
                             CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
                             "cyansh.message.getTrustingPlayers",
                             false,
-                            CyanSHMidnightConfig.useTranslations,
+                            CyanSHMidnightConfig.useCustomTranslations,
                             trustingPlayers
                     );
                 }
@@ -341,7 +352,7 @@ public class PermissionCommands
             source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
         } else
         {
-            checkOrCreateTrustFile();
+            checkOrCreateFile(trustPath);
             try
             {
                 Properties properties = new Properties();
@@ -363,7 +374,7 @@ public class PermissionCommands
                                 CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
                                 "cyansh.message.noTrustedPlayer",
                                 CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations,
+                                CyanSHMidnightConfig.useCustomTranslations,
                                 trustedPlayers
                         );
                     } else
@@ -372,7 +383,7 @@ public class PermissionCommands
                                 CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
                                 "cyansh.message.getTrustedPlayers",
                                 false,
-                                CyanSHMidnightConfig.useTranslations,
+                                CyanSHMidnightConfig.useCustomTranslations,
                                 trustedPlayers
                         );
                     }
@@ -382,7 +393,7 @@ public class PermissionCommands
                             CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
                             "cyansh.message.noTrustedPlayer",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations,
+                            CyanSHMidnightConfig.useCustomTranslations,
                             trustedPlayers
                     );
                 }

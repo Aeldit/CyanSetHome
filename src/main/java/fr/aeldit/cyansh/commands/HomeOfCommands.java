@@ -117,7 +117,7 @@ public class HomeOfCommands
                     String playerName = StringArgumentType.getString(context, "player_name");
                     String homeName = StringArgumentType.getString(context, "home_name");
 
-                    if (playerTrust(playerName, player.getName().getString()))
+                    if (trustPlayer(playerName, player.getName().getString()))
                     {
                         boolean fileFound = false;
                         File currentHomesDir = new File(homesPath.toUri());
@@ -182,8 +182,8 @@ public class HomeOfCommands
                                                         CyanSHLanguageUtils.getTranslation("goToHome"),
                                                         "cyansh.message.goToHome",
                                                         CyanSHMidnightConfig.msgToActionBar,
-                                                        CyanSHMidnightConfig.useTranslations,
-                                                        yellow + homeName
+                                                        CyanSHMidnightConfig.useCustomTranslations,
+                                                        Formatting.YELLOW + homeName
                                                 );
                                             } else
                                             {
@@ -191,8 +191,8 @@ public class HomeOfCommands
                                                         CyanSHLanguageUtils.getTranslation(ERROR + "homeNotFound"),
                                                         "cyansh.error.homeNotFound",
                                                         CyanSHMidnightConfig.errorToActionBar,
-                                                        CyanSHMidnightConfig.useTranslations,
-                                                        yellow + homeName
+                                                        CyanSHMidnightConfig.useCustomTranslations,
+                                                        Formatting.YELLOW + homeName
                                                 );
                                             }
                                         } catch (IOException e)
@@ -208,7 +208,7 @@ public class HomeOfCommands
                                         CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
                                         "cyansh.error.noHomesOf",
                                         CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useTranslations
+                                        CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
                         }
@@ -218,7 +218,7 @@ public class HomeOfCommands
                                 CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusting"),
                                 "cyansh.error.playerNotTrusting",
                                 CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations
+                                CyanSHMidnightConfig.useCustomTranslations
                         );
                     }
                 } else
@@ -227,7 +227,7 @@ public class HomeOfCommands
                             CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
             } else
@@ -236,7 +236,7 @@ public class HomeOfCommands
                         CyanSHLanguageUtils.getTranslation(ERROR + "disabled.homes"),
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
+                        CyanSHMidnightConfig.useCustomTranslations
                 );
             }
         }
@@ -290,8 +290,8 @@ public class HomeOfCommands
                                                     CyanSHLanguageUtils.getTranslation("removeHomeOf"),
                                                     "cyansh.message.removeHomeOf",
                                                     CyanSHMidnightConfig.msgToActionBar,
-                                                    CyanSHMidnightConfig.useTranslations,
-                                                    yellow + homeName,
+                                                    CyanSHMidnightConfig.useCustomTranslations,
+                                                    Formatting.YELLOW + homeName,
                                                     Formatting.AQUA + trustingPlayer
                                             );
                                         } else
@@ -300,8 +300,8 @@ public class HomeOfCommands
                                                     CyanSHLanguageUtils.getTranslation(ERROR + "homeNotFound"),
                                                     "cyansh.error.homeNotFound",
                                                     CyanSHMidnightConfig.errorToActionBar,
-                                                    CyanSHMidnightConfig.useTranslations,
-                                                    yellow + homeName
+                                                    CyanSHMidnightConfig.useCustomTranslations,
+                                                    Formatting.YELLOW + homeName
                                             );
                                         }
                                     }
@@ -311,7 +311,7 @@ public class HomeOfCommands
                                                 CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
                                                 "cyansh.error.noHomesOf",
                                                 CyanSHMidnightConfig.errorToActionBar,
-                                                CyanSHMidnightConfig.useTranslations
+                                                CyanSHMidnightConfig.useCustomTranslations
                                         );
                                     }
                                 } catch (IOException e)
@@ -327,7 +327,7 @@ public class HomeOfCommands
                             CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
                             "cyansh.error.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
             } else
@@ -336,7 +336,7 @@ public class HomeOfCommands
                         CyanSHLanguageUtils.getTranslation(ERROR + "disabled.homes"),
                         "cyansh.error.disabled.homes",
                         CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
+                        CyanSHMidnightConfig.useCustomTranslations
                 );
             }
         }
@@ -364,7 +364,7 @@ public class HomeOfCommands
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                    if (playerTrust(trustingPlayer, player.getName().getString()))
+                    if (trustPlayer(trustingPlayer, player.getName().getString()))
                     {
                         File currentHomesDir = new File(homesPath.toUri());
                         checkOrCreateHomesDir();
@@ -389,27 +389,27 @@ public class HomeOfCommands
                                                         CyanSHLanguageUtils.getTranslation("dashSeparation"),
                                                         "cyansh.message.getDescription.dashSeparation",
                                                         false,
-                                                        CyanSHMidnightConfig.useTranslations
+                                                        CyanSHMidnightConfig.useCustomTranslations
                                                 );
 
                                                 sendPlayerMessage(player,
                                                         CyanSHLanguageUtils.getTranslation("listHomesOf"),
                                                         "cyansh.message.listHomesOf",
                                                         false,
-                                                        CyanSHMidnightConfig.useTranslations,
+                                                        CyanSHMidnightConfig.useCustomTranslations,
                                                         Formatting.AQUA + trustingPlayer
                                                 );
 
                                                 for (String key : properties.stringPropertyNames())
                                                 {
-                                                    player.sendMessage(Text.of(yellow + key + gold + " (" + properties.get(key).toString().split(" ")[0] + ")"));
+                                                    player.sendMessage(Text.of(Formatting.YELLOW + key + Formatting.GOLD + " (" + properties.get(key).toString().split(" ")[0] + ")"));
                                                 }
 
                                                 sendPlayerMessage(player,
                                                         CyanSHLanguageUtils.getTranslation("dashSeparation"),
                                                         "cyansh.message.getDescription.dashSeparation",
                                                         false,
-                                                        CyanSHMidnightConfig.useTranslations
+                                                        CyanSHMidnightConfig.useCustomTranslations
                                                 );
                                             } else
                                             {
@@ -417,7 +417,7 @@ public class HomeOfCommands
                                                         CyanSHLanguageUtils.getTranslation(ERROR + "noHomes"),
                                                         "cyansh.error.noHomes",
                                                         CyanSHMidnightConfig.errorToActionBar,
-                                                        CyanSHMidnightConfig.useTranslations
+                                                        CyanSHMidnightConfig.useCustomTranslations
                                                 );
                                             }
                                         } catch (IOException e)
@@ -433,7 +433,7 @@ public class HomeOfCommands
                                         CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
                                         "cyansh.error.noHomesOf",
                                         CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useTranslations
+                                        CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
                         } else
@@ -442,7 +442,7 @@ public class HomeOfCommands
                                     CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
                                     "cyansh.error.noHomesOf",
                                     CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useTranslations
+                                    CyanSHMidnightConfig.useCustomTranslations
                             );
                         }
                     } else
@@ -451,7 +451,7 @@ public class HomeOfCommands
                                 CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusting"),
                                 "cyansh.error.playerNotTrusting",
                                 CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useTranslations
+                                CyanSHMidnightConfig.useCustomTranslations
                         );
                     }
                 } else
@@ -460,7 +460,7 @@ public class HomeOfCommands
                             CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
                             "cyansh.error.notOp",
                             false,
-                            CyanSHMidnightConfig.useTranslations
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
             } else
@@ -469,7 +469,7 @@ public class HomeOfCommands
                         CyanSHLanguageUtils.getTranslation(ERROR + "disabled.homesOf"),
                         "cyansh.error.disabled.homesOf",
                         CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useTranslations
+                        CyanSHMidnightConfig.useCustomTranslations
                 );
             }
         }

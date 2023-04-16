@@ -20,16 +20,14 @@ package fr.aeldit.cyansh.config;
 import eu.midnightdust.lib.config.MidnightConfig;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
+import static fr.aeldit.cyansh.util.Utils.getDefaultTranslations;
 
 public class CyanSHMidnightConfig extends MidnightConfig
 {
-    public static final List<String> commandsList = new ArrayList<>();
-    public static Map<String, Object> boolOptionsMap = new HashMap<>();
-    public static Map<String, Object> integerOptionsMap = new HashMap<>();
     public static Map<String, Object> allOptionsMap = new HashMap<>();
     @Comment
     public static Comment allowOptions;
@@ -38,9 +36,9 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry
     public static boolean allowHomesOf = true;
     @Entry
-    public static boolean allowOPHomeOf = true;
+    public static boolean allowOPHomesOf = true;
     @Entry
-    public static boolean useTranslations = true;
+    public static boolean useCustomTranslations = false;
     @Entry
     public static boolean msgToActionBar = true;
     @Entry
@@ -59,45 +57,22 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeOPHomesOf = 4;
 
-    public static void generateBoolOptionsMap()
+    public static void generateAllOptionsMap()
     {
-        boolOptionsMap.put("allowHomes", allowHomes);
-        boolOptionsMap.put("allowHomesOf", allowHomesOf);
-        boolOptionsMap.put("allowOPHomesOf", allowOPHomeOf);
+        allOptionsMap.put("allowHomes", allowHomes);
+        allOptionsMap.put("allowHomesOf", allowHomesOf);
+        allOptionsMap.put("allowOPHomesOf", allowOPHomesOf);
 
-        boolOptionsMap.put("useTranslations", useTranslations);
-        boolOptionsMap.put("msgToActionBar", msgToActionBar);
-        boolOptionsMap.put("errorToActionBar", errorToActionBar);
-    }
+        allOptionsMap.put("useCustomTranslations", useCustomTranslations);
+        allOptionsMap.put("msgToActionBar", msgToActionBar);
+        allOptionsMap.put("errorToActionBar", errorToActionBar);
 
-    public static void generateIntegerOptionsMap()
-    {
-        integerOptionsMap.put("maxHomes", maxHomes);
+        allOptionsMap.put("maxHomes", maxHomes);
 
-        integerOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
-        integerOptionsMap.put("minOpLevelExeHomesOf", minOpLevelExeHomesOf);
-        integerOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
-        integerOptionsMap.put("minOpLevelExeOPHomesOf", minOpLevelExeOPHomesOf);
-    }
-
-    public static Map<String, Object> getAllOptionsMap()
-    {
-        allOptionsMap.putAll(getBoolOptionsMap());
-        allOptionsMap.putAll(getIntegerOptionsMap());
-        return allOptionsMap;
-    }
-
-    // For the ArgumentSuggestions
-    public static void generateCommandsList()
-    {
-        commandsList.add("sethome");
-        commandsList.add("home");
-        commandsList.add("removehome");
-        commandsList.add("gethomes");
-
-        commandsList.add("homeof");
-        commandsList.add("removehomeof");
-        commandsList.add("gethomesof");
+        allOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
+        allOptionsMap.put("minOpLevelExeHomesOf", minOpLevelExeHomesOf);
+        allOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
+        allOptionsMap.put("minOpLevelExeOPHomesOf", minOpLevelExeOPHomesOf);
     }
 
     public static void setBoolOption(@NotNull String optionName, boolean value)
@@ -106,13 +81,17 @@ public class CyanSHMidnightConfig extends MidnightConfig
         {
             case "allowHomes" -> allowHomes = value;
             case "allowHomesOf" -> allowHomesOf = value;
-            case "allowOPHomesOf" -> allowOPHomeOf = value;
-            case "useTranslations" -> useTranslations = value;
+            case "allowOPHomesOf" -> allowOPHomesOf = value;
+            case "useCustomTranslations" -> useCustomTranslations = value;
             case "msgToActionBar" -> msgToActionBar = value;
             case "errorToActionBar" -> errorToActionBar = value;
         }
         write("cyansh");
-        generateBoolOptionsMap();
+        generateAllOptionsMap();
+        if (useCustomTranslations)
+        {
+            CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
+        }
     }
 
     public static void setIntOption(@NotNull String optionName, int value)
@@ -126,29 +105,11 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
         write("cyansh");
-        generateIntegerOptionsMap();
+        generateAllOptionsMap();
     }
 
-    public static List<String> getCommandsList()
+    public static Map<String, Object> getAllOptionsMap()
     {
-        return commandsList;
-    }
-
-    public static Map<String, Object> getBoolOptionsMap()
-    {
-        if (boolOptionsMap.isEmpty())
-        {
-            generateBoolOptionsMap();
-        }
-        return boolOptionsMap;
-    }
-
-    public static Map<String, Object> getIntegerOptionsMap()
-    {
-        if (integerOptionsMap.isEmpty())
-        {
-            generateIntegerOptionsMap();
-        }
-        return integerOptionsMap;
+        return allOptionsMap;
     }
 }

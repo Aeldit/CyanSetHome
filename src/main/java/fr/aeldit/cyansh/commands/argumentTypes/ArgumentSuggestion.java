@@ -20,6 +20,7 @@ package fr.aeldit.cyansh.commands.argumentTypes;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -40,36 +41,32 @@ import static fr.aeldit.cyansh.util.Utils.*;
 public final class ArgumentSuggestion
 {
     /**
-     * Called for the commands {@code /cyansh config booleanOption} and {@code /cyansh description options booleanOption}
+     * Called for the command {@code /cyansh config <optionName>}
      *
-     * @param builder the suggestion builder
-     * @return A suggestion with all the boolean options
+     * @return a suggestion with the available options
      */
-    public static CompletableFuture<Suggestions> getBoolOptions(@NotNull SuggestionsBuilder builder)
+    public static CompletableFuture<Suggestions> getOptions(@NotNull SuggestionsBuilder builder)
     {
-        return CommandSource.suggestMatching(CyanSHMidnightConfig.getBoolOptionsMap().keySet(), builder);
+        List<String> options = new ArrayList<>();
+        options.addAll(Utils.getOptionsList().get("booleans"));
+        options.addAll(Utils.getOptionsList().get("integers"));
+        return CommandSource.suggestMatching(options, builder);
     }
 
     /**
-     * Called for the commands {@code /cyansh config integerOption} and {@code /cyansh description options integerOption}
+     * Called for the command {@code /cyansh config optionName [integer]}
      *
-     * @param builder the suggestion builder
-     * @return A suggestion with all the integer options
+     * @return a suggestion with all the available integers for the configurations
      */
-    public static CompletableFuture<Suggestions> getIntegerOptions(@NotNull SuggestionsBuilder builder)
+    public static CompletableFuture<Suggestions> getInts(@NotNull SuggestionsBuilder builder)
     {
-        return CommandSource.suggestMatching(CyanSHMidnightConfig.getIntegerOptionsMap().keySet(), builder);
-    }
-
-    /**
-     * Called for the command {@code /cyansh description commands}
-     *
-     * @param builder the suggestion builder
-     * @return A suggestion with all the available commands
-     */
-    public static CompletableFuture<Suggestions> getCommands(@NotNull SuggestionsBuilder builder)
-    {
-        return CommandSource.suggestMatching(CyanSHMidnightConfig.getCommandsList(), builder);
+        List<String> ints = new ArrayList<>();
+        ints.add("0");
+        ints.add("1");
+        ints.add("2");
+        ints.add("3");
+        ints.add("4");
+        return CommandSource.suggestMatching(ints, builder);
     }
 
     /**
@@ -130,22 +127,24 @@ public final class ArgumentSuggestion
         List<String> players = new ArrayList<>();
         ServerPlayerEntity player = source.getPlayer();
 
-        checkOrCreateTrustFile();
-        try
+        if (Files.exists(trustPath))
         {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(trustPath.toFile()));
-
-            if (player != null)
+            try
             {
-                for (String str : List.of(properties.get(player.getUuidAsString() + "_" + player.getName().getString()).toString().split(" ")))
+                Properties properties = new Properties();
+                properties.load(new FileInputStream(trustPath.toFile()));
+
+                if (player != null)
                 {
-                    players.add(str.split("_")[1]);
+                    for (String str : List.of(properties.get(player.getUuidAsString() + "_" + player.getName().getString()).toString().split(" ")))
+                    {
+                        players.add(str.split("_")[1]);
+                    }
                 }
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
         }
         return CommandSource.suggestMatching(players, builder);
     }
