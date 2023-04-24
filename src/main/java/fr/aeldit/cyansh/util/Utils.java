@@ -17,7 +17,9 @@
 
 package fr.aeldit.cyansh.util;
 
+import fr.aeldit.cyanlib.util.CyanLibUtils;
 import fr.aeldit.cyanlib.util.LanguageUtils;
+import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,10 @@ public class Utils
     // Language Utils
     public static LanguageUtils CyanSHLanguageUtils = new LanguageUtils(MODID);
     public static LinkedHashMap<String, String> defaultTranslations = new LinkedHashMap<>();
+
+    // Utils
+    public static CyanLibUtils CyanLibUtils = new CyanLibUtils(Utils.MODID, CyanSHLanguageUtils, CyanSHMidnightConfig.errorToActionBar, CyanSHMidnightConfig.useCustomTranslations);
+
 
     public static Map<String, List<String>> getOptionsList()
     {

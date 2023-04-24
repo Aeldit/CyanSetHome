@@ -78,52 +78,37 @@ public class PermissionCommands
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
-
         String playerName = StringArgumentType.getString(context, "player");
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
-        {
-            sendPlayerMessage(player,
-                    CyanSHLanguageUtils.getTranslation(ERROR + "playerNotOnline"),
-                    "cyansh.error.playerNotOnline",
-                    CyanSHMidnightConfig.errorToActionBar,
-                    CyanSHMidnightConfig.useCustomTranslations,
-                    playerName
-            );
-        } else
-        {
-            UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
-            String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
-            String trustedPlayer = playerUUID + "_" + playerName;
-
-            checkOrCreateFile(trustPath);
-            try
+            if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
             {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(trustPath.toFile()));
+                sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation(ERROR + "playerNotOnline"),
+                        "cyansh.error.playerNotOnline",
+                        CyanSHMidnightConfig.errorToActionBar,
+                        CyanSHMidnightConfig.useCustomTranslations,
+                        playerName
+                );
+            }
+            else
+            {
+                UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
+                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                String trustedPlayer = playerUUID + "_" + playerName;
 
-                if (!trustedPlayer.equals(trustingPlayer))
+                checkOrCreateFile(trustPath);
+                try
                 {
-                    if (!properties.containsKey(trustingPlayer))
-                    {
-                        properties.put(trustingPlayer, trustedPlayer);
-                        properties.store(new FileOutputStream(trustPath.toFile()), null);
+                    Properties properties = new Properties();
+                    properties.load(new FileInputStream(trustPath.toFile()));
 
-                        sendPlayerMessage(player,
-                                CyanSHLanguageUtils.getTranslation("playerTrusted"),
-                                "cyansh.message.playerTrusted",
-                                CyanSHMidnightConfig.msgToActionBar,
-                                CyanSHMidnightConfig.useCustomTranslations,
-                                Formatting.AQUA + playerName
-                        );
-                    } else
+                    if (!trustedPlayer.equals(trustingPlayer))
                     {
-                        if (!properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                        if (!properties.containsKey(trustingPlayer))
                         {
-                            properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
+                            properties.put(trustingPlayer, trustedPlayer);
                             properties.store(new FileOutputStream(trustPath.toFile()), null);
 
                             sendPlayerMessage(player,
@@ -133,28 +118,46 @@ public class PermissionCommands
                                     CyanSHMidnightConfig.useCustomTranslations,
                                     Formatting.AQUA + playerName
                             );
-                        } else
+                        }
+                        else
                         {
-                            sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
-                                    "cyansh.error.playerAlreadyTrusted",
-                                    CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations
-                            );
+                            if (!properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                            {
+                                properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
+                                properties.store(new FileOutputStream(trustPath.toFile()), null);
+
+                                sendPlayerMessage(player,
+                                        CyanSHLanguageUtils.getTranslation("playerTrusted"),
+                                        "cyansh.message.playerTrusted",
+                                        CyanSHMidnightConfig.msgToActionBar,
+                                        CyanSHMidnightConfig.useCustomTranslations,
+                                        Formatting.AQUA + playerName
+                                );
+                            }
+                            else
+                            {
+                                sendPlayerMessage(player,
+                                        CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
+                                        "cyansh.error.playerAlreadyTrusted",
+                                        CyanSHMidnightConfig.errorToActionBar,
+                                        CyanSHMidnightConfig.useCustomTranslations
+                                );
+                            }
                         }
                     }
-                } else
+                    else
+                    {
+                        sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
+                                "cyansh.error.selfTrust",
+                                CyanSHMidnightConfig.errorToActionBar,
+                                CyanSHMidnightConfig.useCustomTranslations
+                        );
+                    }
+                } catch (IOException e)
                 {
-                    sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
-                            "cyansh.error.selfTrust",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
-                    );
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -170,10 +173,7 @@ public class PermissionCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
+        if (CyanLibUtils.isPlayer(source))
         {
             String playerName = StringArgumentType.getString(context, "player");
             if (!player.getName().getString().equals(playerName))
@@ -213,7 +213,8 @@ public class PermissionCommands
                                 if (tmp.size() == 1 && Objects.equals(tmp.get(0), trustedPlayer))
                                 {
                                     properties.remove(trustingPlayer);
-                                } else
+                                }
+                                else
                                 {
                                     String replace = tmp.toString()
                                             .replace("[", "")
@@ -223,7 +224,8 @@ public class PermissionCommands
                                     if (tmp.indexOf(trustedPlayer) == tmp.size() - 1)
                                     {
                                         properties.put(trustingPlayer, "%s".formatted(replace.replace(" " + trustedPlayer, "")));
-                                    } else
+                                    }
+                                    else
                                     {
                                         properties.put(trustingPlayer, "%s".formatted(replace.replace(trustedPlayer + " ", "")));
                                     }
@@ -236,7 +238,8 @@ public class PermissionCommands
                                         CyanSHMidnightConfig.useCustomTranslations,
                                         Formatting.AQUA + playerName
                                 );
-                            } else
+                            }
+                            else
                             {
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
@@ -245,7 +248,8 @@ public class PermissionCommands
                                         CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
-                        } else
+                        }
+                        else
                         {
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
@@ -258,7 +262,8 @@ public class PermissionCommands
                     {
                         throw new RuntimeException(e);
                     }
-                } else
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
@@ -267,7 +272,8 @@ public class PermissionCommands
                             CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
-            } else
+            }
+            else
             {
                 sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
@@ -290,10 +296,7 @@ public class PermissionCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
+        if (CyanLibUtils.isPlayer(source))
         {
             checkOrCreateFile(trustPath);
             try
@@ -319,7 +322,8 @@ public class PermissionCommands
                             CyanSHMidnightConfig.msgToActionBar,
                             CyanSHMidnightConfig.useCustomTranslations
                     );
-                } else
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
@@ -347,10 +351,7 @@ public class PermissionCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
+        if (CyanLibUtils.isPlayer(source))
         {
             checkOrCreateFile(trustPath);
             try
@@ -377,7 +378,8 @@ public class PermissionCommands
                                 CyanSHMidnightConfig.useCustomTranslations,
                                 trustedPlayers
                         );
-                    } else
+                    }
+                    else
                     {
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
@@ -387,7 +389,8 @@ public class PermissionCommands
                                 trustedPlayers
                         );
                     }
-                } else
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),

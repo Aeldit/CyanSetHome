@@ -41,6 +41,7 @@ import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.*;
+import static fr.aeldit.cyansh.util.Utils.CyanLibUtils;
 import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
 
 public class ConfigCommands
@@ -77,10 +78,7 @@ public class ConfigCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
-        {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
+        if (CyanLibUtils.isPlayer(source))
         {
             CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations(true));
             sendPlayerMessage(player,
@@ -100,12 +98,9 @@ public class ConfigCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
+            if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
                 String option = StringArgumentType.getString(context, "optionName");
                 boolean value = BoolArgumentType.getBool(context, "booleanValue");
@@ -122,7 +117,8 @@ public class ConfigCommands
                             CyanSHMidnightConfig.useCustomTranslations,
                             value ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"
                     );
-                } else
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "optionNotFound"),
@@ -131,14 +127,6 @@ public class ConfigCommands
                             CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
-            } else
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                        "cyansh.message.notOp",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
-                );
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -149,12 +137,9 @@ public class ConfigCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
+            if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
                 String option = StringArgumentType.getString(context, "optionName");
                 int value = IntegerArgumentType.getInteger(context, "integerValue");
@@ -171,7 +156,8 @@ public class ConfigCommands
                             CyanSHMidnightConfig.useCustomTranslations,
                             Formatting.GOLD + String.valueOf(value)
                     );
-                } else
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "optionNotFound"),
@@ -180,14 +166,6 @@ public class ConfigCommands
                             CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
-            } else
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                        "cyansh.message.notOp",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
-                );
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -199,12 +177,9 @@ public class ConfigCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
+            if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
                 String optionName = StringArgumentType.getString(context, "optionName");
                 if (Utils.getOptionsList().get("booleans").contains(optionName) || Utils.getOptionsList().get("integers").contains(optionName))
@@ -240,7 +215,8 @@ public class ConfigCommands
                                                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set true".formatted(optionName)))
                                         )
                         );
-                    } else if (key instanceof Integer currentValue)
+                    }
+                    else if (key instanceof Integer currentValue)
                     {
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("currentValue"),
@@ -277,7 +253,8 @@ public class ConfigCommands
                                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set 4".formatted(optionName)))
                                             )
                             );
-                        } else
+                        }
+                        else
                         {
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("setValue"),
@@ -329,12 +306,9 @@ public class ConfigCommands
         ServerPlayerEntity player = source.getPlayer();
         String currentTrad = null;
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeEditConfig))
+            if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
                 sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation("dashSeparation"),
@@ -372,7 +346,8 @@ public class ConfigCommands
                                                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set true".formatted(key2)))
                                         )
                         );
-                    } else if (entry.getValue() instanceof Integer value)
+                    }
+                    else if (entry.getValue() instanceof Integer value)
                     {
                         sendPlayerMessage(player,
                                 currentTrad,

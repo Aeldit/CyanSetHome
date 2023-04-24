@@ -23,8 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
-import static fr.aeldit.cyansh.util.Utils.getDefaultTranslations;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHMidnightConfig extends MidnightConfig
 {
@@ -54,8 +53,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
     public static int minOpLevelExeHomesOf = 0;
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeEditConfig = 4;
-    @Entry(isSlider = true, min = 0, max = 4)
-    public static int minOpLevelExeOPHomesOf = 4;
 
     public static void generateAllOptionsMap()
     {
@@ -72,7 +69,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
         allOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
         allOptionsMap.put("minOpLevelExeHomesOf", minOpLevelExeHomesOf);
         allOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
-        allOptionsMap.put("minOpLevelExeOPHomesOf", minOpLevelExeOPHomesOf);
     }
 
     public static void setBoolOption(@NotNull String optionName, boolean value)
@@ -86,7 +82,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "msgToActionBar" -> msgToActionBar = value;
             case "errorToActionBar" -> errorToActionBar = value;
         }
-        write("cyansh");
+        write(MODID);
         generateAllOptionsMap();
         if (useCustomTranslations)
         {
@@ -101,10 +97,9 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "maxHomes" -> maxHomes = value;
             case "minOpLevelExeHomes" -> minOpLevelExeHomes = value;
             case "minOpLevelExeHomesOf" -> minOpLevelExeHomesOf = value;
-            case "minOpLevelExeOPHomesOf" -> minOpLevelExeOPHomesOf = value;
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
-        write("cyansh");
+        write(MODID);
         generateAllOptionsMap();
     }
 

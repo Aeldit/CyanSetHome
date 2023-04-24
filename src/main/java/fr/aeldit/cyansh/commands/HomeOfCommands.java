@@ -105,14 +105,11 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (CyanSHMidnightConfig.allowHomesOf)
+            if (CyanLibUtils.isOptionAllowed(player, CyanSHMidnightConfig.allowHomesOf, "homesOfDisabled"))
             {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomesOf) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomesOf))
+                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeHomesOf) || player.hasPermissionLevel(4))
                 {
                     String playerName = StringArgumentType.getString(context, "player_name");
                     String homeName = StringArgumentType.getString(context, "home_name");
@@ -156,7 +153,8 @@ public class HomeOfCommands
                                                             Float.parseFloat(home.split(" ")[4]),
                                                             Float.parseFloat(home.split(" ")[5])
                                                     );
-                                                } else if (Objects.equals(world, "nether"))
+                                                }
+                                                else if (Objects.equals(world, "nether"))
                                                 {
                                                     player.teleport(
                                                             nether,
@@ -166,7 +164,8 @@ public class HomeOfCommands
                                                             Float.parseFloat(home.split(" ")[4]),
                                                             Float.parseFloat(home.split(" ")[5])
                                                     );
-                                                } else if (Objects.equals(world, "end"))
+                                                }
+                                                else if (Objects.equals(world, "end"))
                                                 {
                                                     player.teleport(
                                                             end,
@@ -185,11 +184,12 @@ public class HomeOfCommands
                                                         CyanSHMidnightConfig.useCustomTranslations,
                                                         Formatting.YELLOW + homeName
                                                 );
-                                            } else
+                                            }
+                                            else
                                             {
                                                 sendPlayerMessage(player,
                                                         CyanSHLanguageUtils.getTranslation(ERROR + "homeNotFound"),
-                                                        "cyansh.error.homeNotFound",
+                                                        "cyansh.message.homeNotFound",
                                                         CyanSHMidnightConfig.errorToActionBar,
                                                         CyanSHMidnightConfig.useCustomTranslations,
                                                         Formatting.YELLOW + homeName
@@ -206,38 +206,32 @@ public class HomeOfCommands
                             {
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
-                                        "cyansh.error.noHomesOf",
+                                        "cyansh.message.noHomesOf",
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
                         }
-                    } else
+                    }
+                    else
                     {
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusting"),
-                                "cyansh.error.playerNotTrusting",
+                                "cyansh.message.playerNotTrusting",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useCustomTranslations
                         );
                     }
-                } else
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                            "cyansh.error.notOp",
+                            "cyansh.message.notOp",
                             CyanSHMidnightConfig.errorToActionBar,
                             CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
-            } else
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "disabled.homes"),
-                        "cyansh.error.disabled.homes",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
-                );
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -253,14 +247,11 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (CyanSHMidnightConfig.allowHomesOf)
+            if (CyanLibUtils.isOptionAllowed(player, CyanSHMidnightConfig.allowHomesOf, "homesOfDisabled"))
             {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomesOf))
+                if (CyanLibUtils.hasPermission(player, 4))
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
@@ -294,11 +285,12 @@ public class HomeOfCommands
                                                     Formatting.YELLOW + homeName,
                                                     Formatting.AQUA + trustingPlayer
                                             );
-                                        } else
+                                        }
+                                        else
                                         {
                                             sendPlayerMessage(player,
                                                     CyanSHLanguageUtils.getTranslation(ERROR + "homeNotFound"),
-                                                    "cyansh.error.homeNotFound",
+                                                    "cyansh.message.homeNotFound",
                                                     CyanSHMidnightConfig.errorToActionBar,
                                                     CyanSHMidnightConfig.useCustomTranslations,
                                                     Formatting.YELLOW + homeName
@@ -309,7 +301,7 @@ public class HomeOfCommands
                                     {
                                         sendPlayerMessage(player,
                                                 CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
-                                                "cyansh.error.noHomesOf",
+                                                "cyansh.message.noHomesOf",
                                                 CyanSHMidnightConfig.errorToActionBar,
                                                 CyanSHMidnightConfig.useCustomTranslations
                                         );
@@ -321,23 +313,7 @@ public class HomeOfCommands
                             }
                         }
                     }
-                } else
-                {
-                    sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                            "cyansh.error.notOp",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
-                    );
                 }
-            } else
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "disabled.homes"),
-                        "cyansh.error.disabled.homes",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
-                );
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -353,14 +329,11 @@ public class HomeOfCommands
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player == null)
+        if (CyanLibUtils.isPlayer(source))
         {
-            source.getServer().sendMessage(Text.of(CyanSHLanguageUtils.getTranslation(ERROR + "playerOnlyCmd")));
-        } else
-        {
-            if (CyanSHMidnightConfig.allowHomesOf)
+            if (CyanLibUtils.isOptionAllowed(player, CyanSHMidnightConfig.allowHomesOf, "homesOfDisabled"))
             {
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomesOf))
+                if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomesOf))
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
@@ -411,11 +384,12 @@ public class HomeOfCommands
                                                         false,
                                                         CyanSHMidnightConfig.useCustomTranslations
                                                 );
-                                            } else
+                                            }
+                                            else
                                             {
                                                 sendPlayerMessage(player,
                                                         CyanSHLanguageUtils.getTranslation(ERROR + "noHomes"),
-                                                        "cyansh.error.noHomes",
+                                                        "cyansh.message.noHomes",
                                                         CyanSHMidnightConfig.errorToActionBar,
                                                         CyanSHMidnightConfig.useCustomTranslations
                                                 );
@@ -431,46 +405,32 @@ public class HomeOfCommands
                             {
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
-                                        "cyansh.error.noHomesOf",
+                                        "cyansh.message.noHomesOf",
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
-                        } else
+                        }
+                        else
                         {
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation(ERROR + "noHomesOf"),
-                                    "cyansh.error.noHomesOf",
+                                    "cyansh.message.noHomesOf",
                                     CyanSHMidnightConfig.errorToActionBar,
                                     CyanSHMidnightConfig.useCustomTranslations
                             );
                         }
-                    } else
+                    }
+                    else
                     {
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusting"),
-                                "cyansh.error.playerNotTrusting",
+                                "cyansh.message.playerNotTrusting",
                                 CyanSHMidnightConfig.errorToActionBar,
                                 CyanSHMidnightConfig.useCustomTranslations
                         );
                     }
-                } else
-                {
-                    sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation(ERROR + "notOp"),
-                            "cyansh.error.notOp",
-                            false,
-                            CyanSHMidnightConfig.useCustomTranslations
-                    );
                 }
-            } else
-            {
-                sendPlayerMessage(player,
-                        CyanSHLanguageUtils.getTranslation(ERROR + "disabled.homesOf"),
-                        "cyansh.error.disabled.homesOf",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
-                );
             }
         }
         return Command.SINGLE_SUCCESS;
