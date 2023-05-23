@@ -44,11 +44,9 @@ public class Utils
 
     // Language Utils
     public static LanguageUtils CyanSHLanguageUtils = new LanguageUtils(MODID);
-    public static LinkedHashMap<String, String> defaultTranslations = new LinkedHashMap<>();
-
     // Utils
     public static CyanLibUtils CyanLibUtils = new CyanLibUtils(Utils.MODID, CyanSHLanguageUtils, CyanSHMidnightConfig.errorToActionBar, CyanSHMidnightConfig.useCustomTranslations);
-
+    public static LinkedHashMap<String, String> defaultTranslations = new LinkedHashMap<>();
 
     public static Map<String, List<String>> getOptionsList()
     {
@@ -103,7 +101,7 @@ public class Utils
         }
     }
 
-    public static boolean trustPlayer(String trustingPlayer, String trustedPlayer)
+    public static boolean trustPlayer(String trustingPlayerUsername, String trustedPlayerUsername)
     {
         if (Files.exists(trustPath))
         {
@@ -114,11 +112,11 @@ public class Utils
 
                 for (String key : properties.stringPropertyNames())
                 {
-                    if (key.split("_")[1].equals(trustingPlayer))
+                    if (key.split("_")[1].equals(trustingPlayerUsername))
                     {
                         for (String playerName : properties.get(key).toString().split(" "))
                         {
-                            if (playerName.split("_")[1].equals(trustedPlayer))
+                            if (playerName.split("_")[1].equals(trustedPlayerUsername))
                             {
                                 return true;
                             }

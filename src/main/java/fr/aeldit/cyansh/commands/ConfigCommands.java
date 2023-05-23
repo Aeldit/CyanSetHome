@@ -73,6 +73,11 @@ public class ConfigCommands
         );
     }
 
+    /**
+     * Called by the command {@code /cyansh reloadTranslations}
+     * <p>
+     * Reloads the custom translations
+     */
     public static int reloadTranslations(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -91,8 +96,11 @@ public class ConfigCommands
         return Command.SINGLE_SUCCESS;
     }
 
-    // Set functions
-
+    /**
+     * Called by the command {@code /cyansh config <optionName> set <booleanValue>}
+     * <p>
+     * Sets the option {@code <optionName>} to the value {@code <booleanValue>} if the option exists
+     */
     public static int setBoolOption(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -132,6 +140,12 @@ public class ConfigCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Called by the command {@code /cyansh config <optionName> set <integerValue>}
+     * <p>
+     * Sets the option {@code <optionName>} to the value {@code <integerValue>} if the option exists
+     * and the value is correct
+     */
     public static int setIntOption(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -171,7 +185,11 @@ public class ConfigCommands
         return Command.SINGLE_SUCCESS;
     }
 
-    // Get functions
+    /**
+     * Called by the command {@code /cyansh config <optionName>}
+     * <p>
+     * Send a message in the player's chat with a description of the option {@code optionName} and its value
+     */
     public static int getOptionChatConfig(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
@@ -297,8 +315,9 @@ public class ConfigCommands
     }
 
     /**
-     * Called when a player execute the command {@code /cyansh config}
-     * Send a player in the player's chat with all the mod's options and their values
+     * Called by the command {@code /cyansh config}
+     * <p>
+     * Send a messsage in the player's chat with all the mod's options and their values
      */
     public static int getConfigOptions(@NotNull CommandContext<ServerCommandSource> context)
     {

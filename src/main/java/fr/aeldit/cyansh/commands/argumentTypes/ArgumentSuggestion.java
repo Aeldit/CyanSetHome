@@ -72,8 +72,6 @@ public final class ArgumentSuggestion
     /**
      * Called for the command {@code /gethomes}
      *
-     * @param builder - the suggestion builder
-     * @param player  - player typing the command
      * @return A suggestion with all the player's homes
      */
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
@@ -97,8 +95,6 @@ public final class ArgumentSuggestion
     /**
      * Called for the command {@code /hometrust}
      *
-     * @param builder - the suggestion builder
-     * @param source  - the source of the command
      * @return A suggestion with all the online players
      */
     public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
@@ -118,8 +114,6 @@ public final class ArgumentSuggestion
     /**
      * Called for the command {@code /homeuntrust}
      *
-     * @param builder - the suggestion builder
-     * @param source  - the source of the command
      * @return A suggestion with all the trusted players
      */
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
@@ -152,8 +146,6 @@ public final class ArgumentSuggestion
     /**
      * Called for the homeOf commands
      *
-     * @param builder - the suggestion builder
-     * @param source  - the source of the command
      * @return A suggestion with all the trusting players
      */
     public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
@@ -171,7 +163,7 @@ public final class ArgumentSuggestion
                 properties.load(new FileInputStream(trustPath.toFile()));
                 for (String key : properties.stringPropertyNames())
                 {
-                    if (properties.get(key).toString().contains(player.getUuidAsString()) || player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeOPHomesOf))
+                    if (properties.get(key).toString().contains(player.getUuidAsString()) || CyanSHMidnightConfig.allowOPHomesOf)
                     {
                         players.add(key.split("_")[1]);
                     }
