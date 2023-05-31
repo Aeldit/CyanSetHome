@@ -17,30 +17,30 @@
 
 package fr.aeldit.cyansh.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.Home;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
@@ -116,70 +116,98 @@ public class HomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
+                    String dimension = "overworld";
                     double x = player.getX();
                     double y = player.getY();
                     double z = player.getZ();
                     float yaw = player.getYaw();
                     float pitch = player.getPitch();
+                    String date = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
+
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
-                    String date = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
+
+                    if (player.getWorld() == overworld)
+                    {
+                        dimension = "overworld";
+                    }
+                    else if (player.getWorld() == nether)
+                    {
+                        dimension = "nether";
+                    }
+                    else if (player.getWorld() == end)
+                    {
+                        dimension = "end";
+                    }
 
                     checkOrCreateFile(currentHomesPath);
                     try
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(currentHomesPath.toFile()));
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Home home = new Home(homeName, dimension, x, y, z, yaw, pitch, date);
 
-                        if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes)
+                        if (Files.readAllLines(currentHomesPath).size() == 0)
                         {
-                            if (!properties.containsKey(homeName))
+                            Writer writer = Files.newBufferedWriter(currentHomesPath);
+                            List<Home> homes = List.of(home);
+                            gson.toJson(homes, writer);
+                            writer.close();
+
+                            sendPlayerMessage(player,
+                                    CyanSHLanguageUtils.getTranslation("setHome"),
+                                    "cyansh.message.setHome",
+                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.useCustomTranslations,
+                                    Formatting.YELLOW + homeName
+                            );
+                        }
+                        else
+                        {
+                            Reader reader = Files.newBufferedReader(currentHomesPath);
+                            List<Home> homes = Arrays.asList(gson.fromJson(reader, Home[].class));
+                            reader.close();
+
+                            if (homes.size() < CyanSHMidnightConfig.maxHomes)
                             {
-                                if (player.getWorld() == overworld)
+                                if (!homeExists(homes, homeName))
                                 {
-                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("overworld", x, y, z, yaw, pitch, date));
-                                }
-                                else if (player.getWorld() == nether)
-                                {
-                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("nether", x, y, z, yaw, pitch, date));
-                                }
-                                else if (player.getWorld() == end)
-                                {
-                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("end", x, y, z, yaw, pitch, date));
-                                }
+                                    Writer writer = Files.newBufferedWriter(currentHomesPath);
+                                    ArrayList<Home> mutableHomes = new ArrayList<>(homes);
+                                    mutableHomes.add(home);
+                                    gson.toJson(mutableHomes, writer);
+                                    writer.close();
 
-                                properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
-
-                                sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation("setHome"),
-                                        "cyansh.message.setHome",
-                                        CyanSHMidnightConfig.msgToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations,
-                                        Formatting.YELLOW + homeName
-                                );
+                                    sendPlayerMessage(player,
+                                            CyanSHLanguageUtils.getTranslation("setHome"),
+                                            "cyansh.message.setHome",
+                                            CyanSHMidnightConfig.msgToActionBar,
+                                            CyanSHMidnightConfig.useCustomTranslations,
+                                            Formatting.YELLOW + homeName
+                                    );
+                                }
+                                else
+                                {
+                                    sendPlayerMessage(player,
+                                            CyanSHLanguageUtils.getTranslation(ERROR + "homeAlreadyExists"),
+                                            "cyansh.message.homeAlreadyExists",
+                                            CyanSHMidnightConfig.errorToActionBar,
+                                            CyanSHMidnightConfig.useCustomTranslations
+                                    );
+                                }
                             }
                             else
                             {
                                 sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation(ERROR + "homeAlreadyExists"),
-                                        "cyansh.message.homeAlreadyExists",
+                                        CyanSHLanguageUtils.getTranslation(ERROR + "maxHomesReached"),
+                                        "cyansh.message.maxHomesReached",
                                         CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations
+                                        CyanSHMidnightConfig.useCustomTranslations,
+                                        Formatting.GOLD + String.valueOf(CyanSHMidnightConfig.maxHomes)
                                 );
                             }
-                        }
-                        else
-                        {
-                            sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation(ERROR + "maxHomesReached"),
-                                    "cyansh.message.maxHomesReached",
-                                    CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations,
-                                    Formatting.GOLD + String.valueOf(CyanSHMidnightConfig.maxHomes)
-                            );
                         }
                     } catch (IOException e)
                     {
@@ -209,54 +237,27 @@ public class HomeCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
-                    ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
-                    ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
-                    ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
 
                     checkOrCreateFile(currentHomesPath);
                     try
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(currentHomesPath.toFile()));
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Reader reader = Files.newBufferedReader(currentHomesPath);
+                        List<Home> homes = List.of(gson.fromJson(reader, Home[].class));
+                        reader.close();
 
-                        if (properties.containsKey(homeName))
+                        if (homeExists(homes, homeName))
                         {
-                            String home = (String) properties.get(homeName);
-                            String world = home.split(" ")[0];
-
-                            if (Objects.equals(world, "overworld"))
+                            Home home = homes.get(getHomeIndex(homes, homeName));
+                            switch (home.dimension())
                             {
-                                player.teleport(
-                                        overworld,
-                                        Double.parseDouble(home.split(" ")[1]),
-                                        Double.parseDouble(home.split(" ")[2]),
-                                        Double.parseDouble(home.split(" ")[3]),
-                                        Float.parseFloat(home.split(" ")[4]),
-                                        Float.parseFloat(home.split(" ")[5])
-                                );
-                            }
-                            else if (Objects.equals(world, "nether"))
-                            {
-                                player.teleport(
-                                        nether,
-                                        Double.parseDouble(home.split(" ")[1]),
-                                        Double.parseDouble(home.split(" ")[2]),
-                                        Double.parseDouble(home.split(" ")[3]),
-                                        Float.parseFloat(home.split(" ")[4]),
-                                        Float.parseFloat(home.split(" ")[5])
-                                );
-                            }
-                            else if (Objects.equals(world, "end"))
-                            {
-                                player.teleport(
-                                        end,
-                                        Double.parseDouble(home.split(" ")[1]),
-                                        Double.parseDouble(home.split(" ")[2]),
-                                        Double.parseDouble(home.split(" ")[3]),
-                                        Float.parseFloat(home.split(" ")[4]),
-                                        Float.parseFloat(home.split(" ")[5])
-                                );
+                                case "overworld" -> player.teleport(player.getServer().getWorld(World.OVERWORLD),
+                                        home.x(), home.y(), home.z(), home.yaw(), home.pitch());
+                                case "nether" -> player.teleport(player.getServer().getWorld(World.NETHER),
+                                        home.x(), home.y(), home.z(), home.yaw(), home.pitch());
+                                case "end" -> player.teleport(player.getServer().getWorld(World.END),
+                                        home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                             }
 
                             sendPlayerMessage(player,
@@ -277,6 +278,7 @@ public class HomeCommands
                                     Formatting.YELLOW + homeName
                             );
                         }
+
                     } catch (IOException e)
                     {
                         throw new RuntimeException(e);
@@ -305,18 +307,23 @@ public class HomeCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
 
                     checkOrCreateFile(currentHomesPath);
                     try
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(currentHomesPath.toFile()));
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Reader reader = Files.newBufferedReader(currentHomesPath);
+                        List<Home> homes = List.of(gson.fromJson(reader, Home[].class));
+                        reader.close();
 
-                        if (properties.containsKey(homeName))
+                        if (homeExists(homes, homeName))
                         {
-                            properties.remove(homeName);
-                            properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
+                            ArrayList<Home> mutableHomes = new ArrayList<>(homes);
+                            mutableHomes.remove(getHomeIndex(homes, homeName));
+                            Writer writer = Files.newBufferedWriter(currentHomesPath);
+                            gson.toJson(mutableHomes, writer);
+                            writer.close();
 
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("removeHome"),
@@ -363,16 +370,13 @@ public class HomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
 
                     if (Files.exists(currentHomesPath))
                     {
                         try
                         {
-                            Properties properties = new Properties();
-                            properties.load(new FileInputStream(currentHomesPath.toFile()));
-                            properties.clear();
-                            properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
+                            Files.delete(currentHomesPath);
 
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("removeAllHomes"),
@@ -417,15 +421,18 @@ public class HomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
 
                     if (Files.exists(currentHomesPath))
                     {
                         try
                         {
-                            Properties properties = new Properties();
-                            properties.load(new FileInputStream(currentHomesPath.toFile()));
-                            if (!(properties.size() == 0))
+                            Gson gson = new Gson();
+                            Reader reader = Files.newBufferedReader(currentHomesPath);
+                            Home[] homes = gson.fromJson(reader, Home[].class);
+                            reader.close();
+
+                            if (homes.length != 0)
                             {
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("dashSeparation"),
@@ -440,14 +447,16 @@ public class HomeCommands
                                         CyanSHMidnightConfig.useCustomTranslations
                                 );
 
-                                for (String key : properties.stringPropertyNames())
+                                for (Home home : homes)
                                 {
-                                    String[] items = properties.get(key).toString().split(" ");
-                                    player.sendMessage(Text.of(Formatting.YELLOW + key
-                                            + Formatting.DARK_AQUA + " (" + items[0] + ", "
-                                            + CyanSHLanguageUtils.getTranslation("dateCreated") + items[6]
-                                            + ")"
-                                    ));
+                                    sendPlayerMessage(player,
+                                            CyanSHLanguageUtils.getTranslation("getHome"),
+                                            "cyansh.message.getHome",
+                                            false,
+                                            CyanSHMidnightConfig.useCustomTranslations,
+                                            Formatting.YELLOW + home.name(),
+                                            Formatting.DARK_AQUA + home.dimension(), Formatting.DARK_AQUA + home.date()
+                                    );
                                 }
 
                                 sendPlayerMessage(player,

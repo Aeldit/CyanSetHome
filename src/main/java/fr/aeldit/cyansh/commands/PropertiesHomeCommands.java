@@ -17,15 +17,12 @@
 
 package fr.aeldit.cyansh.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.Home;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,65 +32,69 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Objects;
+import java.util.Properties;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
 
-public class GsonHomeCommands
+public class PropertiesHomeCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("sethome")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .executes(GsonHomeCommands::setHome)
+                        .executes(PropertiesHomeCommands::setHome)
                 )
         );
         dispatcher.register(CommandManager.literal("sh")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .executes(GsonHomeCommands::setHome)
+                        .executes(PropertiesHomeCommands::setHome)
                 )
         );
 
         dispatcher.register(CommandManager.literal("home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
-                        .executes(GsonHomeCommands::goToHome)
+                        .executes(PropertiesHomeCommands::goToHome)
                 )
         );
         dispatcher.register(CommandManager.literal("h")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
-                        .executes(GsonHomeCommands::goToHome)
+                        .executes(PropertiesHomeCommands::goToHome)
                 )
         );
 
         dispatcher.register(CommandManager.literal("removehome")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
-                        .executes(GsonHomeCommands::removeHome)
+                        .executes(PropertiesHomeCommands::removeHome)
                 )
         );
         dispatcher.register(CommandManager.literal("rh")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
-                        .executes(GsonHomeCommands::removeHome)
+                        .executes(PropertiesHomeCommands::removeHome)
                 )
         );
         dispatcher.register(CommandManager.literal("removeallhomes")
-                .executes(GsonHomeCommands::removeAllHomes)
+                .executes(PropertiesHomeCommands::removeAllHomes)
         );
 
         dispatcher.register(CommandManager.literal("gethomes")
-                .executes(GsonHomeCommands::getHomesList)
+                .executes(PropertiesHomeCommands::getHomesList)
         );
         dispatcher.register(CommandManager.literal("gh")
-                .executes(GsonHomeCommands::getHomesList)
+                .executes(PropertiesHomeCommands::getHomesList)
 
         );
     }
@@ -115,110 +116,70 @@ public class GsonHomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String dimension = "overworld";
+                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".properties");
                     double x = player.getX();
                     double y = player.getY();
                     double z = player.getZ();
                     float yaw = player.getYaw();
                     float pitch = player.getPitch();
-                    String date = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
-
                     ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
                     ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
                     ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
-
-                    if (player.getWorld() == overworld)
-                    {
-                        dimension = "overworld";
-                    }
-                    else if (player.getWorld() == nether)
-                    {
-                        dimension = "nether";
-                    }
-                    else if (player.getWorld() == end)
-                    {
-                        dimension = "end";
-                    }
+                    String date = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
 
                     checkOrCreateFile(currentHomesPath);
                     try
                     {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Properties properties = new Properties();
+                        properties.load(new FileInputStream(currentHomesPath.toFile()));
 
-                        if (Files.readAllLines(currentHomesPath).size() == 0)
+                        if (properties.stringPropertyNames().size() < CyanSHMidnightConfig.maxHomes)
                         {
-                            Writer writer = Files.newBufferedWriter(currentHomesPath);
-                            Home home = new Home(homeName, dimension, x, y, z, yaw, pitch, date);
-                            List<Home> homes = List.of(home);
-                            gson.toJson(homes, writer);
-                            writer.close();
-
-                            sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation("setHome"),
-                                    "cyansh.message.setHome",
-                                    CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations,
-                                    Formatting.YELLOW + homeName
-                            );
-                        }
-                        else
-                        {
-                            Reader reader = Files.newBufferedReader(currentHomesPath);
-                            List<Home> homes = Arrays.asList(gson.fromJson(reader, Home[].class));
-                            reader.close();
-
-                            if (homes.size() < CyanSHMidnightConfig.maxHomes)
+                            if (!properties.containsKey(homeName))
                             {
-                                boolean exists = false;
-                                for (Home homeKey : homes)
+                                if (player.getWorld() == overworld)
                                 {
-                                    if (Objects.equals(homeKey.getName(), homeName))
-                                    {
-                                        exists = true;
-                                        break;
-                                    }
+                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("overworld", x, y, z, yaw, pitch, date));
+                                }
+                                else if (player.getWorld() == nether)
+                                {
+                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("nether", x, y, z, yaw, pitch, date));
+                                }
+                                else if (player.getWorld() == end)
+                                {
+                                    properties.put(homeName, "%s %f %f %f %f %f %s".formatted("end", x, y, z, yaw, pitch, date));
                                 }
 
-                                if (!exists)
-                                {
-                                    Writer writer = Files.newBufferedWriter(currentHomesPath);
-                                    Home home = new Home(homeName, dimension, x, y, z, yaw, pitch, date);
+                                properties.store(new FileOutputStream(currentHomesPath.toFile()), null);
 
-                                    ArrayList<Home> newHomes = new ArrayList<>(homes);
-                                    newHomes.add(home);
-                                    gson.toJson(newHomes, writer);
-                                    writer.close();
-
-                                    sendPlayerMessage(player,
-                                            CyanSHLanguageUtils.getTranslation("setHome"),
-                                            "cyansh.message.setHome",
-                                            CyanSHMidnightConfig.msgToActionBar,
-                                            CyanSHMidnightConfig.useCustomTranslations,
-                                            Formatting.YELLOW + homeName
-                                    );
-                                }
-                                else
-                                {
-                                    sendPlayerMessage(player,
-                                            CyanSHLanguageUtils.getTranslation(ERROR + "homeAlreadyExists"),
-                                            "cyansh.message.homeAlreadyExists",
-                                            CyanSHMidnightConfig.errorToActionBar,
-                                            CyanSHMidnightConfig.useCustomTranslations
-                                    );
-                                }
+                                sendPlayerMessage(player,
+                                        CyanSHLanguageUtils.getTranslation("setHome"),
+                                        "cyansh.message.setHome",
+                                        CyanSHMidnightConfig.msgToActionBar,
+                                        CyanSHMidnightConfig.useCustomTranslations,
+                                        Formatting.YELLOW + homeName
+                                );
                             }
                             else
                             {
                                 sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation(ERROR + "maxHomesReached"),
-                                        "cyansh.message.maxHomesReached",
+                                        CyanSHLanguageUtils.getTranslation(ERROR + "homeAlreadyExists"),
+                                        "cyansh.message.homeAlreadyExists",
                                         CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations,
-                                        Formatting.GOLD + String.valueOf(CyanSHMidnightConfig.maxHomes)
+                                        CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
+                        }
+                        else
+                        {
+                            sendPlayerMessage(player,
+                                    CyanSHLanguageUtils.getTranslation(ERROR + "maxHomesReached"),
+                                    "cyansh.message.maxHomesReached",
+                                    CyanSHMidnightConfig.errorToActionBar,
+                                    CyanSHMidnightConfig.useCustomTranslations,
+                                    Formatting.GOLD + String.valueOf(CyanSHMidnightConfig.maxHomes)
+                            );
                         }
                     } catch (IOException e)
                     {

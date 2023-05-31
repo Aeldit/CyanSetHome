@@ -33,6 +33,7 @@
   "cyansh.message.playerUnTrusted": "§3You no longer trust %s",
   "cyansh.message.listHomesOf": "§3Homes of %s §3:",
   "cyansh.message.translationsReloaded": "§3Translations have been reloaded",
+  "cyansh.message.getHome": "%s §3(%s§3, created on the %s§3)",
   "-----------------------------------------------------SETS------------------------------------------------------": "",
   "cyansh.message.set.allowHomes": "§3Toogled §dallowHome §3option %s",
   "cyansh.message.set.allowHomesOf": "§3Toogled §dallowHomeOf §3option %s",

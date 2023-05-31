@@ -21,6 +21,7 @@ import fr.aeldit.cyanlib.util.CyanLibUtils;
 import fr.aeldit.cyanlib.util.LanguageUtils;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +102,30 @@ public class Utils
         }
     }
 
+    public static boolean homeExists(@NotNull List<Home> homes, String homeName)
+    {
+        for (Home homeKey : homes)
+        {
+            if (Objects.equals(homeKey.name(), homeName))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int getHomeIndex(@NotNull List<Home> homes, String homeName)
+    {
+        for (Home homeKey : homes)
+        {
+            if (Objects.equals(homeKey.name(), homeName))
+            {
+                return homes.indexOf(homeKey);
+            }
+        }
+        return -1;
+    }
+
     public static boolean trustPlayer(String trustingPlayerUsername, String trustedPlayerUsername)
     {
         if (Files.exists(trustPath))
@@ -161,7 +186,7 @@ public class Utils
         defaultTranslations.put("listHomesOf", "§6CyanSetHome - HOMES OF %s :\n");
         defaultTranslations.put("headerDescCmd", "§6CyanSetHome - DESCRIPTION (commands) :\n");
         defaultTranslations.put("headerDescOptions", "§6CyanSetHome - DESCRIPTION (options) :\n");
-        defaultTranslations.put("dateCreated", "created on the ");
+        defaultTranslations.put("getHome", "%s §3(%s§3, created on the %s§3)");
 
         defaultTranslations.put("getCfg.header", "§6CyanSetHome - OPTIONS :\n");
         defaultTranslations.put("getCfg.allowHomes", "§6- §dhome §3commands : %s");

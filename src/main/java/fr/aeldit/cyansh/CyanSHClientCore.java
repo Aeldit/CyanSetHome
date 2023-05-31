@@ -20,15 +20,17 @@ package fr.aeldit.cyansh;
 import eu.midnightdust.lib.config.MidnightConfig;
 import fr.aeldit.cyanlib.util.FileUtils;
 import fr.aeldit.cyansh.commands.ConfigCommands;
-import fr.aeldit.cyansh.commands.GsonHomeCommands;
+import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
+import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHClientCore implements ClientModInitializer
@@ -43,13 +45,14 @@ public class CyanSHClientCore implements ClientModInitializer
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);
-            GsonHomeCommands.register(dispatcher);
+            HomeCommands.register(dispatcher);
             HomeOfCommands.register(dispatcher);
             PermissionCommands.register(dispatcher);
         });
         LOGGER.info("[CyanSetHome] Successfully initialized commands");
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> transferPropertiesToGson());
 
         LOGGER.info("[CyanSetHome] Successfully completed initialization");
     }
