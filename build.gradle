@@ -31,8 +31,12 @@ dependencies {
     modImplementation "maven.modrinth:midnightlib:${project.midnightlib_version}"
     include "maven.modrinth:midnightlib:${project.midnightlib_version}"
 
+    //CyanLib
     modImplementation "maven.modrinth:cyanlib:${project.cyanlib_version}"
     include "maven.modrinth:cyanlib:${project.cyanlib_version}"
+
+    //Gson
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 processResources {
