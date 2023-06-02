@@ -51,8 +51,8 @@ public class CyanSHClientCore implements ClientModInitializer
         });
         LOGGER.info("[CyanSetHome] Successfully initialized commands");
 
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> transferPropertiesToGson());
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
 
         LOGGER.info("[CyanSetHome] Successfully completed initialization");
     }

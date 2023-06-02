@@ -17,26 +17,30 @@
 
 package fr.aeldit.cyansh.commands.argumentTypes;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.Home;
 import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.util.Utils.*;
+import static fr.aeldit.cyansh.util.Utils.homesPath;
+import static fr.aeldit.cyansh.util.Utils.trustPath;
 
 public final class ArgumentSuggestion
 {
@@ -77,13 +81,19 @@ public final class ArgumentSuggestion
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
         List<String> homes = new ArrayList<>();
-        if (Files.exists(Path.of(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".properties")))
+        if (Files.exists(Path.of(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".json")))
         {
             try
             {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".properties"));
-                homes = new ArrayList<>(properties.stringPropertyNames());
+                Gson gson = new Gson();
+                Reader reader = Files.newBufferedReader(Path.of(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".json"));
+                Home[] gsonHomes = gson.fromJson(reader, Home[].class);
+                for (Home home : gsonHomes)
+                {
+                    homes.add(home.name());
+                }
+
+                reader.close();
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
@@ -118,26 +128,30 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        List<String> players = new ArrayList<>();
         ServerPlayerEntity player = source.getPlayer();
+        List<String> players = new ArrayList<>();
 
         if (Files.exists(trustPath))
         {
-            try
+            if (player != null)
             {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(trustPath.toFile()));
-
-                if (player != null)
+                try
                 {
-                    for (String str : List.of(properties.get(player.getUuidAsString() + "_" + player.getName().getString()).toString().split(" ")))
+                    Gson gsonReader = new Gson();
+                    Reader reader = Files.newBufferedReader(trustPath);
+                    Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
+                    Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                    reader.close();
+
+                    ArrayList<String> trustedPlayer = gsonTrustingPlayers.get(player.getUuidAsString() + "_" + player.getName().getString());
+                    for (String str : trustedPlayer)
                     {
                         players.add(str.split("_")[1]);
                     }
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
             }
         }
         return CommandSource.suggestMatching(players, builder);
@@ -150,28 +164,35 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        List<String> players = new ArrayList<>();
         ServerPlayerEntity player = source.getPlayer();
+        List<String> players = new ArrayList<>();
 
-        checkOrCreateHomesDir();
-
-        if (player != null)
+        if (Files.exists(trustPath))
         {
-            try
+            if (player != null)
             {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(trustPath.toFile()));
-                for (String key : properties.stringPropertyNames())
+                try
                 {
-                    if (properties.get(key).toString().contains(player.getUuidAsString()) || CyanSHMidnightConfig.allowOPHomesOf)
+                    Gson gsonReader = new Gson();
+                    Reader reader = Files.newBufferedReader(trustPath);
+                    Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
+                    Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                    reader.close();
+
+                    for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
                     {
-                        players.add(key.split("_")[1]);
+                        for (String value : entry.getValue())
+                        {
+                            if (value.contains(player.getUuidAsString()))
+                            {
+                                players.add(entry.getKey().split("_")[1]);
+                            }
+                        }
                     }
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
                 }
-                players.remove(player.getName().getString());
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
             }
         }
         return CommandSource.suggestMatching(players, builder);

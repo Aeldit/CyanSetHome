@@ -17,6 +17,9 @@
 
 package fr.aeldit.cyansh.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -26,18 +29,15 @@ import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
@@ -98,18 +98,26 @@ public class PermissionCommands
                 String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
                 String trustedPlayer = playerUUID + "_" + playerName;
 
-                checkOrCreateFile(trustPath);
-                try
+                if (!trustedPlayer.equals(trustingPlayer))
                 {
-                    Properties properties = new Properties();
-                    properties.load(new FileInputStream(trustPath.toFile()));
-
-                    if (!trustedPlayer.equals(trustingPlayer))
+                    checkOrCreateFile(trustPath);
+                    try
                     {
-                        if (!properties.containsKey(trustingPlayer))
+                        Gson gsonReader = new Gson();
+                        Reader reader = Files.newBufferedReader(trustPath);
+                        Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
+                        Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                        reader.close();
+
+                        Map<String, ArrayList<String>> playersTrustObjects = new HashMap<>();
+
+                        if (gsonTrustingPlayers == null)
                         {
-                            properties.put(trustingPlayer, trustedPlayer);
-                            properties.store(new FileOutputStream(trustPath.toFile()), null);
+                            playersTrustObjects.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
+                            Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                            Writer writer = Files.newBufferedWriter(trustPath);
+                            gsonWriter.toJson(playersTrustObjects, writer);
+                            writer.close();
 
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("playerTrusted"),
@@ -121,10 +129,33 @@ public class PermissionCommands
                         }
                         else
                         {
-                            if (!properties.get(trustingPlayer).toString().contains(trustedPlayer))
+                            playersTrustObjects.putAll(gsonTrustingPlayers);
+
+                            if (!playersTrustObjects.containsKey(trustingPlayer))
                             {
-                                properties.put(trustingPlayer, "%s %s".formatted(properties.get(trustingPlayer), trustedPlayer));
-                                properties.store(new FileOutputStream(trustPath.toFile()), null);
+                                playersTrustObjects.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
+
+                                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                                Writer writer = Files.newBufferedWriter(trustPath);
+                                gsonWriter.toJson(playersTrustObjects, writer);
+                                writer.close();
+
+                                sendPlayerMessage(player,
+                                        CyanSHLanguageUtils.getTranslation("playerTrusted"),
+                                        "cyansh.message.playerTrusted",
+                                        CyanSHMidnightConfig.msgToActionBar,
+                                        CyanSHMidnightConfig.useCustomTranslations,
+                                        Formatting.AQUA + playerName
+                                );
+                            }
+                            else if (!playersTrustObjects.get(trustingPlayer).contains(trustedPlayer))
+                            {
+                                playersTrustObjects.get(trustingPlayer).add(trustedPlayer);
+
+                                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                                Writer writer = Files.newBufferedWriter(trustPath);
+                                gsonWriter.toJson(playersTrustObjects, writer);
+                                writer.close();
 
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
@@ -144,19 +175,19 @@ public class PermissionCommands
                                 );
                             }
                         }
-                    }
-                    else
+                    } catch (IOException e)
                     {
-                        sendPlayerMessage(player,
-                                CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
-                                "cyansh.error.selfTrust",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useCustomTranslations
-                        );
+                        throw new RuntimeException(e);
                     }
-                } catch (IOException e)
+                }
+                else
                 {
-                    throw new RuntimeException(e);
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
+                            "cyansh.error.selfTrust",
+                            CyanSHMidnightConfig.errorToActionBar,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
                 }
             }
         }
@@ -175,69 +206,68 @@ public class PermissionCommands
 
         if (CyanLibUtils.isPlayer(source))
         {
-            String playerName = StringArgumentType.getString(context, "player");
-            if (!player.getName().getString().equals(playerName))
+            String untrustedPlayerName = StringArgumentType.getString(context, "player");
+            if (!player.getName().getString().equals(untrustedPlayerName))
             {
-                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
-                String trustedPlayer = "";
-                List<String> tmp;
-
-                if (Files.exists(trustPath))
+                try
                 {
-                    try
+                    String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+
+                    if (Files.exists(trustPath))
                     {
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(trustPath.toFile()));
-                        String UUIDSearch = (String) properties.get(trustingPlayer);
-                        UUIDSearch = UUIDSearch.replace("[", "").replace("]", "").replace(",", "");
+                        Gson gsonReader = new Gson();
+                        Reader reader = Files.newBufferedReader(trustPath);
+                        Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
+                        Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                        reader.close();
 
-                        // Used to obtain the UUID of the player, even if it is not online
-                        for (String s : UUIDSearch.split(" "))
+                        if (!gsonTrustingPlayers.isEmpty())
                         {
-                            String[] tmpS = s.split("_");
-                            String tmpUUID = tmpS[0];
-                            String tmpName = tmpS[1];
-                            if (tmpName.equals(playerName))
-                            {
-                                trustedPlayer = tmpUUID.concat("_").concat(playerName);
-                                break;
-                            }
-                        }
+                            Map<String, ArrayList<String>> trustedPlayers = new HashMap<>(gsonTrustingPlayers);
+                            boolean playerFound = false;
 
-                        if (properties.get(trustingPlayer).toString().contains(trustedPlayer))
-                        {
-                            tmp = List.of(properties.get(trustingPlayer).toString().split(" "));
-
-                            if (tmp.contains(trustedPlayer))
+                            if (gsonTrustingPlayers.containsKey(trustingPlayer))
                             {
-                                if (tmp.size() == 1 && Objects.equals(tmp.get(0), trustedPlayer))
+                                for (String playerKey : gsonTrustingPlayers.get(trustingPlayer))
                                 {
-                                    properties.remove(trustingPlayer);
+                                    if (Objects.equals(playerKey.split("_")[1], untrustedPlayerName))
+                                    {
+                                        trustedPlayers.get(trustingPlayer).remove(playerKey);
+
+                                        if (trustedPlayers.get(trustingPlayer).isEmpty())
+                                        {
+                                            trustedPlayers.remove(trustingPlayer);
+                                        }
+
+                                        playerFound = true;
+                                        break;
+                                    }
+                                }
+
+                                if (playerFound)
+                                {
+                                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                                    Writer writer = Files.newBufferedWriter(trustPath);
+                                    gsonWriter.toJson(trustedPlayers, writer);
+                                    writer.close();
+
+                                    sendPlayerMessage(player,
+                                            CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
+                                            "cyansh.message.playerUnTrusted",
+                                            CyanSHMidnightConfig.msgToActionBar,
+                                            CyanSHMidnightConfig.useCustomTranslations,
+                                            Formatting.AQUA + untrustedPlayerName
+                                    );
                                 }
                                 else
                                 {
-                                    String replace = tmp.toString()
-                                            .replace("[", "")
-                                            .replace(",", "")
-                                            .replace("]", "");
-
-                                    if (tmp.indexOf(trustedPlayer) == tmp.size() - 1)
-                                    {
-                                        properties.put(trustingPlayer, "%s".formatted(replace.replace(" " + trustedPlayer, "")));
-                                    }
-                                    else
-                                    {
-                                        properties.put(trustingPlayer, "%s".formatted(replace.replace(trustedPlayer + " ", "")));
-                                    }
+                                    sendPlayerMessage(player,
+                                            CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
+                                            "cyansh.error.playerNotTrusted",
+                                            CyanSHMidnightConfig.errorToActionBar,
+                                            CyanSHMidnightConfig.useCustomTranslations
+                                    );
                                 }
-                                properties.store(new FileOutputStream(trustPath.toFile()), null);
-                                sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
-                                        "cyansh.message.playerUnTrusted",
-                                        CyanSHMidnightConfig.msgToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations,
-                                        Formatting.AQUA + playerName
-                                );
                             }
                             else
                             {
@@ -258,19 +288,19 @@ public class PermissionCommands
                                     CyanSHMidnightConfig.useCustomTranslations
                             );
                         }
-                    } catch (IOException e)
-                    {
-                        throw new RuntimeException(e);
                     }
-                }
-                else
+                    else
+                    {
+                        sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
+                                "cyansh.error.playerNotTrusted",
+                                CyanSHMidnightConfig.errorToActionBar,
+                                CyanSHMidnightConfig.useCustomTranslations
+                        );
+                    }
+                } catch (IOException e)
                 {
-                    sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                            "cyansh.error.playerNotTrusted",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
-                    );
+                    throw new RuntimeException(e);
                 }
             }
             else
@@ -301,36 +331,57 @@ public class PermissionCommands
             checkOrCreateFile(trustPath);
             try
             {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(trustPath.toFile()));
-                String trustedPlayer = player.getUuidAsString() + "_" + player.getName().getString();
-                String trustingPlayers = "";
+                Gson gsonReader = new Gson();
+                Reader reader = Files.newBufferedReader(trustPath);
+                Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
+                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                reader.close();
 
-                for (String p : properties.stringPropertyNames())
+                String trustedPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                ArrayList<String> trustingPlayers = new ArrayList<>();
+
+                for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
                 {
-                    if (properties.get(p).toString().contains(trustedPlayer))
+                    if (entry.getValue().contains(trustedPlayer))
                     {
-                        trustingPlayers = trustingPlayers.concat(" ").concat(p.split("_")[1]);
+                        trustingPlayers.add(entry.getKey().split("_")[1]);
                     }
                 }
 
-                if (trustingPlayers.equals(""))
+                if (!trustingPlayers.isEmpty())
+                {
+                    String players = "";
+                    for (int i = 0; i < trustingPlayers.size(); i++)
+                    {
+                        if (trustingPlayers.size() == 1)
+                        {
+                            players = players.concat(" %s".formatted(trustingPlayers.get(i)));
+                        }
+                        else if (i == trustingPlayers.size() - 1)
+                        {
+                            players = players.concat(", %s".formatted(trustingPlayers.get(i)));
+                        }
+                        else
+                        {
+                            players = players.concat(", %s,".formatted(trustingPlayers.get(i)));
+                        }
+                    }
+
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
+                            "cyansh.message.getTrustingPlayers",
+                            false,
+                            CyanSHMidnightConfig.useCustomTranslations,
+                            Formatting.AQUA + players
+                    );
+                }
+                else
                 {
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
                             "cyansh.message.noTrustingPlayer",
                             CyanSHMidnightConfig.msgToActionBar,
                             CyanSHMidnightConfig.useCustomTranslations
-                    );
-                }
-                else
-                {
-                    sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
-                            "cyansh.message.getTrustingPlayers",
-                            false,
-                            CyanSHMidnightConfig.useCustomTranslations,
-                            trustingPlayers
                     );
                 }
             } catch (IOException e)
@@ -356,37 +407,49 @@ public class PermissionCommands
             checkOrCreateFile(trustPath);
             try
             {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(trustPath.toFile()));
+                Gson gsonReader = new Gson();
+                Reader reader = Files.newBufferedReader(trustPath);
+                Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
+                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                reader.close();
+
                 String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
-                String trustedPlayers = "";
 
-                if (properties.containsKey(trustingPlayer))
+                if (gsonTrustingPlayers.containsKey(trustingPlayer))
                 {
-                    for (String p : properties.get(trustingPlayer).toString().split(" "))
+                    if (gsonTrustingPlayers.get(trustingPlayer).size() != 0)
                     {
-                        player.sendMessage(Text.of(p));
-                        trustedPlayers = trustedPlayers.concat(" ").concat(p.split("_")[1]);
-                    }
-
-                    if (trustedPlayers.equals(""))
-                    {
-                        sendPlayerMessage(player,
-                                CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
-                                "cyansh.message.noTrustedPlayer",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useCustomTranslations,
-                                trustedPlayers
-                        );
-                    }
-                    else
-                    {
+                        String players = "";
+                        for (int i = 0; i < gsonTrustingPlayers.get(trustingPlayer).size(); i++)
+                        {
+                            if (gsonTrustingPlayers.get(trustingPlayer).size() == 1)
+                            {
+                                players = players.concat(" %s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                            }
+                            else if (i == gsonTrustingPlayers.get(trustingPlayer).size() - 1)
+                            {
+                                players = players.concat(", %s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                            }
+                            else
+                            {
+                                players = players.concat(", %s,".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                            }
+                        }
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
                                 "cyansh.message.getTrustedPlayers",
                                 false,
                                 CyanSHMidnightConfig.useCustomTranslations,
-                                trustedPlayers
+                                Formatting.AQUA + players
+                        );
+                    }
+                    else
+                    {
+                        sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
+                                "cyansh.message.noTrustedPlayer",
+                                CyanSHMidnightConfig.errorToActionBar,
+                                CyanSHMidnightConfig.useCustomTranslations
                         );
                     }
                 }
@@ -396,8 +459,7 @@ public class PermissionCommands
                             CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
                             "cyansh.message.noTrustedPlayer",
                             CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations,
-                            trustedPlayers
+                            CyanSHMidnightConfig.useCustomTranslations
                     );
                 }
             } catch (IOException e)

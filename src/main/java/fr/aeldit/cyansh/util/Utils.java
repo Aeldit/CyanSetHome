@@ -36,7 +36,7 @@ public class Utils
     public static final String MODID = "cyansh";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public static final Path homesPath = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    public static final Path trustPath = Path.of(homesPath + "/trusted_players.properties");
+    public static final Path trustPath = Path.of(homesPath + "/trusted_players.json");
 
     // Options
     private static final List<String> optionsBool = new ArrayList<>();
@@ -171,15 +171,13 @@ public class Utils
 
         defaultTranslations.put("desc.allowHomes", "§3The §dallowHomes §3option defines wether the home commands are enabled or not");
         defaultTranslations.put("desc.allowHomesOf", "§3The §dallowHomesOf §3option defines wether the homeOf commands are enabled or not");
-        defaultTranslations.put("desc.allowOPHomesOf", "§3The §dallowHomesOf (OP) §3option defines wether the homeOf commands can be used by OP players, independently of the trust system");
         defaultTranslations.put("desc.useCustomTranslations", "§3The §duseTranslations §3option defines wether the translation will be used or not");
         defaultTranslations.put("desc.msgToActionBar", "§3The §dmsgToActionBar §3option defines wether the messages will be sent to the action bar or not");
         defaultTranslations.put("desc.errorToActionBar", "§3The §derrorToActionBar §3option defines wether the error messages will be sent to the action bar or not");
         defaultTranslations.put("desc.maxHomes", "§3The §dmaxHomes §3option defines the maximum number of homes a player can have");
         defaultTranslations.put("desc.minOpLevelExeHomes", "§3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands");
-        defaultTranslations.put("desc.minOpLevelExeHomesOf", "§3The §dminOpLevelExeHomeOf §3option defines the OP level required to run the homeOf commands");
         defaultTranslations.put("desc.minOpLevelExeEditConfig", "§3The §dminOpLevelExeEditConfig §3option defines the OP level required to edit the config");
-        defaultTranslations.put("desc.minOpLevelExeOPHomesOf", "§3The §dminOpLevelExeRemoveHomeOf §3option defines the OP level required to remove the home of another player");
+        defaultTranslations.put("desc.minOpLevelExeMisc", "§3The §dminOpLevelExeMisc §3option defines the OP level required to bypass certain permissions for players with a high enough OP level");
 
         defaultTranslations.put("dashSeparation", "§6------------------------------------");
         defaultTranslations.put("listHomes", "§6CyanSetHome - YOUR HOMES :\n");
@@ -191,30 +189,27 @@ public class Utils
         defaultTranslations.put("getCfg.header", "§6CyanSetHome - OPTIONS :\n");
         defaultTranslations.put("getCfg.allowHomes", "§6- §dhome §3commands : %s");
         defaultTranslations.put("getCfg.allowHomesOf", "§6- §dhomeOf §3commands : %s");
-        defaultTranslations.put("getCfg.allowOPHomesOf", "§6- §dhomeOf §3commands for OP : %s");
         defaultTranslations.put("getCfg.useCustomTranslations", "§6- §3Use custom translations : %s");
         defaultTranslations.put("getCfg.msgToActionBar", "§6- §3Messages to action bar : %s");
         defaultTranslations.put("getCfg.errorToActionBar", "§6- §3Error messages to action bar : %s");
         defaultTranslations.put("getCfg.maxHomes", "§6- §3Max homes per player : %s");
         defaultTranslations.put("getCfg.minOpLevelExeEditConfig", "§6- §3Minimum OP level to edit config : %s");
         defaultTranslations.put("getCfg.minOpLevelExeHomes", "§6- §3Minimum OP level for §dhome §3commands : %s");
-        defaultTranslations.put("getCfg.minOpLevelExeHomesOf", "§6- §3Minimum OP level for §dhomeOf §3commands : %s");
-        defaultTranslations.put("getCfg.minOpLevelExeOPHomesOf", "§6- §3Minimum OP level for to use the §dhomeOf §3commands (OP) §3: %s");
+        defaultTranslations.put("getCfg.minOpLevelExeMisc", "§6- §3Minimum OP level to bypass permissions : %s");
 
         defaultTranslations.put("set.allowHomes", "§3Toogled §dhome §3commands %s");
         defaultTranslations.put("set.allowHomesOf", "§3Toogled §dhomeOf §3commands %s");
-        defaultTranslations.put("set.allowOPHomesOf", "§3Toogled §dhomeOf §3commands for the OP %s");
         defaultTranslations.put("set.useCustomTranslations", "§3Toogled translations %s");
         defaultTranslations.put("set.msgToActionBar", "§3Toogled messages to action bar %s");
         defaultTranslations.put("set.errorToActionBar", "§3Toogled error messages to action bar %s");
         defaultTranslations.put("set.maxHomes", "§3The maximum number of homes per player is now %s");
         defaultTranslations.put("set.minOpLevelExeHomes", "§3The OP level required to use the §dhome §3commands is now %s");
-        defaultTranslations.put("set.minOpLevelExeHomesOf", "§3The OP level required to use the §dhomeOf §3commands is now %s");
         defaultTranslations.put("set.minOpLevelExeEditConfig", "§3The minimum OP level to edit the config is now %s");
-        defaultTranslations.put("set.minOpLevelExOPHomesOf", "§3The minimum OP level required to remove the home of another player is now %s");
+        defaultTranslations.put("set.minOpLevelExeMisc", "§3The minimum OP level required to bypass permissions is now %s");
 
         defaultTranslations.put("error.playerOnlyCmd", "This command can only be executed by a player");
         defaultTranslations.put("error.notOp", "§cYou don't have the required permission to do that");
+        defaultTranslations.put("error.notOpOrTrusted", "§cThis player doesn't trust you or you don't have the required permission");
         defaultTranslations.put("error.incorrectIntOp", "§cThe OP level must be in [0;4]");
         defaultTranslations.put("error.incorrectIntMaxHomes", "§cThe number must be in [1;128]");
         defaultTranslations.put("error.disabled.homes", "§cThe home commands are disabled. To enable them, enter '/cyansh config booleanOptions allowHomes true' in chat");
@@ -228,15 +223,16 @@ public class Utils
         defaultTranslations.put("error.selfTrust", "§cYou can't trust/untrust yourself");
         defaultTranslations.put("error.noHomes", "§cYou don't have any home");
         defaultTranslations.put("error.noHomesOf", "§cThis player doesn't have any home");
+        defaultTranslations.put("error.useSelfHomes", "§cPlease use the normal commands to use your homes");
 
         defaultTranslations.put("setHome", "§3The home %s §3have been created");
         defaultTranslations.put("goToHome", "§3You have been teleported to the home %s");
         defaultTranslations.put("removeHome", "§3The home %s §3have been removed");
         defaultTranslations.put("removeAllHomes", "§3The home %s §3have been removed");
         defaultTranslations.put("removeHomeOf", "§3The home %s §3have been removed from %s§3's homes");
-        defaultTranslations.put("getTrustingPlayers", "§3Players that trust you :%s");
-        defaultTranslations.put("getTrustedPlayers", "§3Players that you trust :%s");
-        defaultTranslations.put("noTrustingPlayer", "§3No player trusts you\"");
+        defaultTranslations.put("getTrustingPlayers", "§3Players that trust you : %s");
+        defaultTranslations.put("getTrustedPlayers", "§3Players that you trust : %s");
+        defaultTranslations.put("noTrustingPlayer", "§3No player trusts you");
         defaultTranslations.put("noTrustedPlayer", "§3You don't trust any player");
         defaultTranslations.put("playerTrusted", "§3You now trust %s");
         defaultTranslations.put("playerUnTrusted", "§3You no longer trust %s");

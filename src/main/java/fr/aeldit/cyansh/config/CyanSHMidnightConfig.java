@@ -35,8 +35,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry
     public static boolean allowHomesOf = true;
     @Entry
-    public static boolean allowOPHomesOf = true;
-    @Entry
     public static boolean useCustomTranslations = false;
     @Entry
     public static boolean msgToActionBar = true;
@@ -50,7 +48,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeHomes = 0;
     @Entry(isSlider = true, min = 0, max = 4)
-    public static int minOpLevelExeHomesOf = 0;
+    public static int minOpLevelExeMisc = 4;
     @Entry(isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeEditConfig = 4;
 
@@ -58,7 +56,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
     {
         allOptionsMap.put("allowHomes", allowHomes);
         allOptionsMap.put("allowHomesOf", allowHomesOf);
-        allOptionsMap.put("allowOPHomesOf", allowOPHomesOf);
 
         allOptionsMap.put("useCustomTranslations", useCustomTranslations);
         allOptionsMap.put("msgToActionBar", msgToActionBar);
@@ -67,7 +64,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
         allOptionsMap.put("maxHomes", maxHomes);
 
         allOptionsMap.put("minOpLevelExeHomes", minOpLevelExeHomes);
-        allOptionsMap.put("minOpLevelExeHomesOf", minOpLevelExeHomesOf);
+        allOptionsMap.put("minOpLevelExeMisc", minOpLevelExeMisc);
         allOptionsMap.put("minOpLevelExeEditConfig", minOpLevelExeEditConfig);
     }
 
@@ -77,7 +74,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
         {
             case "allowHomes" -> allowHomes = value;
             case "allowHomesOf" -> allowHomesOf = value;
-            case "allowOPHomesOf" -> allowOPHomesOf = value;
             case "useCustomTranslations" -> useCustomTranslations = value;
             case "msgToActionBar" -> msgToActionBar = value;
             case "errorToActionBar" -> errorToActionBar = value;
@@ -96,7 +92,7 @@ public class CyanSHMidnightConfig extends MidnightConfig
         {
             case "maxHomes" -> maxHomes = value;
             case "minOpLevelExeHomes" -> minOpLevelExeHomes = value;
-            case "minOpLevelExeHomesOf" -> minOpLevelExeHomesOf = value;
+            case "minOpLevelExeMisc" -> minOpLevelExeMisc = value;
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
         write(MODID);
