@@ -143,6 +143,7 @@ public final class ArgumentSuggestion
                     Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
                     reader.close();
 
+                    // TODO->Fix "Cannot invoke "java.util.ArrayList.iterator()" because "trustedPlayer" is null"
                     ArrayList<String> trustedPlayer = gsonTrustingPlayers.get(player.getUuidAsString() + "_" + player.getName().getString());
                     for (String str : trustedPlayer)
                     {

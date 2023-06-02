@@ -26,6 +26,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.Home;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,6 +38,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
@@ -110,6 +112,7 @@ public class PermissionCommands
                         reader.close();
 
                         Map<String, ArrayList<String>> playersTrustObjects = new HashMap<>();
+                        boolean successfullyTrusted = false;
 
                         if (gsonTrustingPlayers == null)
                         {
@@ -118,6 +121,8 @@ public class PermissionCommands
                             Writer writer = Files.newBufferedWriter(trustPath);
                             gsonWriter.toJson(playersTrustObjects, writer);
                             writer.close();
+
+                            successfullyTrusted = true;
 
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("playerTrusted"),
@@ -140,6 +145,8 @@ public class PermissionCommands
                                 gsonWriter.toJson(playersTrustObjects, writer);
                                 writer.close();
 
+                                successfullyTrusted = true;
+
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                         "cyansh.message.playerTrusted",
@@ -157,6 +164,8 @@ public class PermissionCommands
                                 gsonWriter.toJson(playersTrustObjects, writer);
                                 writer.close();
 
+                                successfullyTrusted = true;
+
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                         "cyansh.message.playerTrusted",
@@ -173,6 +182,105 @@ public class PermissionCommands
                                         CyanSHMidnightConfig.errorToActionBar,
                                         CyanSHMidnightConfig.useCustomTranslations
                                 );
+                            }
+                        }
+
+                        if (successfullyTrusted)
+                        {
+                            Type mapTypeHome = new TypeToken<ArrayList<Home>>() {}.getType();
+                            Path currentHomesPath = Path.of(homesPath + "/" + trustingPlayer + ".json");
+
+                            if (!Files.exists(trustedHomesPath))
+                            {
+                                Files.createFile(trustedHomesPath);
+
+                                if (Files.exists(currentHomesPath))
+                                {
+                                    Gson gsonReaderHomes = new Gson();
+                                    Reader readerHomes = Files.newBufferedReader(currentHomesPath);
+                                    ArrayList<Home> gsonHomes = gsonReaderHomes.fromJson(readerHomes, mapTypeHome);
+                                    readerHomes.close();
+
+                                    ArrayList<String> newHomes = new ArrayList<>();
+                                    gsonHomes.forEach(home -> newHomes.add(home.name()));
+
+                                    Map<String, ArrayList<String>> sharedHomes = new HashMap<>();
+                                    sharedHomes.put(trustingPlayer, newHomes);
+
+                                    Map<String, Map<String, ArrayList<String>>> sharedHomesAll = new HashMap<>();
+                                    sharedHomesAll.put(trustedPlayer, sharedHomes);
+
+                                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                                    Writer writer = Files.newBufferedWriter(trustedHomesPath);
+                                    gsonWriter.toJson(sharedHomesAll, writer);
+                                    writer.close();
+                                }
+                            }
+                            else if (Files.readAllLines(trustedHomesPath).isEmpty())
+                            {
+                                if (Files.exists(currentHomesPath))
+                                {
+                                    Gson gsonReaderHomes = new Gson();
+                                    Reader readerHomes = Files.newBufferedReader(currentHomesPath);
+                                    ArrayList<Home> gsonHomes = gsonReaderHomes.fromJson(readerHomes, mapTypeHome);
+                                    readerHomes.close();
+
+                                    ArrayList<String> newHomes = new ArrayList<>();
+                                    gsonHomes.forEach(home -> newHomes.add(home.name()));
+
+                                    Map<String, ArrayList<String>> sharedHomes = new HashMap<>();
+                                    sharedHomes.put(trustingPlayer, newHomes);
+
+                                    Map<String, Map<String, ArrayList<String>>> sharedHomesAll = new HashMap<>();
+                                    sharedHomesAll.put(trustedPlayer, sharedHomes);
+
+                                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                                    Writer writer = Files.newBufferedWriter(trustedHomesPath);
+                                    gsonWriter.toJson(sharedHomesAll, writer);
+                                    writer.close();
+                                }
+                            }
+                            else
+                            {
+                                if (Files.exists(currentHomesPath))
+                                {
+                                    Gson gsonReaderSharedHomes = new Gson();
+                                    Reader readerSharedHomes = Files.newBufferedReader(trustedHomesPath);
+                                    Type mapTypeSharedHomes = new TypeToken<Map<String, Map<String, ArrayList<String>>>>() {}.getType();
+                                    Map<String, Map<String, ArrayList<String>>> gsonSharedHomes = gsonReaderSharedHomes.fromJson(readerSharedHomes, mapTypeSharedHomes);
+                                    readerSharedHomes.close();
+
+                                    Gson gsonReaderHomes = new Gson();
+                                    Reader readerHomes = Files.newBufferedReader(currentHomesPath);
+                                    ArrayList<Home> gsonHomes = gsonReaderHomes.fromJson(readerHomes, mapTypeHome);
+                                    readerHomes.close();
+
+                                    ArrayList<String> newHomes = new ArrayList<>();
+                                    Map<String, ArrayList<String>> sharedHomes = new HashMap<>();
+                                    Map<String, Map<String, ArrayList<String>>> sharedHomesAll = new HashMap<>(gsonSharedHomes);
+
+                                    if (!gsonSharedHomes.containsKey(trustedPlayer))
+                                    {
+                                        gsonHomes.forEach(home -> newHomes.add(home.name()));
+                                        sharedHomes.put(trustingPlayer, newHomes);
+                                    }
+                                    else
+                                    {
+                                        sharedHomes = gsonSharedHomes.get(trustedPlayer);
+                                        if (!sharedHomes.containsKey(trustingPlayer))
+                                        {
+                                            gsonHomes.forEach(home -> newHomes.add(home.name()));
+                                            sharedHomes.put(trustingPlayer, newHomes);
+                                        }
+                                    }
+
+                                    sharedHomesAll.put(trustedPlayer, sharedHomes);
+
+                                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+                                    Writer writer = Files.newBufferedWriter(trustedHomesPath);
+                                    gsonWriter.toJson(sharedHomesAll, writer);
+                                    writer.close();
+                                }
                             }
                         }
                     } catch (IOException e)

@@ -37,6 +37,7 @@ public class Utils
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public static final Path homesPath = FabricLoader.getInstance().getConfigDir().resolve(MODID);
     public static final Path trustPath = Path.of(homesPath + "/trusted_players.json");
+    public static final Path trustedHomesPath = Path.of(homesPath + "/shared_homes.json");
 
     // Options
     private static final List<String> optionsBool = new ArrayList<>();

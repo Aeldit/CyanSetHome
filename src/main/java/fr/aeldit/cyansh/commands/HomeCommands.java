@@ -29,7 +29,6 @@ import fr.aeldit.cyansh.util.Home;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -124,21 +123,18 @@ public class HomeCommands
                     float pitch = player.getPitch();
                     String date = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
 
-                    ServerWorld overworld = Objects.requireNonNull(player.getServer()).getWorld(World.OVERWORLD);
-                    ServerWorld nether = Objects.requireNonNull(player.getServer()).getWorld(World.NETHER);
-                    ServerWorld end = Objects.requireNonNull(player.getServer()).getWorld(World.END);
                     String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
                     Path currentHomesPath = Path.of(homesPath + "/" + playerKey + ".json");
 
-                    if (player.getWorld() == overworld)
+                    if (player.getWorld() == player.getServer().getWorld(World.OVERWORLD))
                     {
                         dimension = "overworld";
                     }
-                    else if (player.getWorld() == nether)
+                    else if (player.getWorld() == player.getServer().getWorld(World.NETHER))
                     {
                         dimension = "nether";
                     }
-                    else if (player.getWorld() == end)
+                    else if (player.getWorld() == player.getServer().getWorld(World.END))
                     {
                         dimension = "end";
                     }
