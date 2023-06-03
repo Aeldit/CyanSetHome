@@ -41,7 +41,6 @@ import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.*;
-import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.Utils.CyanLibUtils;
 import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
 
@@ -83,8 +82,6 @@ public class ConfigCommands
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
-
-        transferPropertiesToGson();
 
         if (CyanLibUtils.isPlayer(source))
         {

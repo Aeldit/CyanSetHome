@@ -28,6 +28,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
@@ -39,8 +40,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.util.Utils.homesPath;
-import static fr.aeldit.cyansh.util.Utils.trustPath;
+import static fr.aeldit.cyansh.util.HomeUtils.*;
+import static fr.aeldit.cyansh.util.Utils.checkOrCreateHomesDir;
 
 public final class ArgumentSuggestion
 {
@@ -74,7 +75,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called for the command {@code /gethomes}
+     * Called for the command {@code /gethomes} or the suggestions of the {@code home} commands
      *
      * @return A suggestion with all the player's homes
      */
@@ -94,12 +95,60 @@ public final class ArgumentSuggestion
                 }
 
                 reader.close();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 throw new RuntimeException(e);
             }
         }
         return CommandSource.suggestMatching(homes, builder);
+    }
+
+    /**
+     * Called for the command {@code /gethomesof} or the suggestions of the {@code homeOf} commands
+     *
+     * @return A suggestion with all the trusting player's homes
+     */
+    public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
+    {
+        try
+        {
+            String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+
+            checkOrCreateHomesDir();
+            File[] listOfFiles = new File(homesPath.toUri()).listFiles();
+
+            if (trustPlayer(trustingPlayer, playerKey))
+            {
+                if (listOfFiles != null)
+                {
+                    for (File file : listOfFiles)
+                    {
+                        if (file.isFile())
+                        {
+                            if (file.getName().split("_")[1].split("\\.")[0].equals(trustingPlayer))
+                            {
+                                Gson gsonReader = new Gson();
+                                Reader reader = Files.newBufferedReader(file.toPath());
+                                Type mapTypeSharedHomes = new TypeToken<ArrayList<Home>>() {}.getType();
+                                ArrayList<Home> gsonHomes = gsonReader.fromJson(reader, mapTypeSharedHomes);
+                                reader.close();
+
+                                ArrayList<String> homes = new ArrayList<>();
+                                gsonHomes.forEach(home -> homes.add(home.name()));
+
+                                return CommandSource.suggestMatching(homes, builder);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+        return new CompletableFuture<>();
     }
 
     /**
@@ -128,34 +177,9 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        ServerPlayerEntity player = source.getPlayer();
-        List<String> players = new ArrayList<>();
-
-        if (Files.exists(trustPath))
-        {
-            if (player != null)
-            {
-                try
-                {
-                    Gson gsonReader = new Gson();
-                    Reader reader = Files.newBufferedReader(trustPath);
-                    Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                    Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                    reader.close();
-
-                    // TODO->Fix "Cannot invoke "java.util.ArrayList.iterator()" because "trustedPlayer" is null"
-                    ArrayList<String> trustedPlayer = gsonTrustingPlayers.get(player.getUuidAsString() + "_" + player.getName().getString());
-                    for (String str : trustedPlayer)
-                    {
-                        players.add(str.split("_")[1]);
-                    }
-                } catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return CommandSource.suggestMatching(players, builder);
+        ArrayList<String> names = new ArrayList<>();
+        getTrustedPlayers(source.getPlayer().getUuidAsString() + "_" + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split("_")[1]));
+        return CommandSource.suggestMatching(names, builder);
     }
 
     /**
@@ -190,7 +214,8 @@ public final class ArgumentSuggestion
                             }
                         }
                     }
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     throw new RuntimeException(e);
                 }

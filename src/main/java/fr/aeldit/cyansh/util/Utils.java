@@ -21,11 +21,9 @@ import fr.aeldit.cyanlib.util.CyanLibUtils;
 import fr.aeldit.cyanlib.util.LanguageUtils;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.fabricmc.loader.api.FabricLoader;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,9 +33,6 @@ public class Utils
 {
     public static final String MODID = "cyansh";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
-    public static final Path homesPath = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    public static final Path trustPath = Path.of(homesPath + "/trusted_players.json");
-    public static final Path trustedHomesPath = Path.of(homesPath + "/shared_homes.json");
 
     // Options
     private static final List<String> optionsBool = new ArrayList<>();
@@ -101,60 +96,6 @@ public class Utils
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    public static boolean homeExists(@NotNull List<Home> homes, String homeName)
-    {
-        for (Home homeKey : homes)
-        {
-            if (Objects.equals(homeKey.name(), homeName))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static int getHomeIndex(@NotNull List<Home> homes, String homeName)
-    {
-        for (Home homeKey : homes)
-        {
-            if (Objects.equals(homeKey.name(), homeName))
-            {
-                return homes.indexOf(homeKey);
-            }
-        }
-        return -1;
-    }
-
-    public static boolean trustPlayer(String trustingPlayerUsername, String trustedPlayerUsername)
-    {
-        if (Files.exists(trustPath))
-        {
-            try
-            {
-                Properties properties = new Properties();
-                properties.load(new FileInputStream(trustPath.toFile()));
-
-                for (String key : properties.stringPropertyNames())
-                {
-                    if (key.split("_")[1].equals(trustingPlayerUsername))
-                    {
-                        for (String playerName : properties.get(key).toString().split(" "))
-                        {
-                            if (playerName.split("_")[1].equals(trustedPlayerUsername))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        return false;
     }
 
     // Language Utils
@@ -229,7 +170,7 @@ public class Utils
         defaultTranslations.put("setHome", "§3The home %s §3have been created");
         defaultTranslations.put("goToHome", "§3You have been teleported to the home %s");
         defaultTranslations.put("removeHome", "§3The home %s §3have been removed");
-        defaultTranslations.put("removeAllHomes", "§3The home %s §3have been removed");
+        defaultTranslations.put("removeAllHomes", "§3All your homes have been removed");
         defaultTranslations.put("removeHomeOf", "§3The home %s §3have been removed from %s§3's homes");
         defaultTranslations.put("getTrustingPlayers", "§3Players that trust you : %s");
         defaultTranslations.put("getTrustedPlayers", "§3Players that you trust : %s");

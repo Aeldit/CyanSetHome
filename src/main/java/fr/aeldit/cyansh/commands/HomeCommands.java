@@ -43,6 +43,7 @@ import java.util.*;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
+import static fr.aeldit.cyansh.util.HomeUtils.*;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeCommands
@@ -205,7 +206,8 @@ public class HomeCommands
                                 );
                             }
                         }
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
                         throw new RuntimeException(e);
                     }
@@ -275,7 +277,8 @@ public class HomeCommands
                             );
                         }
 
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
                         throw new RuntimeException(e);
                     }
@@ -317,9 +320,17 @@ public class HomeCommands
                         {
                             ArrayList<Home> mutableHomes = new ArrayList<>(homes);
                             mutableHomes.remove(getHomeIndex(homes, homeName));
-                            Writer writer = Files.newBufferedWriter(currentHomesPath);
-                            gson.toJson(mutableHomes, writer);
-                            writer.close();
+
+                            if (mutableHomes.isEmpty())
+                            {
+                                Files.delete(currentHomesPath);
+                            }
+                            else
+                            {
+                                Writer writer = Files.newBufferedWriter(currentHomesPath);
+                                gson.toJson(mutableHomes, writer);
+                                writer.close();
+                            }
 
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("removeHome"),
@@ -339,7 +350,8 @@ public class HomeCommands
                                     Formatting.YELLOW + homeName
                             );
                         }
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
                         throw new RuntimeException(e);
                     }
@@ -380,7 +392,8 @@ public class HomeCommands
                                     CyanSHMidnightConfig.msgToActionBar,
                                     CyanSHMidnightConfig.useCustomTranslations
                             );
-                        } catch (IOException e)
+                        }
+                        catch (IOException e)
                         {
                             throw new RuntimeException(e);
                         }
@@ -471,7 +484,8 @@ public class HomeCommands
                                         CyanSHMidnightConfig.useCustomTranslations
                                 );
                             }
-                        } catch (IOException e)
+                        }
+                        catch (IOException e)
                         {
                             throw new RuntimeException(e);
                         }

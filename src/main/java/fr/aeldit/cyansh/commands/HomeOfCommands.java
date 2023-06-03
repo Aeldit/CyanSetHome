@@ -44,6 +44,7 @@ import java.util.Objects;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
+import static fr.aeldit.cyansh.util.HomeUtils.*;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
@@ -54,6 +55,7 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
                                 .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
@@ -62,6 +64,7 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
                                 .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
@@ -71,6 +74,7 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
                                 .executes(HomeOfCommands::removeHomeOf)
                         )
                 )
@@ -79,6 +83,7 @@ public class HomeOfCommands
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
                                 .executes(HomeOfCommands::removeHomeOf)
                         )
                 )
@@ -113,6 +118,7 @@ public class HomeOfCommands
             if (CyanLibUtils.isOptionAllowed(player, CyanSHMidnightConfig.allowHomesOf, "homesOfDisabled"))
             {
                 String playerName = StringArgumentType.getString(context, "player_name");
+
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeMisc) || trustPlayer(playerName, player.getName().getString()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
@@ -121,6 +127,7 @@ public class HomeOfCommands
                     File currentHomesDir = new File(homesPath.toUri());
                     checkOrCreateHomesDir();
                     File[] listOfFiles = currentHomesDir.listFiles();
+
                     if (listOfFiles != null)
                     {
                         for (File file : listOfFiles)
@@ -130,6 +137,7 @@ public class HomeOfCommands
                                 if (file.getName().split("_")[1].equals(playerName + ".json"))
                                 {
                                     fileFound = true;
+
                                     try
                                     {
                                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -140,6 +148,7 @@ public class HomeOfCommands
                                         if (homeExists(homes, homeName))
                                         {
                                             Home home = homes.get(getHomeIndex(homes, homeName));
+
                                             switch (home.dimension())
                                             {
                                                 case "overworld" ->
@@ -170,13 +179,15 @@ public class HomeOfCommands
                                                     Formatting.YELLOW + homeName
                                             );
                                         }
-                                    } catch (IOException e)
+                                    }
+                                    catch (IOException e)
                                     {
                                         e.printStackTrace();
                                     }
                                 }
                             }
                         }
+
                         if (!fileFound)
                         {
                             sendPlayerMessage(player,
@@ -217,6 +228,7 @@ public class HomeOfCommands
             if (CyanLibUtils.isOptionAllowed(player, CyanSHMidnightConfig.allowHomesOf, "homesOfDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
+
                 if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeMisc) || trustPlayer(trustingPlayer, player.getName().getString()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
@@ -224,6 +236,7 @@ public class HomeOfCommands
                     checkOrCreateHomesDir();
                     File[] listOfFiles = currentHomesDir.listFiles();
                     boolean fileFound = false;
+
                     if (listOfFiles != null)
                     {
                         for (File file : listOfFiles)
@@ -270,6 +283,7 @@ public class HomeOfCommands
                                             );
                                         }
                                     }
+
                                     if (!fileFound)
                                     {
                                         sendPlayerMessage(player,
@@ -279,7 +293,8 @@ public class HomeOfCommands
                                                 CyanSHMidnightConfig.useCustomTranslations
                                         );
                                     }
-                                } catch (IOException e)
+                                }
+                                catch (IOException e)
                                 {
                                     throw new RuntimeException(e);
                                 }
@@ -392,7 +407,8 @@ public class HomeOfCommands
                                                     CyanSHMidnightConfig.useCustomTranslations
                                             );
                                         }
-                                    } catch (IOException e)
+                                    }
+                                    catch (IOException e)
                                     {
                                         throw new RuntimeException(e);
                                     }

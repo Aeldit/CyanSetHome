@@ -31,7 +31,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
 import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
-import static fr.aeldit.cyansh.util.Utils.*;
+import static fr.aeldit.cyansh.util.HomeUtils.trustPath;
+import static fr.aeldit.cyansh.util.Utils.LOGGER;
+import static fr.aeldit.cyansh.util.Utils.MODID;
 
 public class CyanSHClientCore implements ClientModInitializer
 {

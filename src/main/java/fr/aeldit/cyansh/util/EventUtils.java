@@ -31,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import static fr.aeldit.cyansh.util.HomeUtils.homesPath;
+import static fr.aeldit.cyansh.util.HomeUtils.trustPath;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class EventUtils
