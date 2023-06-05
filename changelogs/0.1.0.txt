@@ -1,11 +1,11 @@
 Added :
 - The files are now handeled with Gson instead of Properties
-    - The homes and trust files that were already present in your folders (.properties files) will be transfered
-    automatically to .json files, but won't be removed. To do so, you will have to delete them manually
-    (by using a command from this mod or simply by removing them by hand in your folder)
+- The homes and trust files that were already present in your folders (.properties files) will be transfered
+automatically to .json files, but won't be removed. To do so, you will have to delete them manually
+(by using a command from this mod or simply by removing them by hand in your folder)
 
 Fixed :
 - Some options were misleading (minOpLevelExeOPHomeOf, minOpLevelExeHomeOf, ...),
 so I removed them and added only one instead (minOpLevelExeMisc). This option is basically a bypass to for players
 with a certain OP level, like using the homeOf commands even if the player does not have you in their trust list
-- When typing the homeOf commands, the homes of the player you were trying to reach were not suggested.
+- When typing the homeOf commands, the homes of the player you were trying to reach were not suggested
