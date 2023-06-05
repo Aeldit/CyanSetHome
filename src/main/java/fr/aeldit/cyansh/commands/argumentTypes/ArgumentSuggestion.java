@@ -17,8 +17,6 @@
 
 package fr.aeldit.cyansh.commands.argumentTypes;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import fr.aeldit.cyansh.util.Home;
@@ -29,19 +27,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static fr.aeldit.cyansh.util.GsonUtils.readHomeFile;
+import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
 import static fr.aeldit.cyansh.util.HomeUtils.*;
-import static fr.aeldit.cyansh.util.Utils.checkOrCreateHomesDir;
 
 public final class ArgumentSuggestion
 {
@@ -55,6 +50,7 @@ public final class ArgumentSuggestion
         List<String> options = new ArrayList<>();
         options.addAll(Utils.getOptionsList().get("booleans"));
         options.addAll(Utils.getOptionsList().get("integers"));
+
         return CommandSource.suggestMatching(options, builder);
     }
 
@@ -71,6 +67,7 @@ public final class ArgumentSuggestion
         ints.add("2");
         ints.add("3");
         ints.add("4");
+
         return CommandSource.suggestMatching(ints, builder);
     }
 
@@ -81,27 +78,18 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
-        List<String> homes = new ArrayList<>();
-        if (Files.exists(Path.of(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".json")))
-        {
-            try
-            {
-                Gson gson = new Gson();
-                Reader reader = Files.newBufferedReader(Path.of(homesPath + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".json"));
-                Home[] gsonHomes = gson.fromJson(reader, Home[].class);
-                for (Home home : gsonHomes)
-                {
-                    homes.add(home.name());
-                }
+        Path homesPath = Path.of(HOMES_PATH + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".json");
 
-                reader.close();
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
+        if (Files.exists(homesPath))
+        {
+            ArrayList<Home> gsonHomes = readHomeFile(homesPath);
+
+            List<String> homes = new ArrayList<>();
+            gsonHomes.forEach(home -> homes.add(home.name()));
+
+            return CommandSource.suggestMatching(homes, builder);
         }
-        return CommandSource.suggestMatching(homes, builder);
+        return new CompletableFuture<>();
     }
 
     /**
@@ -111,14 +99,13 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        try
+        String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+
+        if (Files.exists(HOMES_PATH))
         {
-            String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
-            checkOrCreateHomesDir();
-            File[] listOfFiles = new File(homesPath.toUri()).listFiles();
-
-            if (trustPlayer(trustingPlayer, playerKey))
+            if (isPlayerTrusting(trustingPlayer, playerKey))
             {
                 if (listOfFiles != null)
                 {
@@ -128,11 +115,7 @@ public final class ArgumentSuggestion
                         {
                             if (file.getName().split("_")[1].split("\\.")[0].equals(trustingPlayer))
                             {
-                                Gson gsonReader = new Gson();
-                                Reader reader = Files.newBufferedReader(file.toPath());
-                                Type mapTypeSharedHomes = new TypeToken<ArrayList<Home>>() {}.getType();
-                                ArrayList<Home> gsonHomes = gsonReader.fromJson(reader, mapTypeSharedHomes);
-                                reader.close();
+                                ArrayList<Home> gsonHomes = readHomeFile(file.toPath());
 
                                 ArrayList<String> homes = new ArrayList<>();
                                 gsonHomes.forEach(home -> homes.add(home.name()));
@@ -143,10 +126,6 @@ public final class ArgumentSuggestion
                     }
                 }
             }
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
         }
         return new CompletableFuture<>();
     }
@@ -159,13 +138,8 @@ public final class ArgumentSuggestion
     public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         List<String> players = new ArrayList<>();
-
-        for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
-        {
-            players.add(player.getName().getString());
-        }
-
-        players.remove(Objects.requireNonNull(source.getPlayer()).getName().getString());
+        source.getServer().getPlayerManager().getPlayerList().forEach(player -> players.add(player.getName().getString()));
+        players.remove(source.getPlayer().getName().getString());
 
         return CommandSource.suggestMatching(players, builder);
     }
@@ -179,6 +153,7 @@ public final class ArgumentSuggestion
     {
         ArrayList<String> names = new ArrayList<>();
         getTrustedPlayers(source.getPlayer().getUuidAsString() + "_" + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split("_")[1]));
+
         return CommandSource.suggestMatching(names, builder);
     }
 
@@ -192,32 +167,21 @@ public final class ArgumentSuggestion
         ServerPlayerEntity player = source.getPlayer();
         List<String> players = new ArrayList<>();
 
-        if (Files.exists(trustPath))
+        if (Files.exists(TRUST_PATH))
         {
             if (player != null)
             {
-                try
-                {
-                    Gson gsonReader = new Gson();
-                    Reader reader = Files.newBufferedReader(trustPath);
-                    Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                    Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                    reader.close();
+                Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-                    for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
+                for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
+                {
+                    for (String value : entry.getValue())
                     {
-                        for (String value : entry.getValue())
+                        if (value.split("_")[0].equals(player.getUuidAsString()))
                         {
-                            if (value.contains(player.getUuidAsString()))
-                            {
-                                players.add(entry.getKey().split("_")[1]);
-                            }
+                            players.add(entry.getKey().split("_")[1]);
                         }
                     }
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
                 }
             }
         }

@@ -24,27 +24,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static fr.aeldit.cyansh.util.Utils.MODID;
 
 public class HomeUtils
 {
-    public static final Path homesPath = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    public static final Path trustPath = Path.of(homesPath + "/trusted_players.json");
+    public static final Path HOMES_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
+    public static final Path TRUST_PATH = Path.of(HOMES_PATH + "/trusted_players.json");
+
+    public static final TypeToken<Map<String, ArrayList<String>>> TRUST_TYPE = new TypeToken<>() {};
 
 
     public static boolean homeExists(@NotNull List<Home> homes, String homeName)
     {
         for (Home homeKey : homes)
         {
-            if (Objects.equals(homeKey.name(), homeName))
+            if (homeKey.name().equals(homeName))
             {
                 return true;
             }
@@ -56,7 +56,7 @@ public class HomeUtils
     {
         for (Home homeKey : homes)
         {
-            if (Objects.equals(homeKey.name(), homeName))
+            if (homeKey.name().equals(homeName))
             {
                 return homes.indexOf(homeKey);
             }
@@ -64,16 +64,15 @@ public class HomeUtils
         return -1;
     }
 
-    public static boolean trustPlayer(String trustingPlayerUsername, String trustedPlayerUsername)
+    public static boolean isPlayerTrusting(String trustingPlayerUsername, String trustedPlayerUsername)
     {
-        if (Files.exists(trustPath))
+        if (Files.exists(TRUST_PATH))
         {
             try
             {
                 Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(trustPath);
-                Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+                Reader reader = Files.newBufferedReader(TRUST_PATH);
+                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, TRUST_TYPE);
                 reader.close();
 
                 for (String playerKey : gsonTrustingPlayers.keySet())
@@ -100,9 +99,8 @@ public class HomeUtils
         try
         {
             Gson gsonReader = new Gson();
-            Reader reader = Files.newBufferedReader(trustPath);
-            Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-            Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
+            Reader reader = Files.newBufferedReader(TRUST_PATH);
+            Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, TRUST_TYPE);
             reader.close();
 
             if (gsonTrustingPlayers.containsKey(trustingPlayer))

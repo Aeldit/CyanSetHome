@@ -31,7 +31,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
 import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
-import static fr.aeldit.cyansh.util.HomeUtils.trustPath;
+import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHServerCore implements DedicatedServerModInitializer
@@ -42,7 +42,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         MidnightConfig.init(MODID, CyanSHMidnightConfig.class);
         LOGGER.info("[CyanSetHome] Successfully initialized config");
 
-        FileUtils.removeEmptyFiles(trustPath);
+        FileUtils.removeEmptyFiles(TRUST_PATH);
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);

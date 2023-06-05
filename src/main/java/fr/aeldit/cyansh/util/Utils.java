@@ -35,9 +35,9 @@ public class Utils
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
     // Options
-    private static final List<String> optionsBool = new ArrayList<>();
-    private static final List<String> optionsInt = new ArrayList<>();
-    private static final Map<String, List<String>> options = new HashMap<>();
+    public static List<String> optionsBool = new ArrayList<>();
+    public static List<String> optionsInt = new ArrayList<>();
+    public static Map<String, List<String>> options = new HashMap<>();
 
     // Language Utils
     public static LanguageUtils CyanSHLanguageUtils = new LanguageUtils(MODID);
@@ -76,7 +76,8 @@ public class Utils
             try
             {
                 Files.createDirectory(FabricLoader.getInstance().getConfigDir().resolve(MODID));
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 throw new RuntimeException(e);
             }
@@ -91,7 +92,8 @@ public class Utils
             try
             {
                 Files.createFile(path);
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 throw new RuntimeException(e);
             }

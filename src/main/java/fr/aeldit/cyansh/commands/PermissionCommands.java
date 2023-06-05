@@ -17,9 +17,6 @@
 
 package fr.aeldit.cyansh.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -33,16 +30,18 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
-import static fr.aeldit.cyansh.util.HomeUtils.trustPath;
-import static fr.aeldit.cyansh.util.Utils.*;
+import static fr.aeldit.cyansh.util.GsonUtils.*;
+import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
+import static fr.aeldit.cyansh.util.Utils.CyanLibUtils;
+import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
 
 public class PermissionCommands
 {
@@ -95,30 +94,36 @@ public class PermissionCommands
             }
             else
             {
-                UUID playerUUID = Objects.requireNonNull(source.getServer().getPlayerManager().getPlayer(playerName)).getUuid();
                 String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
-                String trustedPlayer = playerUUID + "_" + playerName;
+                String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName).getUuid() + "_" + playerName;
 
                 if (!trustedPlayer.equals(trustingPlayer))
                 {
-                    checkOrCreateFile(trustPath);
                     try
                     {
-                        Gson gsonReader = new Gson();
-                        Reader reader = Files.newBufferedReader(trustPath);
-                        Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                        Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                        reader.close();
-
-                        Map<String, ArrayList<String>> playersTrustObjects = new HashMap<>();
-
-                        if (gsonTrustingPlayers == null)
+                        if (!Files.exists(TRUST_PATH))
                         {
-                            playersTrustObjects.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
-                            Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                            Writer writer = Files.newBufferedWriter(trustPath);
-                            gsonWriter.toJson(playersTrustObjects, writer);
-                            writer.close();
+                            Files.createFile(TRUST_PATH);
+
+                            Map<String, ArrayList<String>> gsonTrustingPlayers = new HashMap<>();
+                            gsonTrustingPlayers.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
+
+                            writeGson(TRUST_PATH, gsonTrustingPlayers);
+
+                            sendPlayerMessage(player,
+                                    CyanSHLanguageUtils.getTranslation("playerTrusted"),
+                                    "cyansh.message.playerTrusted",
+                                    CyanSHMidnightConfig.msgToActionBar,
+                                    CyanSHMidnightConfig.useCustomTranslations,
+                                    Formatting.AQUA + playerName
+                            );
+                        }
+                        else if (Files.readAllLines(TRUST_PATH).isEmpty())
+                        {
+                            Map<String, ArrayList<String>> gsonTrustingPlayers = new HashMap<>();
+                            gsonTrustingPlayers.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
+
+                            writeGson(TRUST_PATH, gsonTrustingPlayers);
 
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("playerTrusted"),
@@ -130,16 +135,13 @@ public class PermissionCommands
                         }
                         else
                         {
-                            playersTrustObjects.putAll(gsonTrustingPlayers);
+                            Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-                            if (!playersTrustObjects.containsKey(trustingPlayer))
+                            if (!gsonTrustingPlayers.containsKey(trustingPlayer))
                             {
-                                playersTrustObjects.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
+                                gsonTrustingPlayers.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
 
-                                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                                Writer writer = Files.newBufferedWriter(trustPath);
-                                gsonWriter.toJson(playersTrustObjects, writer);
-                                writer.close();
+                                writeGson(TRUST_PATH, gsonTrustingPlayers);
 
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
@@ -149,14 +151,11 @@ public class PermissionCommands
                                         Formatting.AQUA + playerName
                                 );
                             }
-                            else if (!playersTrustObjects.get(trustingPlayer).contains(trustedPlayer))
+                            else if (!gsonTrustingPlayers.get(trustingPlayer).contains(trustedPlayer))
                             {
-                                playersTrustObjects.get(trustingPlayer).add(trustedPlayer);
+                                gsonTrustingPlayers.get(trustingPlayer).add(trustedPlayer);
 
-                                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                                Writer writer = Files.newBufferedWriter(trustPath);
-                                gsonWriter.toJson(playersTrustObjects, writer);
-                                writer.close();
+                                writeGson(TRUST_PATH, gsonTrustingPlayers);
 
                                 sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
@@ -203,67 +202,45 @@ public class PermissionCommands
      */
     public static int untrustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (CyanLibUtils.isPlayer(source))
+        if (CyanLibUtils.isPlayer(context.getSource()))
         {
             String untrustedPlayerName = StringArgumentType.getString(context, "player");
             if (!player.getName().getString().equals(untrustedPlayerName))
             {
-                try
+                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+
+                if (Files.exists(TRUST_PATH))
                 {
-                    String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                    Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-                    if (Files.exists(trustPath))
+                    if (!gsonTrustingPlayers.isEmpty())
                     {
-                        Gson gsonReader = new Gson();
-                        Reader reader = Files.newBufferedReader(trustPath);
-                        Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                        Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                        reader.close();
-
-                        if (!gsonTrustingPlayers.isEmpty())
+                        if (gsonTrustingPlayers.containsKey(trustingPlayer))
                         {
-                            Map<String, ArrayList<String>> trustedPlayers = new HashMap<>(gsonTrustingPlayers);
-
-                            if (gsonTrustingPlayers.containsKey(trustingPlayer))
+                            for (String playerKey : gsonTrustingPlayers.get(trustingPlayer))
                             {
-                                for (String playerKey : gsonTrustingPlayers.get(trustingPlayer))
+                                if (playerKey.split("_")[1].equals(untrustedPlayerName))
                                 {
-                                    if (Objects.equals(playerKey.split("_")[1], untrustedPlayerName))
+                                    gsonTrustingPlayers.get(trustingPlayer).remove(playerKey);
+
+                                    if (gsonTrustingPlayers.get(trustingPlayer).isEmpty())
                                     {
-                                        trustedPlayers.get(trustingPlayer).remove(playerKey);
-
-                                        if (trustedPlayers.get(trustingPlayer).isEmpty())
-                                        {
-                                            trustedPlayers.remove(trustingPlayer);
-                                        }
-
-                                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                                        Writer w = Files.newBufferedWriter(trustPath);
-                                        gson.toJson(trustedPlayers, w);
-                                        w.close();
-
-                                        sendPlayerMessage(player,
-                                                CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
-                                                "cyansh.message.playerUnTrusted",
-                                                CyanSHMidnightConfig.msgToActionBar,
-                                                CyanSHMidnightConfig.useCustomTranslations,
-                                                Formatting.AQUA + untrustedPlayerName
-                                        );
-                                        break;
+                                        gsonTrustingPlayers.remove(trustingPlayer);
                                     }
+
+                                    writeGsonOrDeleteFile(TRUST_PATH, gsonTrustingPlayers);
+
+                                    sendPlayerMessage(player,
+                                            CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
+                                            "cyansh.message.playerUnTrusted",
+                                            CyanSHMidnightConfig.msgToActionBar,
+                                            CyanSHMidnightConfig.useCustomTranslations,
+                                            Formatting.AQUA + untrustedPlayerName
+                                    );
+                                    break;
                                 }
-                            }
-                            else
-                            {
-                                sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                                        "cyansh.error.playerNotTrusted",
-                                        CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations
-                                );
                             }
                         }
                         else
@@ -286,9 +263,14 @@ public class PermissionCommands
                         );
                     }
                 }
-                catch (IOException e)
+                else
                 {
-                    throw new RuntimeException(e);
+                    sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
+                            "cyansh.error.playerNotTrusted",
+                            CyanSHMidnightConfig.errorToActionBar,
+                            CyanSHMidnightConfig.useCustomTranslations
+                    );
                 }
             }
             else
@@ -311,26 +293,19 @@ public class PermissionCommands
      */
     public static int getTrustingPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (CyanLibUtils.isPlayer(source))
+        if (CyanLibUtils.isPlayer(context.getSource()))
         {
-            checkOrCreateFile(trustPath);
-            try
+            if (Files.exists(TRUST_PATH))
             {
-                Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(trustPath);
-                Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                reader.close();
+                Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-                String trustedPlayer = player.getUuidAsString() + "_" + player.getName().getString();
                 ArrayList<String> trustingPlayers = new ArrayList<>();
 
                 for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
                 {
-                    if (entry.getValue().contains(trustedPlayer))
+                    if (entry.getValue().contains(player.getUuidAsString() + "_" + player.getName().getString()))
                     {
                         trustingPlayers.add(entry.getKey().split("_")[1]);
                     }
@@ -339,11 +314,12 @@ public class PermissionCommands
                 if (!trustingPlayers.isEmpty())
                 {
                     String players = "";
+
                     for (int i = 0; i < trustingPlayers.size(); i++)
                     {
                         if (trustingPlayers.size() == 1)
                         {
-                            players = players.concat(" %s".formatted(trustingPlayers.get(i)));
+                            players = players.concat("%s".formatted(trustingPlayers.get(i)));
                         }
                         else if (i == trustingPlayers.size() - 1)
                         {
@@ -373,9 +349,14 @@ public class PermissionCommands
                     );
                 }
             }
-            catch (IOException e)
+            else
             {
-                throw new RuntimeException(e);
+                sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
+                        "cyansh.message.noTrustingPlayer",
+                        CyanSHMidnightConfig.msgToActionBar,
+                        CyanSHMidnightConfig.useCustomTranslations
+                );
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -388,19 +369,13 @@ public class PermissionCommands
      */
     public static int getTrustedPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (CyanLibUtils.isPlayer(source))
+        if (CyanLibUtils.isPlayer(context.getSource()))
         {
-            checkOrCreateFile(trustPath);
-            try
+            if (Files.exists(TRUST_PATH))
             {
-                Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(trustPath);
-                Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                reader.close();
+                Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
                 String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
 
@@ -409,11 +384,12 @@ public class PermissionCommands
                     if (gsonTrustingPlayers.get(trustingPlayer).size() != 0)
                     {
                         String players = "";
+
                         for (int i = 0; i < gsonTrustingPlayers.get(trustingPlayer).size(); i++)
                         {
                             if (gsonTrustingPlayers.get(trustingPlayer).size() == 1)
                             {
-                                players = players.concat(" %s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                                players = players.concat("%s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
                             }
                             else if (i == gsonTrustingPlayers.get(trustingPlayer).size() - 1)
                             {
@@ -424,6 +400,7 @@ public class PermissionCommands
                                 players = players.concat(", %s,".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
                             }
                         }
+
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
                                 "cyansh.message.getTrustedPlayers",
@@ -452,9 +429,14 @@ public class PermissionCommands
                     );
                 }
             }
-            catch (IOException e)
+            else
             {
-                throw new RuntimeException(e);
+                sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
+                        "cyansh.message.noTrustedPlayer",
+                        CyanSHMidnightConfig.errorToActionBar,
+                        CyanSHMidnightConfig.useCustomTranslations
+                );
             }
         }
         return Command.SINGLE_SUCCESS;
