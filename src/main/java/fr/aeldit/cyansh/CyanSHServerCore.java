@@ -32,8 +32,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
 import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.HomeUtils.trustPath;
-import static fr.aeldit.cyansh.util.Utils.LOGGER;
-import static fr.aeldit.cyansh.util.Utils.MODID;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHServerCore implements DedicatedServerModInitializer
 {
@@ -52,6 +51,11 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
             PermissionCommands.register(dispatcher);
         });
         LOGGER.info("[CyanSetHome] Successfully initialized commands");
+
+        if (CyanSHMidnightConfig.useCustomTranslations)
+        {
+            CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
+        }
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> transferPropertiesToGson());
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));

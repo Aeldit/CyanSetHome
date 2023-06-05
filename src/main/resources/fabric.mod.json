@@ -3,7 +3,7 @@
   "id": "cyansh",
   "version": "${version}",
   "name": "CyanSetHome",
-  "description": "This mod adds the /sethome command and everything that goes with",
+  "description": "This mod adds the /sethome command and everything that comes with it",
   "authors": [
     "Aeldit"
   ],
@@ -26,7 +26,7 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.14.17",
+    "fabricloader": ">=0.14.21",
     "fabric": "*",
     "minecraft": "1.19.4",
     "java": ">=17"

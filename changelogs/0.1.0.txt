@@ -8,3 +8,4 @@ Fixed :
 - Some options were misleading (minOpLevelExeOPHomeOf, minOpLevelExeHomeOf, ...),
 so I removed them and added only one instead (minOpLevelExeMisc). This option is basically a bypass to for players
 with a certain OP level, like using the homeOf commands even if the player does not have you in their trust list
+- When typing the homeOf commands, the homes of the player you were trying to reach were not suggested.

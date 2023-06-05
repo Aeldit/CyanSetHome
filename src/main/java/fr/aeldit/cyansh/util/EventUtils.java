@@ -40,7 +40,7 @@ public class EventUtils
     /**
      * Called on {@code ServerPlayConnectionEvents.JOIN} event
      * Renames the trust and homes files if the players username corresponding to the UUID changed.
-     * (ex: UUID_Username -> UUID_newUsername)
+     * (ex: UUID_Username -> UUID_updatedUsername)
      *
      * @param handler The ServerPlayNetworkHandler
      */
@@ -69,7 +69,8 @@ public class EventUtils
                         {
                             Files.move(file.toPath(), currentHomesPath.resolveSibling(playerKey + ".json"));
                             LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
-                        } catch (IOException e)
+                        }
+                        catch (IOException e)
                         {
                             throw new RuntimeException(e);
                         }
@@ -96,8 +97,8 @@ public class EventUtils
                 {
                     for (String key : gsonTrustingPlayers.keySet())
                     {
-                        //Changes the key of the actual player
-                        if (Objects.equals(key.split("_")[0], playerUUID) && !Objects.equals(key.split("_")[1], playerName))
+                        // Changes the key's player username of the actual player
+                        if (key.split("_")[0].equals(playerUUID) && !key.split("_")[1].equals(playerName))
                         {
                             prevName = key.split("_")[1];
                             trustingPlayers.put(playerKey, trustingPlayers.get(key));
@@ -110,10 +111,10 @@ public class EventUtils
                             key = playerKey;
                         }
 
-                        //Changes the player when it is not a key but an element of the list
+                        // Changes the player's username when it is not a key but an element of the list
                         for (String listKey : trustingPlayers.get(key))
                         {
-                            if (listKey.contains(playerUUID))
+                            if (listKey.split("_")[0].equals(playerUUID) && !listKey.split("_")[1].equals(playerName))
                             {
                                 prevName = listKey.split("_")[1];
                                 trustingPlayers.get(key).add(playerKey);
@@ -132,7 +133,8 @@ public class EventUtils
                     writer.close();
                     LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", player.getName().getString(), prevName);
                 }
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 throw new RuntimeException(e);
             }
@@ -274,7 +276,8 @@ public class EventUtils
                                 }
                             }
                         }
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
                         throw new RuntimeException(e);
                     }
