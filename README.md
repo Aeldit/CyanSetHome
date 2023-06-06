@@ -57,11 +57,6 @@
 | `/removehomeof <player_name> <home_name>` |       Removes the home of the given player        | `/rho <player_name> <home_name>` |
 |        `/gethomesof <player_name>`        | Displays all the given player's homes in the chat |       `/gho <player_name>`       |
 
-### 🌐```Current languages```
-
-- English
-- French
-
 > ### ❗ Important :
 >
 >If you are not using this mod on client but only on server side, download the resource pack for messages translations
