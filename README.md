@@ -57,9 +57,6 @@
 | `/removehomeof <player_name> <home_name>` |       Removes the home of the given player        | `/rho <player_name> <home_name>` |
 |        `/gethomesof <player_name>`        | Displays all the given player's homes in the chat |       `/gho <player_name>`       |
 
-For a more detailed explanation on how to use the cyansh commands,
-see [COMMANDS.md](https://github.com/Aeldit/Cyan/blob/1.19.x/docs/COMMANDS.md)
-
 ### 🌐```Current languages```
 
 - English
