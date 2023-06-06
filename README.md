@@ -45,6 +45,7 @@
 |          `/sethome <home_name>`           |        Creates a home with the given name         |        `/sh <home_name>`         |
 |            `/home <home_name>`            |          Teleports you to the given home          |         `/h <home_name>`         |
 |         `/removehome <home_name>`         |              Removes the given home               |        `/rh <home_name>`         |
+|             `/removeallhomes`             |              Removes all your homes               |                ❌                 |
 |                `/gethomes`                |        Displays all your homes in the chat        |              `/gh`               |
 |                                           |                                                   |                                  |
 |               `/hometrust`                |     Adds the given player to your trust list      |                ❌                 |

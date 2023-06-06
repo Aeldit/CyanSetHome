@@ -80,10 +80,9 @@ public class ConfigCommands
      */
     public static int reloadTranslations(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (CyanLibUtils.isPlayer(source))
+        if (CyanLibUtils.isPlayer(context.getSource()))
         {
             CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations(true));
             sendPlayerMessage(player,
@@ -192,17 +191,17 @@ public class ConfigCommands
      */
     public static int getOptionChatConfig(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (CyanLibUtils.isPlayer(source))
+        if (CyanLibUtils.isPlayer(context.getSource()))
         {
             if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
                 String optionName = StringArgumentType.getString(context, "optionName");
+
                 if (Utils.getOptionsList().get("booleans").contains(optionName) || Utils.getOptionsList().get("integers").contains(optionName))
                 {
-                    Object key = CyanSHMidnightConfig.getAllOptionsMap().get(optionName);
+                    Object value = CyanSHMidnightConfig.getAllOptionsMap().get(optionName);
 
                     sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("dashSeparation"),
@@ -218,7 +217,7 @@ public class ConfigCommands
                             CyanSHMidnightConfig.useCustomTranslations
                     );
 
-                    if (key instanceof Boolean currentValue)
+                    if (value instanceof Boolean currentValue)
                     {
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("currentValue"),
@@ -234,7 +233,7 @@ public class ConfigCommands
                                         )
                         );
                     }
-                    else if (key instanceof Integer currentValue)
+                    else if (value instanceof Integer currentValue)
                     {
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("currentValue"),
@@ -243,6 +242,7 @@ public class ConfigCommands
                                 CyanSHMidnightConfig.useCustomTranslations,
                                 Formatting.GOLD + String.valueOf(currentValue)
                         );
+
                         if (optionName.startsWith("minOpLevelExe"))
                         {
                             sendPlayerMessage(player,
@@ -321,11 +321,10 @@ public class ConfigCommands
      */
     public static int getConfigOptions(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
         String currentTrad = null;
 
-        if (CyanLibUtils.isPlayer(source))
+        if (CyanLibUtils.isPlayer(context.getSource()))
         {
             if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
@@ -344,25 +343,26 @@ public class ConfigCommands
 
                 for (Map.Entry<String, Object> entry : CyanSHMidnightConfig.getAllOptionsMap().entrySet())
                 {
-                    Object key2 = entry.getKey();
+                    String key = entry.getKey();
+
                     if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
                     {
-                        currentTrad = CyanSHLanguageUtils.getTranslation(GETCFG + key2);
+                        currentTrad = CyanSHLanguageUtils.getTranslation(GETCFG + key);
                     }
 
                     if (entry.getValue() instanceof Boolean value)
                     {
                         sendPlayerMessage(player,
                                 currentTrad,
-                                "cyansh.message.getCfg.%s".formatted(key2),
+                                "cyansh.message.getCfg.%s".formatted(key),
                                 false,
                                 CyanSHMidnightConfig.useCustomTranslations,
                                 value ? Text.literal(Formatting.GREEN + "ON").
                                         setStyle(Style.EMPTY.withClickEvent(
-                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set false".formatted(key2)))
+                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set false".formatted(key)))
                                         ) : Text.literal(Formatting.RED + "OFF").
                                         setStyle(Style.EMPTY.withClickEvent(
-                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set true".formatted(key2)))
+                                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cyansh config %s set true".formatted(key)))
                                         )
                         );
                     }
@@ -370,7 +370,7 @@ public class ConfigCommands
                     {
                         sendPlayerMessage(player,
                                 currentTrad,
-                                "cyansh.message.getCfg.%s".formatted(key2),
+                                "cyansh.message.getCfg.%s".formatted(key),
                                 false,
                                 CyanSHMidnightConfig.useCustomTranslations,
                                 Formatting.GOLD + Integer.toString(value)

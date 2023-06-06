@@ -87,6 +87,7 @@ public class Utils
     public static void checkOrCreateFile(Path path)
     {
         checkOrCreateHomesDir();
+
         if (!Files.exists(path))
         {
             try

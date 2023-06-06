@@ -207,6 +207,7 @@ public class PermissionCommands
         if (CyanLibUtils.isPlayer(context.getSource()))
         {
             String untrustedPlayerName = StringArgumentType.getString(context, "player");
+
             if (!player.getName().getString().equals(untrustedPlayerName))
             {
                 String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
@@ -299,11 +300,9 @@ public class PermissionCommands
         {
             if (Files.exists(TRUST_PATH))
             {
-                Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
-
                 ArrayList<String> trustingPlayers = new ArrayList<>();
 
-                for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
+                for (Map.Entry<String, ArrayList<String>> entry : readTrustFile().entrySet())
                 {
                     if (entry.getValue().contains(player.getUuidAsString() + "_" + player.getName().getString()))
                     {

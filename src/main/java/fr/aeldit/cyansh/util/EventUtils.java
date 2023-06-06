@@ -17,15 +17,13 @@
 
 package fr.aeldit.cyansh.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.lang.reflect.Type;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -50,10 +48,8 @@ public class EventUtils
         String playerName = handler.getPlayer().getName().getString();
         String playerKey = playerUUID + "_" + playerName;
 
-        File currentHomesDir = new File(HOMES_PATH.toUri());
-        Path currentHomesPath = Path.of(HOMES_PATH + "\\" + playerKey + ".json");
         checkOrCreateHomesDir();
-        File[] listOfFiles = currentHomesDir.listFiles();
+        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
         if (listOfFiles != null)
         {
@@ -62,17 +58,19 @@ public class EventUtils
                 if (file.isFile())
                 {
                     String[] splitedFileName = file.getName().split("_");
+
                     if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
                     {
                         try
                         {
-                            Files.move(file.toPath(), currentHomesPath.resolveSibling(playerKey + ".json"));
+                            Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
                             LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
                         }
                         catch (IOException e)
                         {
                             throw new RuntimeException(e);
                         }
+                        break;
                     }
                 }
             }
@@ -80,62 +78,47 @@ public class EventUtils
 
         if (Files.exists(TRUST_PATH))
         {
-            try
+            Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
+
+            boolean changed = false;
+            String prevName = "";
+
+            if (!gsonTrustingPlayers.isEmpty())
             {
-                Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(TRUST_PATH);
-                Type mapType = new TypeToken<Map<String, ArrayList<String>>>() {}.getType();
-                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, mapType);
-                reader.close();
-
-                Map<String, ArrayList<String>> trustingPlayers = new HashMap<>(gsonTrustingPlayers);
-                boolean changed = false;
-                String prevName = "";
-
-                if (gsonTrustingPlayers.size() != 0)
+                for (String key : gsonTrustingPlayers.keySet())
                 {
-                    for (String key : gsonTrustingPlayers.keySet())
+                    // Changes the player username when it is a key
+                    if (key.split("_")[0].equals(playerUUID) && !key.split("_")[1].equals(playerName))
                     {
-                        // Changes the key's player username of the actual player
-                        if (key.split("_")[0].equals(playerUUID) && !key.split("_")[1].equals(playerName))
+                        prevName = key.split("_")[1];
+                        gsonTrustingPlayers.put(playerKey, gsonTrustingPlayers.get(key));
+                        gsonTrustingPlayers.remove(key);
+                        changed = true;
+                    }
+
+                    if (changed)
+                    {
+                        key = playerKey;
+                    }
+
+                    // Changes the player's username when it is in a list of trusted players
+                    for (String listKey : gsonTrustingPlayers.get(key))
+                    {
+                        if (listKey.split("_")[0].equals(playerUUID) && !listKey.split("_")[1].equals(playerName))
                         {
-                            prevName = key.split("_")[1];
-                            trustingPlayers.put(playerKey, trustingPlayers.get(key));
-                            trustingPlayers.remove(key);
+                            prevName = listKey.split("_")[1];
+                            gsonTrustingPlayers.get(key).add(playerKey);
+                            gsonTrustingPlayers.get(key).remove(listKey);
                             changed = true;
-                        }
-
-                        if (changed)
-                        {
-                            key = playerKey;
-                        }
-
-                        // Changes the player's username when it is not a key but an element of the list
-                        for (String listKey : trustingPlayers.get(key))
-                        {
-                            if (listKey.split("_")[0].equals(playerUUID) && !listKey.split("_")[1].equals(playerName))
-                            {
-                                prevName = listKey.split("_")[1];
-                                trustingPlayers.get(key).add(playerKey);
-                                trustingPlayers.get(key).remove(listKey);
-                                changed = true;
-                            }
                         }
                     }
                 }
-
-                if (changed)
-                {
-                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                    Writer writer = Files.newBufferedWriter(TRUST_PATH);
-                    gsonWriter.toJson(trustingPlayers, writer);
-                    writer.close();
-                    LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", playerName, prevName);
-                }
             }
-            catch (IOException e)
+
+            if (changed)
             {
-                throw new RuntimeException(e);
+                writeGson(TRUST_PATH, gsonTrustingPlayers);
+                LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", playerName, prevName);
             }
         }
     }

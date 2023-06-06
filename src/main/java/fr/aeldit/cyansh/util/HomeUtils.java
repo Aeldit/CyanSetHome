@@ -17,19 +17,17 @@
 
 package fr.aeldit.cyansh.util;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
 import static fr.aeldit.cyansh.util.Utils.MODID;
 
 public class HomeUtils
@@ -68,27 +66,17 @@ public class HomeUtils
     {
         if (Files.exists(TRUST_PATH))
         {
-            try
-            {
-                Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(TRUST_PATH);
-                Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, TRUST_TYPE);
-                reader.close();
+            Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-                for (String playerKey : gsonTrustingPlayers.keySet())
+            for (String playerKey : gsonTrustingPlayers.keySet())
+            {
+                if (playerKey.split("_")[1].equals(trustingPlayerUsername))
                 {
-                    if (playerKey.split("_")[1].equals(trustingPlayerUsername))
+                    if (gsonTrustingPlayers.get(playerKey).contains(trustedPlayerUsername))
                     {
-                        if (gsonTrustingPlayers.get(playerKey).contains(trustedPlayerUsername))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
             }
         }
         return false;
@@ -96,21 +84,11 @@ public class HomeUtils
 
     public static ArrayList<String> getTrustedPlayers(String trustingPlayer)
     {
-        try
-        {
-            Gson gsonReader = new Gson();
-            Reader reader = Files.newBufferedReader(TRUST_PATH);
-            Map<String, ArrayList<String>> gsonTrustingPlayers = gsonReader.fromJson(reader, TRUST_TYPE);
-            reader.close();
+        Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-            if (gsonTrustingPlayers.containsKey(trustingPlayer))
-            {
-                return gsonTrustingPlayers.get(trustingPlayer);
-            }
-        }
-        catch (IOException e)
+        if (gsonTrustingPlayers.containsKey(trustingPlayer))
         {
-            throw new RuntimeException(e);
+            return gsonTrustingPlayers.get(trustingPlayer);
         }
         return new ArrayList<>();
     }

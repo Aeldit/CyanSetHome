@@ -99,13 +99,11 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-
         if (Files.exists(HOMES_PATH))
         {
             File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
-            if (isPlayerTrusting(trustingPlayer, playerKey))
+            if (isPlayerTrusting(trustingPlayer, player.getUuidAsString() + "_" + player.getName().getString()))
             {
                 if (listOfFiles != null)
                 {

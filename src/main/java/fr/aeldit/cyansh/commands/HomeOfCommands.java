@@ -166,6 +166,7 @@ public class HomeOfCommands
                                                 Formatting.YELLOW + homeName
                                         );
                                     }
+                                    break;
                                 }
                             }
                         }
@@ -256,6 +257,7 @@ public class HomeOfCommands
                                                 Formatting.YELLOW + homeName
                                         );
                                     }
+                                    break;
                                 }
                             }
                         }
@@ -316,19 +318,15 @@ public class HomeOfCommands
 
                     if (listOfFiles != null)
                     {
-                        boolean isTrusted = false;
-
                         for (File file : listOfFiles)
                         {
                             if (file.isFile())
                             {
                                 if (file.getName().split("_")[1].equals(trustingPlayer + ".json"))
                                 {
-                                    isTrusted = true;
-
                                     ArrayList<Home> homes = readHomeFile(file.toPath());
 
-                                    if (homes.size() != 0)
+                                    if (!homes.isEmpty())
                                     {
                                         sendPlayerMessage(player,
                                                 CyanSHLanguageUtils.getTranslation("dashSeparation"),
@@ -372,18 +370,9 @@ public class HomeOfCommands
                                                 CyanSHMidnightConfig.useCustomTranslations
                                         );
                                     }
+                                    break;
                                 }
                             }
-                        }
-
-                        if (!isTrusted)
-                        {
-                            sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusting"),
-                                    "cyansh.message.playerNotTrusting",
-                                    CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations
-                            );
                         }
                     }
                     else

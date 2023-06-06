@@ -116,15 +116,8 @@ public class HomeCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String dimension = "overworld";
-                    double x = player.getX();
-                    double y = player.getY();
-                    double z = player.getZ();
-                    float yaw = player.getYaw();
-                    float pitch = player.getPitch();
-                    String date = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
 
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
-                    Path currentHomesPath = Path.of(HOMES_PATH + "/" + playerKey + ".json");
+                    Path currentHomesPath = Path.of(HOMES_PATH + "/" + player.getUuidAsString() + "_" + player.getName().getString() + ".json");
 
                     if (player.getWorld() == player.getServer().getWorld(World.OVERWORLD))
                     {
@@ -143,9 +136,15 @@ public class HomeCommands
 
                     try
                     {
-                        Home home = new Home(homeName, dimension, x, y, z, yaw, pitch, date);
+                        Home home = new Home(
+                                homeName,
+                                dimension,
+                                player.getX(), player.getY(), player.getZ(),
+                                player.getYaw(), player.getPitch(),
+                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                        );
 
-                        if (Files.readAllLines(currentHomesPath).size() == 0)
+                        if (Files.readAllLines(currentHomesPath).isEmpty())
                         {
                             writeGson(currentHomesPath, List.of(home));
 
@@ -233,6 +232,7 @@ public class HomeCommands
                     if (homeExists(homes, homeName))
                     {
                         Home home = homes.get(getHomeIndex(homes, homeName));
+
                         switch (home.dimension())
                         {
                             case "overworld" -> player.teleport(player.getServer().getWorld(World.OVERWORLD),
@@ -294,21 +294,7 @@ public class HomeCommands
                     {
                         homes.remove(getHomeIndex(homes, homeName));
 
-                        if (homes.isEmpty())
-                        {
-                            try
-                            {
-                                Files.delete(currentHomesPath);
-                            }
-                            catch (IOException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        else
-                        {
-                            writeGsonOrDeleteFile(currentHomesPath, homes);
-                        }
+                        writeGsonOrDeleteFile(currentHomesPath, homes);
 
                         sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("removeHome"),
@@ -405,7 +391,7 @@ public class HomeCommands
                     {
                         ArrayList<Home> homes = readHomeFile(currentHomesPath);
 
-                        if (homes.size() != 0)
+                        if (!homes.isEmpty())
                         {
                             sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("dashSeparation"),
