@@ -31,7 +31,8 @@ import java.util.*;
 import static fr.aeldit.cyansh.util.GsonUtils.*;
 import static fr.aeldit.cyansh.util.HomeUtils.HOMES_PATH;
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
-import static fr.aeldit.cyansh.util.Utils.*;
+import static fr.aeldit.cyansh.util.Utils.LOGGER;
+import static fr.aeldit.cyansh.util.Utils.MODID;
 
 public class EventUtils
 {
@@ -48,29 +49,31 @@ public class EventUtils
         String playerName = handler.getPlayer().getName().getString();
         String playerKey = playerUUID + "_" + playerName;
 
-        checkOrCreateHomesDir();
-        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
-
-        if (listOfFiles != null)
+        if (Files.exists(HOMES_PATH))
         {
-            for (File file : listOfFiles)
-            {
-                if (file.isFile())
-                {
-                    String[] splitedFileName = file.getName().split("_");
+            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
-                    if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
+            if (listOfFiles != null)
+            {
+                for (File file : listOfFiles)
+                {
+                    if (file.isFile())
                     {
-                        try
+                        String[] splitedFileName = file.getName().split("_");
+
+                        if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
                         {
-                            Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
-                            LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
+                            try
+                            {
+                                Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
+                                LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
+                            }
+                            catch (IOException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                            break;
                         }
-                        catch (IOException e)
-                        {
-                            throw new RuntimeException(e);
-                        }
-                        break;
                     }
                 }
             }
@@ -140,7 +143,9 @@ public class EventUtils
                         if (splitedFileName[1].equals("properties") && Files.readAllLines(file.toPath()).size() > 1)
                         {
                             Properties properties = new Properties();
-                            properties.load(new FileInputStream(file));
+                            FileInputStream fis = new FileInputStream(file);
+                            properties.load(fis);
+                            fis.close();
 
                             if (splitedFileName[0].equals("trusted_players"))
                             {
@@ -180,6 +185,7 @@ public class EventUtils
 
                                     LOGGER.info("[CyanSetHome] Transfered the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
                                 }
+
                                 writeGson(TRUST_PATH, trusts);
                             }
                             else
