@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
 import static fr.aeldit.cyansh.util.GsonUtils.*;
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
@@ -84,11 +83,9 @@ public class PermissionCommands
         {
             if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
             {
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation(ERROR + "playerNotOnline"),
                         "cyansh.error.playerNotOnline",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations,
                         playerName
                 );
             }
@@ -110,7 +107,7 @@ public class PermissionCommands
 
                             writeGson(TRUST_PATH, gsonTrustingPlayers);
 
-                            sendPlayerMessage(player,
+                            CyanLibUtils.sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                     "cyansh.message.playerTrusted",
                                     CyanSHMidnightConfig.msgToActionBar,
@@ -125,7 +122,7 @@ public class PermissionCommands
 
                             writeGson(TRUST_PATH, gsonTrustingPlayers);
 
-                            sendPlayerMessage(player,
+                            CyanLibUtils.sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                     "cyansh.message.playerTrusted",
                                     CyanSHMidnightConfig.msgToActionBar,
@@ -143,7 +140,7 @@ public class PermissionCommands
 
                                 writeGson(TRUST_PATH, gsonTrustingPlayers);
 
-                                sendPlayerMessage(player,
+                                CyanLibUtils.sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                         "cyansh.message.playerTrusted",
                                         CyanSHMidnightConfig.msgToActionBar,
@@ -157,7 +154,7 @@ public class PermissionCommands
 
                                 writeGson(TRUST_PATH, gsonTrustingPlayers);
 
-                                sendPlayerMessage(player,
+                                CyanLibUtils.sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation("playerTrusted"),
                                         "cyansh.message.playerTrusted",
                                         CyanSHMidnightConfig.msgToActionBar,
@@ -167,11 +164,9 @@ public class PermissionCommands
                             }
                             else
                             {
-                                sendPlayerMessage(player,
+                                CyanLibUtils.sendPlayerMessage(player,
                                         CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
-                                        "cyansh.error.playerAlreadyTrusted",
-                                        CyanSHMidnightConfig.errorToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations
+                                        "cyansh.error.playerAlreadyTrusted"
                                 );
                             }
                         }
@@ -183,11 +178,9 @@ public class PermissionCommands
                 }
                 else
                 {
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
-                            "cyansh.error.selfTrust",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
+                            "cyansh.error.selfTrust"
                     );
                 }
             }
@@ -233,11 +226,9 @@ public class PermissionCommands
 
                                     writeGsonOrDeleteFile(TRUST_PATH, gsonTrustingPlayers);
 
-                                    sendPlayerMessage(player,
+                                    CyanLibUtils.sendPlayerMessage(player,
                                             CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
                                             "cyansh.message.playerUnTrusted",
-                                            CyanSHMidnightConfig.msgToActionBar,
-                                            CyanSHMidnightConfig.useCustomTranslations,
                                             Formatting.AQUA + untrustedPlayerName
                                     );
                                     break;
@@ -246,41 +237,33 @@ public class PermissionCommands
                         }
                         else
                         {
-                            sendPlayerMessage(player,
+                            CyanLibUtils.sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                                    "cyansh.error.playerNotTrusted",
-                                    CyanSHMidnightConfig.errorToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations
+                                    "cyansh.error.playerNotTrusted"
                             );
                         }
                     }
                     else
                     {
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                                "cyansh.error.playerNotTrusted",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useCustomTranslations
+                                "cyansh.error.playerNotTrusted"
                         );
                     }
                 }
                 else
                 {
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                            "cyansh.error.playerNotTrusted",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
+                            "cyansh.error.playerNotTrusted"
                     );
                 }
             }
             else
             {
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation(ERROR + "selfTrust"),
-                        "cyansh.error.selfTrust",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
+                        "cyansh.error.selfTrust"
                 );
             }
         }
@@ -330,31 +313,25 @@ public class PermissionCommands
                         }
                     }
 
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
                             "cyansh.message.getTrustingPlayers",
-                            false,
-                            CyanSHMidnightConfig.useCustomTranslations,
                             Formatting.AQUA + players
                     );
                 }
                 else
                 {
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
-                            "cyansh.message.noTrustingPlayer",
-                            CyanSHMidnightConfig.msgToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
+                            "cyansh.message.noTrustingPlayer"
                     );
                 }
             }
             else
             {
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
-                        "cyansh.message.noTrustingPlayer",
-                        CyanSHMidnightConfig.msgToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
+                        "cyansh.message.noTrustingPlayer"
                 );
             }
         }
@@ -400,41 +377,33 @@ public class PermissionCommands
                             }
                         }
 
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
                                 "cyansh.message.getTrustedPlayers",
-                                false,
-                                CyanSHMidnightConfig.useCustomTranslations,
                                 Formatting.AQUA + players
                         );
                     }
                     else
                     {
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
-                                "cyansh.message.noTrustedPlayer",
-                                CyanSHMidnightConfig.errorToActionBar,
-                                CyanSHMidnightConfig.useCustomTranslations
+                                "cyansh.message.noTrustedPlayer"
                         );
                     }
                 }
                 else
                 {
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
-                            "cyansh.message.noTrustedPlayer",
-                            CyanSHMidnightConfig.errorToActionBar,
-                            CyanSHMidnightConfig.useCustomTranslations
+                            "cyansh.message.noTrustedPlayer"
                     );
                 }
             }
             else
             {
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
-                        "cyansh.message.noTrustedPlayer",
-                        CyanSHMidnightConfig.errorToActionBar,
-                        CyanSHMidnightConfig.useCustomTranslations
+                        "cyansh.message.noTrustedPlayer"
                 );
             }
         }

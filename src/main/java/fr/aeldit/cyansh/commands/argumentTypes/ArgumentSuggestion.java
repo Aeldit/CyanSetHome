@@ -19,24 +19,23 @@ package fr.aeldit.cyansh.commands.argumentTypes;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import fr.aeldit.cyansh.util.Home;
+import fr.aeldit.cyansh.homes.PlayerHomes;
 import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.util.GsonUtils.readHomeFile;
 import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
-import static fr.aeldit.cyansh.util.HomeUtils.*;
+import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
+import static fr.aeldit.cyansh.util.HomeUtils.getTrustedPlayers;
+import static fr.aeldit.cyansh.util.Utils.HomesObj;
 
 public final class ArgumentSuggestion
 {
@@ -78,18 +77,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
-        Path homesPath = Path.of(HOMES_PATH + "\\" + player.getUuidAsString() + "_" + player.getName().getString() + ".json");
-
-        if (Files.exists(homesPath))
-        {
-            ArrayList<Home> gsonHomes = readHomeFile(homesPath);
-
-            List<String> homes = new ArrayList<>();
-            gsonHomes.forEach(home -> homes.add(home.name()));
-
-            return CommandSource.suggestMatching(homes, builder);
-        }
-        return new CompletableFuture<>();
+        return CommandSource.suggestMatching(HomesObj.getHomesNames(player.getUuidAsString() + "_" + player.getName().getString()), builder);
     }
 
     /**
@@ -99,33 +87,8 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        if (Files.exists(HOMES_PATH))
-        {
-            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
-
-            if (isPlayerTrusting(trustingPlayer, player.getUuidAsString() + "_" + player.getName().getString()))
-            {
-                if (listOfFiles != null)
-                {
-                    for (File file : listOfFiles)
-                    {
-                        if (file.isFile())
-                        {
-                            if (file.getName().split("_")[1].split("\\.")[0].equals(trustingPlayer))
-                            {
-                                ArrayList<Home> gsonHomes = readHomeFile(file.toPath());
-
-                                ArrayList<String> homes = new ArrayList<>();
-                                gsonHomes.forEach(home -> homes.add(home.name()));
-
-                                return CommandSource.suggestMatching(homes, builder);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return new CompletableFuture<>();
+        PlayerHomes PlayerHomesObj = new PlayerHomes(trustingPlayer);
+        return CommandSource.suggestMatching(PlayerHomesObj.getHomesNames(), builder);
     }
 
     /**

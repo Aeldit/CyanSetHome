@@ -19,8 +19,8 @@ package fr.aeldit.cyansh.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_TYPE;
+import static fr.aeldit.cyansh.util.Utils.MOD_PATH;
 
 public class GsonUtils
 {
@@ -44,24 +45,6 @@ public class GsonUtils
             reader.close();
 
             return trustedPlayers;
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static ArrayList<Home> readHomeFile(Path filePath)
-    {
-        try
-        {
-            Gson gsonReader = new Gson();
-            Reader reader = Files.newBufferedReader(filePath);
-            TypeToken<ArrayList<Home>> homesType = new TypeToken<>() {};
-            ArrayList<Home> homes = gsonReader.fromJson(reader, homesType);
-            reader.close();
-
-            return homes;
         }
         catch (IOException e)
         {
@@ -108,6 +91,25 @@ public class GsonUtils
             catch (IOException e)
             {
                 throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static void removePropertiesFiles()
+    {
+        if (Files.exists(MOD_PATH))
+        {
+            File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
+
+            if (listOfFiles != null)
+            {
+                for (File file : listOfFiles)
+                {
+                    if (file.isFile())
+                    {
+
+                    }
+                }
             }
         }
     }

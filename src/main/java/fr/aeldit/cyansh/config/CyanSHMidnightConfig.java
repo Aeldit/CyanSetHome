@@ -28,6 +28,7 @@ import static fr.aeldit.cyansh.util.Utils.*;
 public class CyanSHMidnightConfig extends MidnightConfig
 {
     public static Map<String, Object> allOptionsMap = new HashMap<>();
+
     @Comment
     public static Comment allowOptions;
     @Entry
@@ -38,8 +39,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
     public static boolean useCustomTranslations = false;
     @Entry
     public static boolean msgToActionBar = true;
-    @Entry
-    public static boolean errorToActionBar = true;
 
     @Comment
     public static Comment intOptions;
@@ -59,7 +58,6 @@ public class CyanSHMidnightConfig extends MidnightConfig
 
         allOptionsMap.put("useCustomTranslations", useCustomTranslations);
         allOptionsMap.put("msgToActionBar", msgToActionBar);
-        allOptionsMap.put("errorToActionBar", errorToActionBar);
 
         allOptionsMap.put("maxHomes", maxHomes);
 
@@ -76,13 +74,27 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "allowHomesOf" -> allowHomesOf = value;
             case "useCustomTranslations" -> useCustomTranslations = value;
             case "msgToActionBar" -> msgToActionBar = value;
-            case "errorToActionBar" -> errorToActionBar = value;
         }
+
         write(MODID);
         generateAllOptionsMap();
+
         if (useCustomTranslations)
         {
             CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
+        }
+        if (optionName.equals("msgToActionBar"))
+        {
+            CyanLibUtils.setMsgToActionBar(value);
+        }
+        else if (optionName.equals("useCustomTranslations"))
+        {
+            CyanLibUtils.setUseCustomTranslations(value);
+
+            if (useCustomTranslations)
+            {
+                CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
+            }
         }
     }
 

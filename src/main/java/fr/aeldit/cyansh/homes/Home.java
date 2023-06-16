@@ -15,6 +15,6 @@
  * in the repo of this mod (https://github.com/Aeldit/CyanSetHome)
  */
 
-package fr.aeldit.cyansh.util;
+package fr.aeldit.cyansh.homes;
 
 public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date) {}

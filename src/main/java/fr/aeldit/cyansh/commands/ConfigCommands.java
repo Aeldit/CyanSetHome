@@ -25,6 +25,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.GsonUtils;
 import fr.aeldit.cyansh.util.Utils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -39,8 +40,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static fr.aeldit.cyanlib.util.ChatUtils.sendPlayerMessage;
 import static fr.aeldit.cyanlib.util.Constants.*;
+import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.Utils.CyanLibUtils;
 import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
 
@@ -85,12 +86,30 @@ public class ConfigCommands
         if (CyanLibUtils.isPlayer(context.getSource()))
         {
             CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations(true));
-            sendPlayerMessage(player,
+            CyanLibUtils.sendPlayerMessage(player,
                     CyanSHLanguageUtils.getTranslation("translationsReloaded"),
                     "cyansh.message.translationsReloaded",
                     CyanSHMidnightConfig.msgToActionBar,
                     CyanSHMidnightConfig.useCustomTranslations
             );
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Called by the command {@code /cyan removePropertiesFiles}
+     * <p>
+     * Removes all the properties files
+     */
+    public static int removePropertiesFiles(@NotNull CommandContext<ServerCommandSource> context)
+    {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+
+        transferPropertiesToGson();
+
+        if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
+        {
+            GsonUtils.removePropertiesFiles();
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -117,7 +136,7 @@ public class ConfigCommands
                     CyanSHMidnightConfig.setBoolOption(option, value);
 
                     source.getServer().getCommandManager().executeWithPrefix(source, "/cyansh config %s".formatted(option));
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(SET + option),
                             "cyansh.message.set.%s".formatted(option),
                             CyanSHMidnightConfig.msgToActionBar,
@@ -127,7 +146,7 @@ public class ConfigCommands
                 }
                 else
                 {
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "optionNotFound"),
                             "cyansh.message.error.optionNotFound",
                             CyanSHMidnightConfig.msgToActionBar,
@@ -162,7 +181,7 @@ public class ConfigCommands
                     CyanSHMidnightConfig.setIntOption(option, value);
 
                     source.getServer().getCommandManager().executeWithPrefix(source, "/cyansh config %s".formatted(option));
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(SET + option),
                             "cyansh.message.set.%s".formatted(option),
                             CyanSHMidnightConfig.msgToActionBar,
@@ -172,7 +191,7 @@ public class ConfigCommands
                 }
                 else
                 {
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(ERROR + "optionNotFound"),
                             "cyansh.message.error.optionNotFound",
                             CyanSHMidnightConfig.msgToActionBar,
@@ -203,14 +222,14 @@ public class ConfigCommands
                 {
                     Object value = CyanSHMidnightConfig.getAllOptionsMap().get(optionName);
 
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("dashSeparation"),
                             "cyansh.message.getDescription.dashSeparation",
                             false,
                             CyanSHMidnightConfig.useCustomTranslations
                     );
 
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation(DESC + optionName),
                             "cyansh.message.getDescription.%s".formatted(optionName),
                             false,
@@ -219,7 +238,7 @@ public class ConfigCommands
 
                     if (value instanceof Boolean currentValue)
                     {
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("currentValue"),
                                 "cyansh.message.currentValue",
                                 false,
@@ -235,7 +254,7 @@ public class ConfigCommands
                     }
                     else if (value instanceof Integer currentValue)
                     {
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("currentValue"),
                                 "cyansh.message.currentValue",
                                 false,
@@ -245,7 +264,7 @@ public class ConfigCommands
 
                         if (optionName.startsWith("minOpLevelExe"))
                         {
-                            sendPlayerMessage(player,
+                            CyanLibUtils.sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("setValue"),
                                     "cyansh.message.setValue",
                                     false,
@@ -274,7 +293,7 @@ public class ConfigCommands
                         }
                         else
                         {
-                            sendPlayerMessage(player,
+                            CyanLibUtils.sendPlayerMessage(player,
                                     CyanSHLanguageUtils.getTranslation("setValue"),
                                     "cyansh.message.setValue",
                                     false,
@@ -302,7 +321,7 @@ public class ConfigCommands
                             );
                         }
                     }
-                    sendPlayerMessage(player,
+                    CyanLibUtils.sendPlayerMessage(player,
                             CyanSHLanguageUtils.getTranslation("dashSeparation"),
                             "cyansh.message.getDescription.dashSeparation",
                             false,
@@ -328,13 +347,13 @@ public class ConfigCommands
         {
             if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeEditConfig))
             {
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation("dashSeparation"),
                         "cyansh.message.getDescription.dashSeparation",
                         false,
                         CyanSHMidnightConfig.useCustomTranslations
                 );
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation(GETCFG + "header"),
                         "cyansh.message.getCfg.header",
                         false,
@@ -352,7 +371,7 @@ public class ConfigCommands
 
                     if (entry.getValue() instanceof Boolean value)
                     {
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 currentTrad,
                                 "cyansh.message.getCfg.%s".formatted(key),
                                 false,
@@ -368,7 +387,7 @@ public class ConfigCommands
                     }
                     else if (entry.getValue() instanceof Integer value)
                     {
-                        sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 currentTrad,
                                 "cyansh.message.getCfg.%s".formatted(key),
                                 false,
@@ -377,7 +396,7 @@ public class ConfigCommands
                         );
                     }
                 }
-                sendPlayerMessage(player,
+                CyanLibUtils.sendPlayerMessage(player,
                         CyanSHLanguageUtils.getTranslation("dashSeparation"),
                         "cyansh.message.getDescription.dashSeparation",
                         false,

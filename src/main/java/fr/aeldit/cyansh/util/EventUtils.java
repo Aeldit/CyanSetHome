@@ -17,6 +17,7 @@
 
 package fr.aeldit.cyansh.util;
 
+import fr.aeldit.cyansh.homes.Home;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.jetbrains.annotations.NotNull;
@@ -28,11 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import static fr.aeldit.cyansh.util.GsonUtils.*;
-import static fr.aeldit.cyansh.util.HomeUtils.HOMES_PATH;
+import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
+import static fr.aeldit.cyansh.util.GsonUtils.writeGson;
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
-import static fr.aeldit.cyansh.util.Utils.LOGGER;
-import static fr.aeldit.cyansh.util.Utils.MODID;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class EventUtils
 {
@@ -49,9 +49,9 @@ public class EventUtils
         String playerName = handler.getPlayer().getName().getString();
         String playerKey = playerUUID + "_" + playerName;
 
-        if (Files.exists(HOMES_PATH))
+        if (Files.exists(MOD_PATH))
         {
-            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
+            File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
 
             if (listOfFiles != null)
             {
@@ -65,7 +65,7 @@ public class EventUtils
                         {
                             try
                             {
-                                Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
+                                Files.move(file.toPath(), Path.of(MOD_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
                                 LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
                             }
                             catch (IOException e)
@@ -128,7 +128,7 @@ public class EventUtils
 
     public static void transferPropertiesToGson()
     {
-        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
+        File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
 
         if (listOfFiles != null)
         {
@@ -221,7 +221,7 @@ public class EventUtils
                                     writeGson(gsonFilePath, homes);
                                     LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
                                 }
-                                else
+                                /*else
                                 {
                                     ArrayList<Home> homesFromGson = readHomeFile(gsonFilePath);
 
@@ -249,7 +249,7 @@ public class EventUtils
 
                                     writeGson(gsonFilePath, homesFromGson);
                                     LOGGER.info("[CyanSetHome] Transfered the missing home of " + file.getName() + " to the corresponding json file.");
-                                }
+                                }*/
                             }
                         }
                     }

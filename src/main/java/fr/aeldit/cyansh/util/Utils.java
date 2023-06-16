@@ -20,6 +20,7 @@ package fr.aeldit.cyansh.util;
 import fr.aeldit.cyanlib.util.CyanLibUtils;
 import fr.aeldit.cyanlib.util.LanguageUtils;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.homes.Homes;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,10 @@ public class Utils
 {
     public static final String MODID = "cyansh";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+    public static final Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
+    public static final Path HOMES_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID + "/homes");
+
+    public static Homes HomesObj = new Homes();
 
     // Options
     public static List<String> optionsBool = new ArrayList<>();
@@ -42,7 +47,7 @@ public class Utils
     // Language Utils
     public static LanguageUtils CyanSHLanguageUtils = new LanguageUtils(MODID);
     // Utils
-    public static CyanLibUtils CyanLibUtils = new CyanLibUtils(Utils.MODID, CyanSHLanguageUtils, CyanSHMidnightConfig.errorToActionBar, CyanSHMidnightConfig.useCustomTranslations);
+    public static CyanLibUtils CyanLibUtils = new CyanLibUtils(Utils.MODID, CyanSHLanguageUtils, CyanSHMidnightConfig.msgToActionBar, CyanSHMidnightConfig.useCustomTranslations);
     public static LinkedHashMap<String, String> defaultTranslations = new LinkedHashMap<>();
 
     public static Map<String, List<String>> getOptionsList()
@@ -71,11 +76,11 @@ public class Utils
     // Files
     public static void checkOrCreateHomesDir()
     {
-        if (!Files.exists(FabricLoader.getInstance().getConfigDir().resolve(MODID)))
+        if (!Files.exists(HOMES_PATH))
         {
             try
             {
-                Files.createDirectory(FabricLoader.getInstance().getConfigDir().resolve(MODID));
+                Files.createDirectory(HOMES_PATH);
             }
             catch (IOException e)
             {
