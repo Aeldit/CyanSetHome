@@ -24,7 +24,6 @@ import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.homes.Home;
-import fr.aeldit.cyansh.homes.PlayerHomesOf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,8 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
 import static fr.aeldit.cyansh.util.HomeUtils.isPlayerTrusting;
-import static fr.aeldit.cyansh.util.Utils.CyanLibUtils;
-import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
 {
@@ -108,14 +106,13 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeMisc))
+                if (CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    PlayerHomesOf PlayerHomesObj = new PlayerHomesOf(trustingPlayer);
 
-                    if (PlayerHomesObj.homeExists(homeName))
+                    if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
                     {
-                        PlayerHomesObj.remove(homeName);
+                        HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
                         CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("removeHomeOf"),
                                 "cyansh.message.removeHomeOf",
@@ -159,14 +156,13 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeMisc) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
+                if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    PlayerHomesOf PlayerHomesObj = new PlayerHomesOf(trustingPlayer);
 
-                    if (PlayerHomesObj.homeExists(homeName))
+                    if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
                     {
-                        Home home = PlayerHomesObj.getPlayerHome(homeName);
+                        Home home = HomesObj.getPlayerHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
                         switch (home.dimension())
                         {
@@ -227,11 +223,9 @@ public class HomeOfCommands
                             "cyansh.message.useSelfHomes"
                     );
                 }
-                else if (player.hasPermissionLevel(CyanSHMidnightConfig.minOpLevelExeMisc) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
+                else if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
                 {
-                    PlayerHomesOf PlayerHomesObj = new PlayerHomesOf(trustingPlayer);
-
-                    if (!PlayerHomesObj.isEmpty())
+                    if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {
                         CyanLibUtils.sendPlayerMessageActionBar(player,
                                 CyanSHLanguageUtils.getTranslation("dashSeparation"),
@@ -246,7 +240,7 @@ public class HomeOfCommands
                                 Formatting.AQUA + trustingPlayer
                         );
 
-                        PlayerHomesObj.getPlayerHomes().forEach(home -> CyanLibUtils.sendPlayerMessageActionBar(player,
+                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer)).forEach(home -> CyanLibUtils.sendPlayerMessageActionBar(player,
                                         CyanSHLanguageUtils.getTranslation("getHome"),
                                         "cyansh.message.getHome",
                                         false,

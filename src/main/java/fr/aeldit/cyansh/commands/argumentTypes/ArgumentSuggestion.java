@@ -19,7 +19,7 @@ package fr.aeldit.cyansh.commands.argumentTypes;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import fr.aeldit.cyansh.homes.PlayerHomes;
+import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -33,8 +33,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
-import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
-import static fr.aeldit.cyansh.util.HomeUtils.getTrustedPlayers;
+import static fr.aeldit.cyansh.util.HomeUtils.*;
 import static fr.aeldit.cyansh.util.Utils.HomesObj;
 
 public final class ArgumentSuggestion
@@ -77,7 +76,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
     {
-        return CommandSource.suggestMatching(HomesObj.getHomesNames(player.getUuidAsString() + "_" + player.getName().getString()), builder);
+        return CommandSource.suggestMatching(HomesObj.getHomesNames(player.getUuidAsString() + " " + player.getName().getString()), builder);
     }
 
     /**
@@ -87,8 +86,11 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        PlayerHomes PlayerHomesObj = new PlayerHomes(trustingPlayer);
-        return CommandSource.suggestMatching(PlayerHomesObj.getHomesNames(), builder);
+        if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
+        {
+            return CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder);
+        }
+        return new CompletableFuture<>();
     }
 
     /**
@@ -113,7 +115,7 @@ public final class ArgumentSuggestion
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         ArrayList<String> names = new ArrayList<>();
-        getTrustedPlayers(source.getPlayer().getUuidAsString() + "_" + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split("_")[1]));
+        getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split(" ")[1]));
 
         return CommandSource.suggestMatching(names, builder);
     }
@@ -128,9 +130,14 @@ public final class ArgumentSuggestion
         ServerPlayerEntity player = source.getPlayer();
         List<String> players = new ArrayList<>();
 
-        if (Files.exists(TRUST_PATH))
+        if (player != null)
         {
-            if (player != null)
+            if (player.hasPermissionLevel(4) && CyanSHMidnightConfig.allowByPass)
+            {
+                return CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder);
+            }
+
+            if (Files.exists(TRUST_PATH))
             {
                 Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
@@ -138,9 +145,9 @@ public final class ArgumentSuggestion
                 {
                     for (String value : entry.getValue())
                     {
-                        if (value.split("_")[0].equals(player.getUuidAsString()))
+                        if (value.split(" ")[0].equals(player.getUuidAsString()))
                         {
-                            players.add(entry.getKey().split("_")[1]);
+                            players.add(entry.getKey().split(" ")[1]);
                         }
                     }
                 }

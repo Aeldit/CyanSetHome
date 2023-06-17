@@ -41,11 +41,14 @@ public class HomeUtils
 
             for (String playerKey : gsonTrustingPlayers.keySet())
             {
-                if (playerKey.split("_")[1].equals(trustingPlayerUsername))
+                if (playerKey.split(" ")[1].equals(trustingPlayerUsername))
                 {
-                    if (gsonTrustingPlayers.get(playerKey).contains(trustedPlayerUsername))
+                    for (String trustedKey : gsonTrustingPlayers.get(playerKey))
                     {
-                        return true;
+                        if (trustedKey.split(" ")[1].equals(trustedPlayerUsername))
+                        {
+                            return true;
+                        }
                     }
                 }
             }

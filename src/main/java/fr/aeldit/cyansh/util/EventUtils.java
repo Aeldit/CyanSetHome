@@ -59,7 +59,7 @@ public class EventUtils
                 {
                     if (file.isFile())
                     {
-                        String[] splitedFileName = file.getName().split("_");
+                        String[] splitedFileName = file.getName().split(" ");
 
                         if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
                         {
@@ -140,7 +140,7 @@ public class EventUtils
 
                     try
                     {
-                        if (splitedFileName[1].equals("properties") && Files.readAllLines(file.toPath()).size() > 1)
+                        if (splitedFileName[splitedFileName.length - 1].equals("properties") && Files.readAllLines(file.toPath()).size() > 1)
                         {
                             Properties properties = new Properties();
                             FileInputStream fis = new FileInputStream(file);

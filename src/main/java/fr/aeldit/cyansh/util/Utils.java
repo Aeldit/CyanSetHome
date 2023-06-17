@@ -56,16 +56,13 @@ public class Utils
         {
             optionsBool.add("allowHomes");
             optionsBool.add("allowHomesOf");
-            optionsBool.add("allowOPHomesOf");
+            optionsBool.add("allowByPass");
             optionsBool.add("useCustomTranslations");
             optionsBool.add("msgToActionBar");
-            optionsBool.add("errorToActionBar");
 
             optionsInt.add("maxHomes");
             optionsInt.add("minOpLevelExeHomes");
-            optionsInt.add("minOpLevelExeHomesOf");
             optionsInt.add("minOpLevelExeEditConfig");
-            optionsInt.add("minOpLevelExeOPHomesOf");
 
             options.put("booleans", optionsBool);
             options.put("integers", optionsInt);
@@ -81,23 +78,6 @@ public class Utils
             try
             {
                 Files.createDirectory(HOMES_PATH);
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static void checkOrCreateFile(Path path)
-    {
-        checkOrCreateHomesDir();
-
-        if (!Files.exists(path))
-        {
-            try
-            {
-                Files.createFile(path);
             }
             catch (IOException e)
             {

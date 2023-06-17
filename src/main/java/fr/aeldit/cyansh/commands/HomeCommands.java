@@ -78,6 +78,7 @@ public class HomeCommands
                         .executes(HomeCommands::removeHome)
                 )
         );
+
         dispatcher.register(CommandManager.literal("removeallhomes")
                 .executes(HomeCommands::removeAllHomes)
         );
@@ -107,7 +108,7 @@ public class HomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
                     if (!HomesObj.maxHomesReached(playerKey))
                     {
@@ -182,7 +183,7 @@ public class HomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
@@ -212,7 +213,7 @@ public class HomeCommands
      * <p>
      * Removes all the homes
      */
-    public static int removeAllHomes(@NotNull CommandContext<ServerCommandSource> context)
+    public static int removeAllHomes(@NotNull CommandContext<ServerCommandSource> context) // TODO -> ask for confirmation
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -222,7 +223,7 @@ public class HomeCommands
             {
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    if (HomesObj.removeAll(player.getUuidAsString() + "_" + player.getName().getString()))
+                    if (HomesObj.removeAll(player.getUuidAsString() + " " + player.getName().getString()))
                     {
                         CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("removeAllHomes"),
@@ -258,7 +259,7 @@ public class HomeCommands
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
@@ -310,7 +311,7 @@ public class HomeCommands
             {
                 if (CyanLibUtils.hasPermission(player, CyanSHMidnightConfig.minOpLevelExeHomes))
                 {
-                    String playerKey = player.getUuidAsString() + "_" + player.getName().getString();
+                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
                     if (!HomesObj.isEmpty(playerKey))
                     {

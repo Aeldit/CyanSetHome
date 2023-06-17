@@ -19,6 +19,7 @@ package fr.aeldit.cyansh.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import java.util.Map;
 
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
 import static fr.aeldit.cyansh.util.HomeUtils.TRUST_TYPE;
-import static fr.aeldit.cyansh.util.Utils.MOD_PATH;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class GsonUtils
 {
@@ -95,11 +96,12 @@ public class GsonUtils
         }
     }
 
-    public static void removePropertiesFiles()
+    public static void removePropertiesFiles(ServerPlayerEntity player)
     {
         if (Files.exists(MOD_PATH))
         {
             File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
+            boolean fileDeleted = false;
 
             if (listOfFiles != null)
             {
@@ -107,9 +109,35 @@ public class GsonUtils
                 {
                     if (file.isFile())
                     {
-
+                        if (file.getName().split("\\.")[-1].equals(".properties"))
+                        {
+                            try
+                            {
+                                Files.delete(file.toPath());
+                                fileDeleted = true;
+                            }
+                            catch (IOException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
                 }
+            }
+
+            if (fileDeleted)
+            {
+                CyanLibUtils.sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("propertiesFilesDeleted"),
+                        "cyan.message.propertiesFilesDeleted"
+                );
+            }
+            else
+            {
+                CyanLibUtils.sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("noPropertiesFiles"),
+                        "cyan.message.noPropertiesFiles"
+                );
             }
         }
     }

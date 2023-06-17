@@ -48,14 +48,14 @@ public class PermissionCommands
     {
         dispatcher.register(CommandManager.literal("hometrust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getOnlinePlayersName(builder4, context4.getSource()))
+                        .suggests((context, builder) -> ArgumentSuggestion.getOnlinePlayersName(builder, context.getSource()))
                         .executes(PermissionCommands::trustPlayer)
                 )
         );
 
         dispatcher.register(CommandManager.literal("homeuntrust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getTrustedPlayersName(builder4, context4.getSource()))
+                        .suggests((context, builder) -> ArgumentSuggestion.getTrustedPlayersName(builder, context.getSource()))
                         .executes(PermissionCommands::untrustPlayer)
                 )
         );
@@ -91,8 +91,8 @@ public class PermissionCommands
             }
             else
             {
-                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
-                String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName).getUuid() + "_" + playerName;
+                String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
+                String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName).getUuid() + " " + playerName;
 
                 if (!trustedPlayer.equals(trustingPlayer))
                 {
@@ -203,7 +203,7 @@ public class PermissionCommands
 
             if (!player.getName().getString().equals(untrustedPlayerName))
             {
-                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
 
                 if (Files.exists(TRUST_PATH))
                 {
@@ -215,7 +215,7 @@ public class PermissionCommands
                         {
                             for (String playerKey : gsonTrustingPlayers.get(trustingPlayer))
                             {
-                                if (playerKey.split("_")[1].equals(untrustedPlayerName))
+                                if (playerKey.split(" ")[1].equals(untrustedPlayerName))
                                 {
                                     gsonTrustingPlayers.get(trustingPlayer).remove(playerKey);
 
@@ -287,9 +287,9 @@ public class PermissionCommands
 
                 for (Map.Entry<String, ArrayList<String>> entry : readTrustFile().entrySet())
                 {
-                    if (entry.getValue().contains(player.getUuidAsString() + "_" + player.getName().getString()))
+                    if (entry.getValue().contains(player.getUuidAsString() + " " + player.getName().getString()))
                     {
-                        trustingPlayers.add(entry.getKey().split("_")[1]);
+                        trustingPlayers.add(entry.getKey().split(" ")[1]);
                     }
                 }
 
@@ -353,7 +353,7 @@ public class PermissionCommands
             {
                 Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
 
-                String trustingPlayer = player.getUuidAsString() + "_" + player.getName().getString();
+                String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
 
                 if (gsonTrustingPlayers.containsKey(trustingPlayer))
                 {
@@ -365,21 +365,22 @@ public class PermissionCommands
                         {
                             if (gsonTrustingPlayers.get(trustingPlayer).size() == 1)
                             {
-                                players = players.concat("%s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                                players = players.concat("%s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split(" ")[1]));
                             }
                             else if (i == gsonTrustingPlayers.get(trustingPlayer).size() - 1)
                             {
-                                players = players.concat(", %s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                                players = players.concat(", %s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split(" ")[1]));
                             }
                             else
                             {
-                                players = players.concat(", %s,".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split("_")[1]));
+                                players = players.concat(", %s,".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split(" ")[1]));
                             }
                         }
 
-                        CyanLibUtils.sendPlayerMessage(player,
+                        CyanLibUtils.sendPlayerMessageActionBar(player,
                                 CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
                                 "cyansh.message.getTrustedPlayers",
+                                false,
                                 Formatting.AQUA + players
                         );
                     }

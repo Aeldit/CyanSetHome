@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.util.HomeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -107,17 +108,31 @@ public class Homes
     /**
      * Can be called if and only if the result of {@link Homes#homeExists} is true
      */
-    public Home getPlayerHome(String playerKey, String homeName)
+    public Home getPlayerHome(String playerName, String homeName)
     {
-        return this.homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
+        return this.homes.get(playerName).get(getHomeIndex(playerName, homeName));
     }
 
     /**
      * Can be called if and only if the result of {@link Homes#isEmpty} is false
      */
-    public ArrayList<Home> getPlayerHomes(String playerKey)
+    public ArrayList<Home> getPlayerHomes(String playerName)
     {
-        return this.homes.get(playerKey);
+        return this.homes.get(playerName);
+    }
+
+    public ArrayList<String> getPlayersWithHomes(String excludedPlayer)
+    {
+        ArrayList<String> names = new ArrayList<>();
+
+        for (String key : this.homes.keySet())
+        {
+            if (!key.split(" ")[1].equals(excludedPlayer))
+            {
+                names.add(key.split(" ")[1]);
+            }
+        }
+        return names;
     }
 
     public boolean isEmpty(String playerKey)
@@ -126,7 +141,19 @@ public class Homes
         {
             return this.homes.get(playerKey).isEmpty();
         }
-        return false;
+        return true;
+    }
+
+    public boolean isEmptyFromName(String playerName)
+    {
+        for (String playerKey : this.homes.keySet())
+        {
+            if (playerKey.split(" ")[1].equals(playerName))
+            {
+                return this.homes.get(playerKey).isEmpty();
+            }
+        }
+        return true;
     }
 
     public boolean maxHomesReached(String playerKey)
@@ -148,6 +175,25 @@ public class Homes
                 if (homeIterator.name().equals(homeName))
                 {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public boolean homeExistsFromName(String playerName, String homeName)
+    {
+        for (String key : this.homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                for (Home home : this.homes.get(key))
+                {
+                    if (home.name().equals(homeName))
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -179,6 +225,37 @@ public class Homes
         }
 
         return names;
+    }
+
+    /**
+     * Can be called if an only if the player receiving the suggestion is trusted by the player {@code playerName}
+     * (result of {@link HomeUtils#isPlayerTrusting})
+     */
+    public ArrayList<String> getHomesNamesOf(String playerName)
+    {
+        ArrayList<String> names = new ArrayList<>();
+
+        for (String key : this.homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                this.homes.get(key).forEach(home -> names.add(home.name()));
+            }
+        }
+
+        return names;
+    }
+
+    public String getKeyFromName(String playerName)
+    {
+        for (String key : this.homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                return key;
+            }
+        }
+        return null;
     }
 
     public void read()

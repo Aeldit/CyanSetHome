@@ -5,3 +5,4 @@ made here just in case)
 
 Fixed :
 - FileInputStream not being closed, resulting in some errors when trying to delete the file
+- A trusted player could remove another player's home
