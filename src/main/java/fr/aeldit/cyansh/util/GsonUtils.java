@@ -17,85 +17,16 @@
 
 package fr.aeldit.cyansh.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Map;
 
-import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
-import static fr.aeldit.cyansh.util.HomeUtils.TRUST_TYPE;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class GsonUtils
 {
-    public static Map<String, ArrayList<String>> readTrustFile()
-    {
-        try
-        {
-            Gson gsonReader = new Gson();
-            Reader reader = Files.newBufferedReader(TRUST_PATH);
-            Map<String, ArrayList<String>> trustedPlayers = gsonReader.fromJson(reader, TRUST_TYPE);
-            reader.close();
-
-            return trustedPlayers;
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void writeGson(Path filePath, Object content)
-    {
-        if (Files.exists(filePath))
-        {
-            try
-            {
-                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                Writer writer = Files.newBufferedWriter(filePath);
-                gsonWriter.toJson(content, writer);
-                writer.close();
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static void writeGsonOrDeleteFile(Path filePath, Object content)
-    {
-        if (Files.exists(filePath))
-        {
-            try
-            {
-                if ((content instanceof ArrayList<?> && ((ArrayList<?>) content).isEmpty()) || (content instanceof Map<?, ?> && ((Map<?, ?>) content).isEmpty()))
-                {
-                    Files.delete(filePath);
-                }
-                else
-                {
-                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                    Writer writer = Files.newBufferedWriter(filePath);
-                    gsonWriter.toJson(content, writer);
-                    writer.close();
-                }
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     public static void removePropertiesFiles(ServerPlayerEntity player)
     {
         if (Files.exists(MOD_PATH))

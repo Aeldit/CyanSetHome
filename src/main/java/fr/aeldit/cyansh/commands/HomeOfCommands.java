@@ -32,7 +32,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
-import static fr.aeldit.cyansh.util.HomeUtils.isPlayerTrusting;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
@@ -156,7 +155,7 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
+                if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
@@ -223,7 +222,7 @@ public class HomeOfCommands
                             "cyansh.message.useSelfHomes"
                     );
                 }
-                else if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
+                else if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
                 {
                     if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {

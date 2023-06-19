@@ -22,25 +22,16 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
-import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
-import static fr.aeldit.cyansh.util.GsonUtils.*;
-import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
-import static fr.aeldit.cyansh.util.Utils.CyanLibUtils;
-import static fr.aeldit.cyansh.util.Utils.CyanSHLanguageUtils;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public class PermissionCommands
 {
@@ -94,86 +85,24 @@ public class PermissionCommands
                 String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
                 String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName).getUuid() + " " + playerName;
 
-                if (!trustedPlayer.equals(trustingPlayer))
+                if (!trustingPlayer.equals(trustedPlayer))
                 {
-                    try
+                    if (!TrustsObj.isPlayerTrustingFromName(player.getName().getString(), playerName))
                     {
-                        if (!Files.exists(TRUST_PATH))
-                        {
-                            Files.createFile(TRUST_PATH);
+                        TrustsObj.trustPlayer(trustingPlayer, trustedPlayer);
 
-                            Map<String, ArrayList<String>> gsonTrustingPlayers = new HashMap<>();
-                            gsonTrustingPlayers.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
-
-                            writeGson(TRUST_PATH, gsonTrustingPlayers);
-
-                            CyanLibUtils.sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation("playerTrusted"),
-                                    "cyansh.message.playerTrusted",
-                                    CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations,
-                                    Formatting.AQUA + playerName
-                            );
-                        }
-                        else if (Files.readAllLines(TRUST_PATH).isEmpty())
-                        {
-                            Map<String, ArrayList<String>> gsonTrustingPlayers = new HashMap<>();
-                            gsonTrustingPlayers.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
-
-                            writeGson(TRUST_PATH, gsonTrustingPlayers);
-
-                            CyanLibUtils.sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation("playerTrusted"),
-                                    "cyansh.message.playerTrusted",
-                                    CyanSHMidnightConfig.msgToActionBar,
-                                    CyanSHMidnightConfig.useCustomTranslations,
-                                    Formatting.AQUA + playerName
-                            );
-                        }
-                        else
-                        {
-                            Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
-
-                            if (!gsonTrustingPlayers.containsKey(trustingPlayer))
-                            {
-                                gsonTrustingPlayers.put(trustingPlayer, new ArrayList<>(Collections.singleton(trustedPlayer)));
-
-                                writeGson(TRUST_PATH, gsonTrustingPlayers);
-
-                                CyanLibUtils.sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation("playerTrusted"),
-                                        "cyansh.message.playerTrusted",
-                                        CyanSHMidnightConfig.msgToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations,
-                                        Formatting.AQUA + playerName
-                                );
-                            }
-                            else if (!gsonTrustingPlayers.get(trustingPlayer).contains(trustedPlayer))
-                            {
-                                gsonTrustingPlayers.get(trustingPlayer).add(trustedPlayer);
-
-                                writeGson(TRUST_PATH, gsonTrustingPlayers);
-
-                                CyanLibUtils.sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation("playerTrusted"),
-                                        "cyansh.message.playerTrusted",
-                                        CyanSHMidnightConfig.msgToActionBar,
-                                        CyanSHMidnightConfig.useCustomTranslations,
-                                        Formatting.AQUA + playerName
-                                );
-                            }
-                            else
-                            {
-                                CyanLibUtils.sendPlayerMessage(player,
-                                        CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
-                                        "cyansh.error.playerAlreadyTrusted"
-                                );
-                            }
-                        }
+                        CyanLibUtils.sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation("playerTrusted"),
+                                "cyansh.message.playerTrusted",
+                                Formatting.AQUA + playerName
+                        );
                     }
-                    catch (IOException e)
+                    else
                     {
-                        throw new RuntimeException(e);
+                        CyanLibUtils.sendPlayerMessage(player,
+                                CyanSHLanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
+                                "cyansh.error.playerAlreadyTrusted"
+                        );
                     }
                 }
                 else
@@ -203,53 +132,15 @@ public class PermissionCommands
 
             if (!player.getName().getString().equals(untrustedPlayerName))
             {
-                String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
-
-                if (Files.exists(TRUST_PATH))
+                if (TrustsObj.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
                 {
-                    Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
+                    TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
 
-                    if (!gsonTrustingPlayers.isEmpty())
-                    {
-                        if (gsonTrustingPlayers.containsKey(trustingPlayer))
-                        {
-                            for (String playerKey : gsonTrustingPlayers.get(trustingPlayer))
-                            {
-                                if (playerKey.split(" ")[1].equals(untrustedPlayerName))
-                                {
-                                    gsonTrustingPlayers.get(trustingPlayer).remove(playerKey);
-
-                                    if (gsonTrustingPlayers.get(trustingPlayer).isEmpty())
-                                    {
-                                        gsonTrustingPlayers.remove(trustingPlayer);
-                                    }
-
-                                    writeGsonOrDeleteFile(TRUST_PATH, gsonTrustingPlayers);
-
-                                    CyanLibUtils.sendPlayerMessage(player,
-                                            CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
-                                            "cyansh.message.playerUnTrusted",
-                                            Formatting.AQUA + untrustedPlayerName
-                                    );
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            CyanLibUtils.sendPlayerMessage(player,
-                                    CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                                    "cyansh.error.playerNotTrusted"
-                            );
-                        }
-                    }
-                    else
-                    {
-                        CyanLibUtils.sendPlayerMessage(player,
-                                CyanSHLanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
-                                "cyansh.error.playerNotTrusted"
-                        );
-                    }
+                    CyanLibUtils.sendPlayerMessage(player,
+                            CyanSHLanguageUtils.getTranslation("playerUnTrusted"),
+                            "cyansh.message.playerUnTrusted",
+                            Formatting.AQUA + untrustedPlayerName
+                    );
                 }
                 else
                 {
@@ -281,51 +172,34 @@ public class PermissionCommands
 
         if (CyanLibUtils.isPlayer(context.getSource()))
         {
-            if (Files.exists(TRUST_PATH))
+            ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString());
+
+            if (!trustingPlayers.isEmpty())
             {
-                ArrayList<String> trustingPlayers = new ArrayList<>();
+                String players = "";
 
-                for (Map.Entry<String, ArrayList<String>> entry : readTrustFile().entrySet())
+                for (int i = 0; i < trustingPlayers.size(); i++)
                 {
-                    if (entry.getValue().contains(player.getUuidAsString() + " " + player.getName().getString()))
+                    if (trustingPlayers.size() == 1)
                     {
-                        trustingPlayers.add(entry.getKey().split(" ")[1]);
+                        players = players.concat("%s".formatted(trustingPlayers.get(i)));
+                    }
+                    else if (i == trustingPlayers.size() - 1)
+                    {
+                        players = players.concat(", %s".formatted(trustingPlayers.get(i)));
+                    }
+                    else
+                    {
+                        players = players.concat(", %s,".formatted(trustingPlayers.get(i)));
                     }
                 }
 
-                if (!trustingPlayers.isEmpty())
-                {
-                    String players = "";
-
-                    for (int i = 0; i < trustingPlayers.size(); i++)
-                    {
-                        if (trustingPlayers.size() == 1)
-                        {
-                            players = players.concat("%s".formatted(trustingPlayers.get(i)));
-                        }
-                        else if (i == trustingPlayers.size() - 1)
-                        {
-                            players = players.concat(", %s".formatted(trustingPlayers.get(i)));
-                        }
-                        else
-                        {
-                            players = players.concat(", %s,".formatted(trustingPlayers.get(i)));
-                        }
-                    }
-
-                    CyanLibUtils.sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
-                            "cyansh.message.getTrustingPlayers",
-                            Formatting.AQUA + players
-                    );
-                }
-                else
-                {
-                    CyanLibUtils.sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation("noTrustingPlayer"),
-                            "cyansh.message.noTrustingPlayer"
-                    );
-                }
+                CyanLibUtils.sendPlayerMessageActionBar(player,
+                        CyanSHLanguageUtils.getTranslation("getTrustingPlayers"),
+                        "cyansh.message.getTrustingPlayers",
+                        false,
+                        Formatting.AQUA + players
+                );
             }
             else
             {
@@ -349,56 +223,34 @@ public class PermissionCommands
 
         if (CyanLibUtils.isPlayer(context.getSource()))
         {
-            if (Files.exists(TRUST_PATH))
+            ArrayList<String> trustedPlayers = TrustsObj.getTrustedPlayers(player.getUuidAsString() + " " + player.getName().getString());
+
+            if (!trustedPlayers.isEmpty())
             {
-                Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
+                String players = "";
 
-                String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
-
-                if (gsonTrustingPlayers.containsKey(trustingPlayer))
+                for (int i = 0; i < trustedPlayers.size(); i++)
                 {
-                    if (gsonTrustingPlayers.get(trustingPlayer).size() != 0)
+                    if (trustedPlayers.size() == 1)
                     {
-                        String players = "";
-
-                        for (int i = 0; i < gsonTrustingPlayers.get(trustingPlayer).size(); i++)
-                        {
-                            if (gsonTrustingPlayers.get(trustingPlayer).size() == 1)
-                            {
-                                players = players.concat("%s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split(" ")[1]));
-                            }
-                            else if (i == gsonTrustingPlayers.get(trustingPlayer).size() - 1)
-                            {
-                                players = players.concat(", %s".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split(" ")[1]));
-                            }
-                            else
-                            {
-                                players = players.concat(", %s,".formatted(gsonTrustingPlayers.get(trustingPlayer).get(i).split(" ")[1]));
-                            }
-                        }
-
-                        CyanLibUtils.sendPlayerMessageActionBar(player,
-                                CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
-                                "cyansh.message.getTrustedPlayers",
-                                false,
-                                Formatting.AQUA + players
-                        );
+                        players = players.concat("%s".formatted(trustedPlayers.get(i).split(" ")[1]));
+                    }
+                    else if (i == trustedPlayers.size() - 1)
+                    {
+                        players = players.concat(", %s".formatted(trustedPlayers.get(i).split(" ")[1]));
                     }
                     else
                     {
-                        CyanLibUtils.sendPlayerMessage(player,
-                                CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
-                                "cyansh.message.noTrustedPlayer"
-                        );
+                        players = players.concat(", %s,".formatted(trustedPlayers.get(i).split(" ")[1]));
                     }
                 }
-                else
-                {
-                    CyanLibUtils.sendPlayerMessage(player,
-                            CyanSHLanguageUtils.getTranslation("noTrustedPlayer"),
-                            "cyansh.message.noTrustedPlayer"
-                    );
-                }
+
+                CyanLibUtils.sendPlayerMessageActionBar(player,
+                        CyanSHLanguageUtils.getTranslation("getTrustedPlayers"),
+                        "cyansh.message.getTrustedPlayers",
+                        false,
+                        Formatting.AQUA + players
+                );
             }
             else
             {

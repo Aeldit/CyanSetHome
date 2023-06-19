@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
-import fr.aeldit.cyansh.util.HomeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -40,13 +39,13 @@ public class Homes
 {
     private ConcurrentHashMap<String, ArrayList<Home>> homes;
     private final TypeToken<ArrayList<Home>> HOMES_TYPE = new TypeToken<>() {};
-    private String currentArray;
-    private boolean isEditingFile = false;
+    private final ArrayList<String> currentArrays = new ArrayList<>();
+    private final ArrayList<String> editingFiles = new ArrayList<>();
 
 
     public Homes()
     {
-        read();
+        this.homes = new ConcurrentHashMap<>();
     }
 
     public void addPlayer(String playerKey, ArrayList<Home> playerHomes)
@@ -59,18 +58,18 @@ public class Homes
     {
         if (!this.homes.containsKey(playerKey))
         {
-            this.currentArray = playerKey;
+            this.currentArrays.add(playerKey);
             this.homes.put(playerKey, new ArrayList<>(Collections.singletonList(home)));
-            this.currentArray = null;
+            this.currentArrays.remove(playerKey);
             writeHomes(playerKey);
         }
         else
         {
-            if (!playerKey.equals(this.currentArray))
+            if (!this.currentArrays.contains(playerKey))
             {
-                this.currentArray = playerKey;
+                this.currentArrays.add(playerKey);
                 this.homes.get(playerKey).add(home);
-                this.currentArray = null;
+                this.currentArrays.remove(playerKey);
                 writeHomes(playerKey);
             }
         }
@@ -81,11 +80,11 @@ public class Homes
      */
     public void removeHome(@NotNull String playerKey, String homeName)
     {
-        if (!playerKey.equals(this.currentArray))
+        if (!this.currentArrays.contains(playerKey))
         {
-            this.currentArray = playerKey;
+            this.currentArrays.add(playerKey);
             this.homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
-            this.currentArray = null;
+            this.currentArrays.remove(playerKey);
             writeHomes(playerKey);
         }
     }
@@ -160,7 +159,6 @@ public class Homes
     {
         if (this.homes.containsKey(playerKey))
         {
-            LOGGER.info(String.valueOf(this.homes.get(playerKey)));
             return this.homes.get(playerKey).size() >= CyanSHMidnightConfig.maxHomes;
         }
         return false;
@@ -229,7 +227,7 @@ public class Homes
 
     /**
      * Can be called if an only if the player receiving the suggestion is trusted by the player {@code playerName}
-     * (result of {@link HomeUtils#isPlayerTrusting})
+     * (result of {@link Trusts#isPlayerTrustingFromName})
      */
     public ArrayList<String> getHomesNamesOf(String playerName)
     {
@@ -258,7 +256,43 @@ public class Homes
         return null;
     }
 
-    public void read()
+    public void renameIfUsernameChanged(String playerKey, String playerUUID, String playerName)
+    {
+        if (Files.exists(HOMES_PATH))
+        {
+            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
+
+            if (listOfFiles != null)
+            {
+                for (File file : listOfFiles)
+                {
+                    if (file.isFile())
+                    {
+                        String[] splitedFileName = file.getName().split(" ");
+
+                        if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
+                        {
+                            try
+                            {
+                                Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
+                                LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
+                            }
+                            catch (IOException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Directory : minecraft/config/cyansh/homes
+     */
+    public void readServer()
     {
         File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
         this.homes = new ConcurrentHashMap<>();
@@ -285,6 +319,42 @@ public class Homes
         }
     }
 
+
+    /**
+     * Directory (client) : minecraft/config/cyansh/save_name
+     */
+    public void readClient(String saveName)
+    {
+        this.homes = new ConcurrentHashMap<>();
+        HOMES_PATH = Path.of(MOD_PATH + "/" + saveName);
+        checkOrCreateHomesDir();
+        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
+
+        if (listOfFiles != null)
+        {
+            for (File file : listOfFiles)
+            {
+                if (file.isFile())
+                {
+                    if (!file.getName().equals("trusted_players.json"))
+                    {
+                        try
+                        {
+                            Gson gsonReader = new Gson();
+                            Reader reader = Files.newBufferedReader(file.toPath());
+                            addPlayer(file.getName().split("\\.")[0], gsonReader.fromJson(reader, HOMES_TYPE));
+                            reader.close();
+                        }
+                        catch (IOException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void writeHomes(String playerKey)
     {
         checkOrCreateHomesDir();
@@ -302,34 +372,41 @@ public class Homes
             }
             else
             {
-                if (!this.isEditingFile)
+                if (!this.editingFiles.contains(path.getFileName().toString()))
                 {
-                    this.isEditingFile = true;
+                    this.editingFiles.add(path.getFileName().toString());
 
                     Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                     Writer writer = Files.newBufferedWriter(path);
                     gsonWriter.toJson(this.homes.get(playerKey), writer);
                     writer.close();
 
-                    this.isEditingFile = false;
+                    this.editingFiles.remove(path.getFileName().toString());
                 }
                 else
                 {
-                    long end = System.currentTimeMillis() + 1000 * 1000; // 1 s
+                    long end = System.currentTimeMillis() + 1000; // 1 s
+                    boolean couldWrite = false;
 
                     while (System.currentTimeMillis() < end)
                     {
-                        if (!this.isEditingFile)
+                        if (!this.editingFiles.contains(path.getFileName().toString()))
                         {
-                            this.isEditingFile = true;
+                            this.editingFiles.add(path.getFileName().toString());
 
                             Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                             Writer writer = Files.newBufferedWriter(path);
                             gsonWriter.toJson(this.homes.get(playerKey), writer);
                             writer.close();
 
-                            this.isEditingFile = false;
+                            couldWrite = true;
+                            this.editingFiles.remove(path.getFileName().toString());
                         }
+                    }
+
+                    if (!couldWrite)
+                    {
+                        LOGGER.info("[CyanSetHome] Could not write the file %s because it is already beeing written".formatted(path.getFileName().toString()));
                     }
                 }
             }

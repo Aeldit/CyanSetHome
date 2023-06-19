@@ -24,14 +24,15 @@ import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
+import fr.aeldit.cyansh.homes.Homes;
+import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
+import static fr.aeldit.cyansh.homes.Trusts.TRUST_PATH;
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
 import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
-import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHClientCore implements ClientModInitializer
@@ -41,6 +42,9 @@ public class CyanSHClientCore implements ClientModInitializer
     {
         MidnightConfig.init(MODID, CyanSHMidnightConfig.class);
         LOGGER.info("[CyanSetHome] Successfully initialized config");
+
+        HomesObj = new Homes();
+        TrustsObj = new Trusts();
 
         FileUtils.removeEmptyFiles(TRUST_PATH);
 
@@ -57,8 +61,14 @@ public class CyanSHClientCore implements ClientModInitializer
             CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
         }
 
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> transferPropertiesToGson());
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
+        // Join World Event
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            renameFileIfUsernameChanged(handler);
+            HomesObj.readClient(server.getIconFile().toString().replace("icon.png]", "")
+                    .split("\\\\")[server.getIconFile().toString().split("\\\\").length - 2]);
+            TrustsObj.readClient();
+            transferPropertiesToGson();
+        });
 
         LOGGER.info("[CyanSetHome] Successfully completed initialization");
     }

@@ -21,6 +21,7 @@ import fr.aeldit.cyanlib.util.CyanLibUtils;
 import fr.aeldit.cyanlib.util.LanguageUtils;
 import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.homes.Homes;
+import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,11 @@ public class Utils
 {
     public static final String MODID = "cyansh";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
-    public static final Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    public static final Path HOMES_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID + "/homes");
+    public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
+    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
 
-    public static Homes HomesObj = new Homes();
+    public static Homes HomesObj;
+    public static Trusts TrustsObj;
 
     // Options
     public static List<String> optionsBool = new ArrayList<>();
@@ -73,6 +75,18 @@ public class Utils
     // Files
     public static void checkOrCreateHomesDir()
     {
+        if (!Files.exists(MOD_PATH))
+        {
+            try
+            {
+                Files.createDirectory(MOD_PATH);
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+
         if (!Files.exists(HOMES_PATH))
         {
             try

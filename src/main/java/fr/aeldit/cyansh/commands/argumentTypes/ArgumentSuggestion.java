@@ -26,15 +26,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
-import static fr.aeldit.cyansh.util.HomeUtils.*;
 import static fr.aeldit.cyansh.util.Utils.HomesObj;
+import static fr.aeldit.cyansh.util.Utils.TrustsObj;
 
 public final class ArgumentSuggestion
 {
@@ -86,7 +83,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || isPlayerTrusting(trustingPlayer, player.getName().getString()))
+        if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
         {
             return CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder);
         }
@@ -115,7 +112,7 @@ public final class ArgumentSuggestion
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         ArrayList<String> names = new ArrayList<>();
-        getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split(" ")[1]));
+        TrustsObj.getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split(" ")[1]));
 
         return CommandSource.suggestMatching(names, builder);
     }
@@ -128,7 +125,6 @@ public final class ArgumentSuggestion
     public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
         ServerPlayerEntity player = source.getPlayer();
-        List<String> players = new ArrayList<>();
 
         if (player != null)
         {
@@ -136,23 +132,11 @@ public final class ArgumentSuggestion
             {
                 return CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder);
             }
-
-            if (Files.exists(TRUST_PATH))
+            else
             {
-                Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
-
-                for (Map.Entry<String, ArrayList<String>> entry : gsonTrustingPlayers.entrySet())
-                {
-                    for (String value : entry.getValue())
-                    {
-                        if (value.split(" ")[0].equals(player.getUuidAsString()))
-                        {
-                            players.add(entry.getKey().split(" ")[1]);
-                        }
-                    }
-                }
+                return CommandSource.suggestMatching(TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()), builder);
             }
         }
-        return CommandSource.suggestMatching(players, builder);
+        return CommandSource.suggestMatching(new ArrayList<>(), builder);
     }
 }

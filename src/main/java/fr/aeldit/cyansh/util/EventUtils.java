@@ -18,6 +18,7 @@
 package fr.aeldit.cyansh.util;
 
 import fr.aeldit.cyansh.homes.Home;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.jetbrains.annotations.NotNull;
@@ -26,12 +27,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static fr.aeldit.cyansh.util.GsonUtils.readTrustFile;
-import static fr.aeldit.cyansh.util.GsonUtils.writeGson;
-import static fr.aeldit.cyansh.util.HomeUtils.TRUST_PATH;
+import static fr.aeldit.cyansh.homes.Trusts.TRUST_PATH;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class EventUtils
@@ -49,81 +50,8 @@ public class EventUtils
         String playerName = handler.getPlayer().getName().getString();
         String playerKey = playerUUID + "_" + playerName;
 
-        if (Files.exists(MOD_PATH))
-        {
-            File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
-
-            if (listOfFiles != null)
-            {
-                for (File file : listOfFiles)
-                {
-                    if (file.isFile())
-                    {
-                        String[] splitedFileName = file.getName().split(" ");
-
-                        if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
-                        {
-                            try
-                            {
-                                Files.move(file.toPath(), Path.of(MOD_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
-                                LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
-                            }
-                            catch (IOException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (Files.exists(TRUST_PATH))
-        {
-            Map<String, ArrayList<String>> gsonTrustingPlayers = readTrustFile();
-
-            boolean changed = false;
-            String prevName = "";
-
-            if (!gsonTrustingPlayers.isEmpty())
-            {
-                for (String key : gsonTrustingPlayers.keySet())
-                {
-                    // Changes the player username when it is a key
-                    if (key.split("_")[0].equals(playerUUID) && !key.split("_")[1].equals(playerName))
-                    {
-                        prevName = key.split("_")[1];
-                        gsonTrustingPlayers.put(playerKey, gsonTrustingPlayers.get(key));
-                        gsonTrustingPlayers.remove(key);
-                        changed = true;
-                    }
-
-                    if (changed)
-                    {
-                        key = playerKey;
-                    }
-
-                    // Changes the player's username when it is in a list of trusted players
-                    for (String listKey : gsonTrustingPlayers.get(key))
-                    {
-                        if (listKey.split("_")[0].equals(playerUUID) && !listKey.split("_")[1].equals(playerName))
-                        {
-                            prevName = listKey.split("_")[1];
-                            gsonTrustingPlayers.get(key).add(playerKey);
-                            gsonTrustingPlayers.get(key).remove(listKey);
-                            changed = true;
-                        }
-                    }
-                }
-            }
-
-            if (changed)
-            {
-                writeGson(TRUST_PATH, gsonTrustingPlayers);
-                LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", playerName, prevName);
-            }
-        }
+        HomesObj.renameIfUsernameChanged(playerKey, playerUUID, playerName);
+        TrustsObj.renameChangedUsernames(playerKey, playerUUID, playerName);
     }
 
     public static void transferPropertiesToGson()
@@ -140,7 +68,7 @@ public class EventUtils
 
                     try
                     {
-                        if (splitedFileName[splitedFileName.length - 1].equals("properties") && Files.readAllLines(file.toPath()).size() > 1)
+                        if (splitedFileName[splitedFileName.length - 1].equals("properties") && Files.readAllLines(file.toPath()).size() >= 1)
                         {
                             Properties properties = new Properties();
                             FileInputStream fis = new FileInputStream(file);
@@ -149,7 +77,7 @@ public class EventUtils
 
                             if (splitedFileName[0].equals("trusted_players"))
                             {
-                                Map<String, ArrayList<String>> trusts = new HashMap<>();
+                                ConcurrentHashMap<String, ArrayList<String>> trusts = new ConcurrentHashMap<>();
 
                                 if (!Files.exists(TRUST_PATH))
                                 {
@@ -161,15 +89,23 @@ public class EventUtils
                                                 trusts.put(name, trusted);
                                             }
                                     );
+                                    TrustsObj.setTrusts(trusts);
                                     LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
                                 }
                                 else
                                 {
-                                    Map<String, ArrayList<String>> homesFromGson = readTrustFile();
-
-                                    if (homesFromGson != null)
+                                    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
                                     {
-                                        trusts.putAll(homesFromGson);
+                                        TrustsObj.readServer();
+                                    }
+                                    else
+                                    {
+                                        TrustsObj.readClient();
+                                    }
+
+                                    if (TrustsObj.isNotEmpty())
+                                    {
+                                        trusts.putAll(TrustsObj.getTrusts());
                                     }
 
                                     properties.stringPropertyNames().forEach(name ->
@@ -186,70 +122,59 @@ public class EventUtils
                                     LOGGER.info("[CyanSetHome] Transfered the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
                                 }
 
-                                writeGson(TRUST_PATH, trusts);
+                                TrustsObj.write();
                             }
                             else
                             {
-                                ArrayList<Home> homes = new ArrayList<>();
+                                boolean changed = false;
 
                                 if (!properties.stringPropertyNames().isEmpty())
                                 {
-                                    for (String name : properties.stringPropertyNames())
+                                    if (HomesObj.isEmpty(file.getName().split("\\.")[0]))
                                     {
-                                        String currentHome = (String) properties.get(name);
-                                        if (currentHome.split(" ").length == 7)
-                                        {
-                                            homes.add(new Home(
-                                                    name,
-                                                    currentHome.split(" ")[0],
-                                                    Double.parseDouble(currentHome.split(" ")[1]),
-                                                    Double.parseDouble(currentHome.split(" ")[2]),
-                                                    Double.parseDouble(currentHome.split(" ")[3]),
-                                                    Float.parseFloat(currentHome.split(" ")[4]),
-                                                    Float.parseFloat(currentHome.split(" ")[5]),
-                                                    currentHome.split(" ")[6]
-                                            ));
-                                        }
+                                        ArrayList<Home> homes = new ArrayList<>();
+                                        properties.stringPropertyNames().forEach(s -> homes.add(new Home(
+                                                        s,
+                                                        properties.getProperty(s).split(" ")[0],
+                                                        Double.parseDouble(properties.getProperty(s).split(" ")[1]),
+                                                        Double.parseDouble(properties.getProperty(s).split(" ")[2]),
+                                                        Double.parseDouble(properties.getProperty(s).split(" ")[3]),
+                                                        Float.parseFloat(properties.getProperty(s).split(" ")[4]),
+                                                        Float.parseFloat(properties.getProperty(s).split(" ")[5]),
+                                                        properties.getProperty(s).split(" ")[6]
+                                                ))
+                                        );
+                                        HomesObj.addPlayer(file.getName().split("\\.")[0], homes);
                                     }
-                                }
-
-                                Path gsonFilePath = FabricLoader.getInstance().getConfigDir().resolve(MODID + "/" + file.getName().split("\\.")[0] + ".json");
-
-                                if (!Files.exists(gsonFilePath))
-                                {
-                                    Files.createFile(gsonFilePath);
-                                    writeGson(gsonFilePath, homes);
-                                    LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
-                                }
-                                /*else
-                                {
-                                    ArrayList<Home> homesFromGson = readHomeFile(gsonFilePath);
-
-                                    ArrayList<String> existantNames = new ArrayList<>();
-
-                                    homesFromGson.forEach(home -> existantNames.add(home.name()));
-
-                                    for (String name : properties.stringPropertyNames())
+                                    else
                                     {
-                                        if (!existantNames.contains(name))
+                                        for (String name : properties.stringPropertyNames())
                                         {
                                             String currentHome = (String) properties.get(name);
-                                            homesFromGson.add(new Home(
-                                                    name,
-                                                    currentHome.split(" ")[0],
-                                                    Double.parseDouble(currentHome.split(" ")[1]),
-                                                    Double.parseDouble(currentHome.split(" ")[2]),
-                                                    Double.parseDouble(currentHome.split(" ")[3]),
-                                                    Float.parseFloat(currentHome.split(" ")[4]),
-                                                    Float.parseFloat(currentHome.split(" ")[5]),
-                                                    currentHome.split(" ")[6]
-                                            ));
+
+                                            if (currentHome.split(" ").length == 7)
+                                            {
+                                                HomesObj.addHome(file.getName().split("\\.")[0], new Home(
+                                                        name,
+                                                        currentHome.split(" ")[0],
+                                                        Double.parseDouble(currentHome.split(" ")[1]),
+                                                        Double.parseDouble(currentHome.split(" ")[2]),
+                                                        Double.parseDouble(currentHome.split(" ")[3]),
+                                                        Float.parseFloat(currentHome.split(" ")[4]),
+                                                        Float.parseFloat(currentHome.split(" ")[5]),
+                                                        currentHome.split(" ")[6]
+                                                ));
+                                                LOGGER.info("a");
+                                                changed = true;
+                                            }
                                         }
                                     }
+                                }
 
-                                    writeGson(gsonFilePath, homesFromGson);
-                                    LOGGER.info("[CyanSetHome] Transfered the missing home of " + file.getName() + " to the corresponding json file.");
-                                }*/
+                                if (changed)
+                                {
+                                    LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
+                                }
                             }
                         }
                     }
