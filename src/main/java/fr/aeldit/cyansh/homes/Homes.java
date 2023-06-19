@@ -31,15 +31,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
-    private ConcurrentHashMap<String, ArrayList<Home>> homes;
-    private final TypeToken<ArrayList<Home>> HOMES_TYPE = new TypeToken<>() {};
-    private final ArrayList<String> currentArrays = new ArrayList<>();
+    private ConcurrentHashMap<String, List<Home>> homes;
+    private final TypeToken<List<Home>> HOMES_TYPE = new TypeToken<>() {};
     private final ArrayList<String> editingFiles = new ArrayList<>();
 
 
@@ -48,7 +48,10 @@ public class Homes
         this.homes = new ConcurrentHashMap<>();
     }
 
-    public void addPlayer(String playerKey, ArrayList<Home> playerHomes)
+    /**
+     * Adds an entry to the map {@code this.homes} with all the player's homes
+     */
+    public void addPlayer(String playerKey, List<Home> playerHomes)
     {
         this.homes.put(playerKey, playerHomes);
         writeHomes(playerKey);
@@ -58,20 +61,13 @@ public class Homes
     {
         if (!this.homes.containsKey(playerKey))
         {
-            this.currentArrays.add(playerKey);
-            this.homes.put(playerKey, new ArrayList<>(Collections.singletonList(home)));
-            this.currentArrays.remove(playerKey);
+            this.homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
             writeHomes(playerKey);
         }
         else
         {
-            if (!this.currentArrays.contains(playerKey))
-            {
-                this.currentArrays.add(playerKey);
-                this.homes.get(playerKey).add(home);
-                this.currentArrays.remove(playerKey);
-                writeHomes(playerKey);
-            }
+            this.homes.get(playerKey).add(home);
+            writeHomes(playerKey);
         }
     }
 
@@ -80,15 +76,15 @@ public class Homes
      */
     public void removeHome(@NotNull String playerKey, String homeName)
     {
-        if (!this.currentArrays.contains(playerKey))
-        {
-            this.currentArrays.add(playerKey);
-            this.homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
-            this.currentArrays.remove(playerKey);
-            writeHomes(playerKey);
-        }
+        this.homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+        writeHomes(playerKey);
     }
 
+    /**
+     * Removes the key:value entry of the player {@code playerName} if it exists
+     *
+     * @return true if the entry was removed | false otherwise
+     */
     public boolean removeAll(String playerKey)
     {
         if (this.homes.containsKey(playerKey))
@@ -106,6 +102,8 @@ public class Homes
 
     /**
      * Can be called if and only if the result of {@link Homes#homeExists} is true
+     *
+     * @return The home with the name {@code homeName}
      */
     public Home getPlayerHome(String playerName, String homeName)
     {
@@ -114,12 +112,17 @@ public class Homes
 
     /**
      * Can be called if and only if the result of {@link Homes#isEmpty} is false
+     *
+     * @return An ArrayList containing all the homes of the player {@code playerName}
      */
-    public ArrayList<Home> getPlayerHomes(String playerName)
+    public List<Home> getPlayerHomes(String playerName)
     {
         return this.homes.get(playerName);
     }
 
+    /**
+     * @return An ArrayList containing the names of all the players that have at least 1 home
+     */
     public ArrayList<String> getPlayersWithHomes(String excludedPlayer)
     {
         ArrayList<String> names = new ArrayList<>();
@@ -132,6 +135,70 @@ public class Homes
             }
         }
         return names;
+    }
+
+    /**
+     * @return An ArrayList containing all the homes names of the player {@code playerName}
+     */
+    public ArrayList<String> getHomesNames(String playerKey)
+    {
+        ArrayList<String> names = new ArrayList<>();
+
+        if (this.homes.containsKey(playerKey))
+        {
+            this.homes.get(playerKey).forEach(home -> names.add(home.name()));
+        }
+
+        return names;
+    }
+
+    /**
+     * Can be called if an only if the player receiving the suggestion is trusted by the player {@code playerName}
+     * (result of {@link Trusts#isPlayerTrustingFromName})
+     *
+     * @return An ArrayList containing all the homes names of the player {@code playerName}
+     */
+    public ArrayList<String> getHomesNamesOf(String playerName)
+    {
+        ArrayList<String> names = new ArrayList<>();
+
+        for (String key : this.homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                this.homes.get(key).forEach(home -> names.add(home.name()));
+                break;
+            }
+        }
+
+        return names;
+    }
+
+    /**
+     * Can be called if and only if the result of {@link Homes#homeExists} is true
+     */
+    public int getHomeIndex(String playerKey, String homeName)
+    {
+        for (Home home : this.homes.get(playerKey))
+        {
+            if (home.name().equals(homeName))
+            {
+                return this.homes.get(playerKey).indexOf(home);
+            }
+        }
+        return 0;
+    }
+
+    public String getKeyFromName(String playerName)
+    {
+        for (String key : this.homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                return key;
+            }
+        }
+        return null;
     }
 
     public boolean isEmpty(String playerKey)
@@ -168,9 +235,9 @@ public class Homes
     {
         if (this.homes.containsKey(playerKey))
         {
-            for (Home homeIterator : this.homes.get(playerKey))
+            for (Home home : this.homes.get(playerKey))
             {
-                if (homeIterator.name().equals(homeName))
+                if (home.name().equals(homeName))
                 {
                     return true;
                 }
@@ -178,7 +245,6 @@ public class Homes
         }
         return false;
     }
-
 
     public boolean homeExistsFromName(String playerName, String homeName)
     {
@@ -198,64 +264,6 @@ public class Homes
         return false;
     }
 
-    /**
-     * Can be called if and only if the result of {@link Homes#homeExists} is true
-     */
-    public int getHomeIndex(String playerKey, String homeName)
-    {
-        for (Home home : this.homes.get(playerKey))
-        {
-            if (home.name().equals(homeName))
-            {
-                return this.homes.get(playerKey).indexOf(home);
-            }
-        }
-        return -1;
-    }
-
-    public ArrayList<String> getHomesNames(String playerKey)
-    {
-        ArrayList<String> names = new ArrayList<>();
-
-        if (this.homes.containsKey(playerKey))
-        {
-            this.homes.get(playerKey).forEach(home -> names.add(home.name()));
-        }
-
-        return names;
-    }
-
-    /**
-     * Can be called if an only if the player receiving the suggestion is trusted by the player {@code playerName}
-     * (result of {@link Trusts#isPlayerTrustingFromName})
-     */
-    public ArrayList<String> getHomesNamesOf(String playerName)
-    {
-        ArrayList<String> names = new ArrayList<>();
-
-        for (String key : this.homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                this.homes.get(key).forEach(home -> names.add(home.name()));
-            }
-        }
-
-        return names;
-    }
-
-    public String getKeyFromName(String playerName)
-    {
-        for (String key : this.homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                return key;
-            }
-        }
-        return null;
-    }
-
     public void renameIfUsernameChanged(String playerKey, String playerUUID, String playerName)
     {
         if (Files.exists(HOMES_PATH))
@@ -269,8 +277,9 @@ public class Homes
                     if (file.isFile())
                     {
                         String[] splitedFileName = file.getName().split(" ");
+                        String[] splitedFileNameOld = file.getName().split("_");
 
-                        if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json"))
+                        if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json") || (splitedFileNameOld.length == 2 && splitedFileNameOld[0].equals(playerUUID) && !splitedFileNameOld[1].equals(playerName + ".json")))
                         {
                             try
                             {
@@ -307,7 +316,7 @@ public class Homes
                     {
                         Gson gsonReader = new Gson();
                         Reader reader = Files.newBufferedReader(file.toPath());
-                        addPlayer(file.getName().split("\\.")[0], gsonReader.fromJson(reader, HOMES_TYPE));
+                        addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, HOMES_TYPE))));
                         reader.close();
                     }
                     catch (IOException e)
@@ -318,7 +327,6 @@ public class Homes
             }
         }
     }
-
 
     /**
      * Directory (client) : minecraft/config/cyansh/save_name
@@ -342,7 +350,7 @@ public class Homes
                         {
                             Gson gsonReader = new Gson();
                             Reader reader = Files.newBufferedReader(file.toPath());
-                            addPlayer(file.getName().split("\\.")[0], gsonReader.fromJson(reader, HOMES_TYPE));
+                            addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, HOMES_TYPE))));
                             reader.close();
                         }
                         catch (IOException e)
@@ -401,6 +409,7 @@ public class Homes
 
                             couldWrite = true;
                             this.editingFiles.remove(path.getFileName().toString());
+                            break;
                         }
                     }
 

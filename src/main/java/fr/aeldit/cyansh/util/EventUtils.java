@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +49,7 @@ public class EventUtils
     {
         String playerUUID = handler.getPlayer().getUuidAsString();
         String playerName = handler.getPlayer().getName().getString();
-        String playerKey = playerUUID + "_" + playerName;
+        String playerKey = playerUUID + " " + playerName;
 
         HomesObj.renameIfUsernameChanged(playerKey, playerUUID, playerName);
         TrustsObj.renameChangedUsernames(playerKey, playerUUID, playerName);
@@ -77,7 +78,7 @@ public class EventUtils
 
                             if (splitedFileName[0].equals("trusted_players"))
                             {
-                                ConcurrentHashMap<String, ArrayList<String>> trusts = new ConcurrentHashMap<>();
+                                ConcurrentHashMap<String, List<String>> trusts = new ConcurrentHashMap<>();
 
                                 if (!Files.exists(TRUST_PATH))
                                 {
@@ -85,7 +86,7 @@ public class EventUtils
                                     properties.stringPropertyNames().forEach(name ->
                                             {
                                                 String trustedPlayers = (String) properties.get(name);
-                                                ArrayList<String> trusted = new ArrayList<>(List.of(trustedPlayers.split(" ")));
+                                                List<String> trusted = Collections.synchronizedList(new ArrayList<>(List.of(trustedPlayers.split(" "))));
                                                 trusts.put(name, trusted);
                                             }
                                     );
@@ -113,7 +114,7 @@ public class EventUtils
                                                 if (!trusts.containsKey(name))
                                                 {
                                                     String trustedPlayers = (String) properties.get(name);
-                                                    ArrayList<String> trusted = new ArrayList<>(List.of(trustedPlayers.split(" ")));
+                                                    List<String> trusted = Collections.synchronizedList(new ArrayList<>(List.of(trustedPlayers.split(" "))));
                                                     trusts.put(name, trusted);
                                                 }
                                             }
@@ -132,7 +133,7 @@ public class EventUtils
                                 {
                                     if (HomesObj.isEmpty(file.getName().split("\\.")[0]))
                                     {
-                                        ArrayList<Home> homes = new ArrayList<>();
+                                        List<Home> homes = Collections.synchronizedList(new ArrayList<>());
                                         properties.stringPropertyNames().forEach(s -> homes.add(new Home(
                                                         s,
                                                         properties.getProperty(s).split(" ")[0],
@@ -144,7 +145,7 @@ public class EventUtils
                                                         properties.getProperty(s).split(" ")[6]
                                                 ))
                                         );
-                                        HomesObj.addPlayer(file.getName().split("\\.")[0], homes);
+                                        HomesObj.addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(homes)));
                                     }
                                     else
                                     {

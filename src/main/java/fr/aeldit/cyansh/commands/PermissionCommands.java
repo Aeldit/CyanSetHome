@@ -29,6 +29,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static fr.aeldit.cyanlib.util.Constants.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -223,7 +224,7 @@ public class PermissionCommands
 
         if (CyanLibUtils.isPlayer(context.getSource()))
         {
-            ArrayList<String> trustedPlayers = TrustsObj.getTrustedPlayers(player.getUuidAsString() + " " + player.getName().getString());
+            List<String> trustedPlayers = TrustsObj.getTrustedPlayers(player.getUuidAsString() + " " + player.getName().getString());
 
             if (!trustedPlayers.isEmpty())
             {
