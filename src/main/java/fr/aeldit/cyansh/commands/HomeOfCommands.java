@@ -112,6 +112,7 @@ public class HomeOfCommands
                     if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
                     {
                         HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
+
                         CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("removeHomeOf"),
                                 "cyansh.message.removeHomeOf",
@@ -231,7 +232,6 @@ public class HomeOfCommands
                                 "cyansh.message.getDescription.dashSeparation",
                                 false
                         );
-
                         CyanLibUtils.sendPlayerMessageActionBar(player,
                                 CyanSHLanguageUtils.getTranslation("listHomesOf"),
                                 "cyansh.message.listHomesOf",

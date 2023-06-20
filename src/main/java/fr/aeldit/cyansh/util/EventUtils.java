@@ -83,6 +83,7 @@ public class EventUtils
                                 if (!Files.exists(TRUST_PATH))
                                 {
                                     Files.createFile(TRUST_PATH);
+
                                     properties.stringPropertyNames().forEach(name ->
                                             {
                                                 String trustedPlayers = (String) properties.get(name);
@@ -90,6 +91,7 @@ public class EventUtils
                                                 trusts.put(name, trusted);
                                             }
                                     );
+
                                     TrustsObj.setTrusts(trusts);
                                     LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
                                 }
@@ -134,6 +136,7 @@ public class EventUtils
                                     if (HomesObj.isEmpty(file.getName().split("\\.")[0]))
                                     {
                                         List<Home> homes = Collections.synchronizedList(new ArrayList<>());
+
                                         properties.stringPropertyNames().forEach(s -> homes.add(new Home(
                                                         s,
                                                         properties.getProperty(s).split(" ")[0],
@@ -145,6 +148,7 @@ public class EventUtils
                                                         properties.getProperty(s).split(" ")[6]
                                                 ))
                                         );
+
                                         HomesObj.addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(homes)));
                                     }
                                     else
@@ -165,7 +169,7 @@ public class EventUtils
                                                         Float.parseFloat(currentHome.split(" ")[5]),
                                                         currentHome.split(" ")[6]
                                                 ));
-                                                LOGGER.info("a");
+
                                                 changed = true;
                                             }
                                         }

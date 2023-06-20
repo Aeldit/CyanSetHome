@@ -188,6 +188,7 @@ public class HomeCommands
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
                         HomesObj.removeHome(playerKey, homeName);
+
                         CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation("removeHome"),
                                 "cyansh.message.removeHome",
@@ -344,10 +345,9 @@ public class HomeCommands
                     }
                     else
                     {
-                        CyanLibUtils.sendPlayerMessageActionBar(player,
+                        CyanLibUtils.sendPlayerMessage(player,
                                 CyanSHLanguageUtils.getTranslation(ERROR + "noHomes"),
-                                "cyansh.message.noHomes",
-                                false
+                                "cyansh.message.noHomes"
                         );
                     }
                 }

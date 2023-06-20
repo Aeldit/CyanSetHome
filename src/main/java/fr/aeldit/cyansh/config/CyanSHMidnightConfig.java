@@ -29,26 +29,22 @@ public class CyanSHMidnightConfig extends MidnightConfig
 {
     public static Map<String, Object> allOptionsMap = new HashMap<>();
 
-    @Comment
-    public static Comment allowOptions;
-    @Entry
+    @Entry(category = "allows")
     public static boolean allowHomes = true;
-    @Entry
+    @Entry(category = "allows")
     public static boolean allowHomesOf = true;
-    @Entry
+    @Entry(category = "allows")
     public static boolean allowByPass = false;
-    @Entry
+    @Entry(category = "allows")
     public static boolean useCustomTranslations = false;
-    @Entry
+    @Entry(category = "allows")
     public static boolean msgToActionBar = true;
 
-    @Comment
-    public static Comment intOptions;
-    @Entry(min = 1, max = 128)
+    @Entry(category = "integers", min = 1, max = 128)
     public static int maxHomes = 10;
-    @Entry(isSlider = true, min = 0, max = 4)
+    @Entry(category = "integers", isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeHomes = 0;
-    @Entry(isSlider = true, min = 0, max = 4)
+    @Entry(category = "integers", isSlider = true, min = 0, max = 4)
     public static int minOpLevelExeEditConfig = 4;
 
     public static void generateAllOptionsMap()
@@ -77,8 +73,8 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "msgToActionBar" -> msgToActionBar = value;
         }
 
+        allOptionsMap.put(optionName, value);
         write(MODID);
-        generateAllOptionsMap();
 
         if (useCustomTranslations)
         {
@@ -108,8 +104,8 @@ public class CyanSHMidnightConfig extends MidnightConfig
             case "minOpLevelExeEditConfig" -> minOpLevelExeEditConfig = value;
         }
 
+        allOptionsMap.put(optionName, value);
         write(MODID);
-        generateAllOptionsMap();
     }
 
     public static Map<String, Object> getAllOptionsMap()

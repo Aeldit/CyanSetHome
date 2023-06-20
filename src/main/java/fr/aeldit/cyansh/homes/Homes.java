@@ -62,13 +62,12 @@ public class Homes
         if (!this.homes.containsKey(playerKey))
         {
             this.homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
-            writeHomes(playerKey);
         }
         else
         {
             this.homes.get(playerKey).add(home);
-            writeHomes(playerKey);
         }
+        writeHomes(playerKey);
     }
 
     /**
@@ -148,7 +147,6 @@ public class Homes
         {
             this.homes.get(playerKey).forEach(home -> names.add(home.name()));
         }
-
         return names;
     }
 
@@ -170,7 +168,6 @@ public class Homes
                 break;
             }
         }
-
         return names;
     }
 
@@ -303,8 +300,8 @@ public class Homes
      */
     public void readServer()
     {
-        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
         this.homes = new ConcurrentHashMap<>();
+        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
         if (listOfFiles != null)
         {
@@ -415,7 +412,7 @@ public class Homes
 
                     if (!couldWrite)
                     {
-                        LOGGER.info("[CyanSetHome] Could not write the file %s because it is already beeing written".formatted(path.getFileName().toString()));
+                        LOGGER.info("[CyanSetHome] Could not write the file %s because it is already beeing written (for more than 1 sec)".formatted(path.getFileName().toString()));
                     }
                 }
             }

@@ -69,10 +69,11 @@ public class PermissionCommands
     {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
-        String playerName = StringArgumentType.getString(context, "player");
 
         if (CyanLibUtils.isPlayer(source))
         {
+            String playerName = StringArgumentType.getString(context, "player");
+
             if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
             {
                 CyanLibUtils.sendPlayerMessage(player,

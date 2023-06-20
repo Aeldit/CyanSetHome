@@ -23,9 +23,11 @@ import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.homes.Homes;
 import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -100,6 +102,52 @@ public class Utils
         }
     }
 
+    public static void removePropertiesFiles(ServerPlayerEntity player)
+    {
+        if (Files.exists(MOD_PATH))
+        {
+            File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
+            boolean fileDeleted = false;
+
+            if (listOfFiles != null)
+            {
+                for (File file : listOfFiles)
+                {
+                    if (file.isFile())
+                    {
+                        if (file.getName().split("\\.")[-1].equals(".properties"))
+                        {
+                            try
+                            {
+                                Files.delete(file.toPath());
+                                fileDeleted = true;
+                            }
+                            catch (IOException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (fileDeleted)
+            {
+                CyanLibUtils.sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("propertiesFilesDeleted"),
+                        "cyan.message.propertiesFilesDeleted"
+                );
+            }
+            else
+            {
+                CyanLibUtils.sendPlayerMessage(player,
+                        CyanSHLanguageUtils.getTranslation("noPropertiesFiles"),
+                        "cyan.message.noPropertiesFiles"
+                );
+            }
+        }
+    }
+
     // Language Utils
     public static void generateDefaultTranslations()
     {
@@ -110,18 +158,16 @@ public class Utils
         defaultTranslations.put("desc.gethomes", "§3The §d/gethomes §3command lists all your homes");
         defaultTranslations.put("desc.homeof", "§3The §d/homeof <player_name> <home_name> §3command teleports you to the home of the player");
         defaultTranslations.put("desc.removehomeof", "§3The §d/removehomeof <player_name> <home_name> §3command removes the home of the player");
-        defaultTranslations.put("desc.removeallhomesof", "§3The §d/removeallhomesof <player_name> §3command removes all the homes of the player");
         defaultTranslations.put("desc.gethomesof", "§3The §d/gethomesof <player_name> §3command lists all the player's homes");
 
         defaultTranslations.put("desc.allowHomes", "§3The §dallowHomes §3option defines wether the home commands are enabled or not");
         defaultTranslations.put("desc.allowHomesOf", "§3The §dallowHomesOf §3option defines wether the homeOf commands are enabled or not");
+        defaultTranslations.put("desc.allowByPass", "§3The §dallowByPass §3option defines wether admins with the correct OP level can bypass permissions like trust between players");
         defaultTranslations.put("desc.useCustomTranslations", "§3The §duseTranslations §3option defines wether the translation will be used or not");
         defaultTranslations.put("desc.msgToActionBar", "§3The §dmsgToActionBar §3option defines wether the messages will be sent to the action bar or not");
-        defaultTranslations.put("desc.errorToActionBar", "§3The §derrorToActionBar §3option defines wether the error messages will be sent to the action bar or not");
         defaultTranslations.put("desc.maxHomes", "§3The §dmaxHomes §3option defines the maximum number of homes a player can have");
         defaultTranslations.put("desc.minOpLevelExeHomes", "§3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands");
         defaultTranslations.put("desc.minOpLevelExeEditConfig", "§3The §dminOpLevelExeEditConfig §3option defines the OP level required to edit the config");
-        defaultTranslations.put("desc.minOpLevelExeMisc", "§3The §dminOpLevelExeMisc §3option defines the OP level required to bypass certain permissions for players with a high enough OP level");
 
         defaultTranslations.put("dashSeparation", "§6------------------------------------");
         defaultTranslations.put("listHomes", "§6CyanSetHome - YOUR HOMES :\n");
@@ -133,23 +179,21 @@ public class Utils
         defaultTranslations.put("getCfg.header", "§6CyanSetHome - OPTIONS :\n");
         defaultTranslations.put("getCfg.allowHomes", "§6- §dhome §3commands : %s");
         defaultTranslations.put("getCfg.allowHomesOf", "§6- §dhomeOf §3commands : %s");
+        defaultTranslations.put("getCfg.allowByPass", "§6- §3Allow bypass for OPs : %s");
         defaultTranslations.put("getCfg.useCustomTranslations", "§6- §3Use custom translations : %s");
         defaultTranslations.put("getCfg.msgToActionBar", "§6- §3Messages to action bar : %s");
-        defaultTranslations.put("getCfg.errorToActionBar", "§6- §3Error messages to action bar : %s");
         defaultTranslations.put("getCfg.maxHomes", "§6- §3Max homes per player : %s");
         defaultTranslations.put("getCfg.minOpLevelExeEditConfig", "§6- §3Minimum OP level to edit config : %s");
         defaultTranslations.put("getCfg.minOpLevelExeHomes", "§6- §3Minimum OP level for §dhome §3commands : %s");
-        defaultTranslations.put("getCfg.minOpLevelExeMisc", "§6- §3Minimum OP level to bypass permissions : %s");
 
         defaultTranslations.put("set.allowHomes", "§3Toogled §dhome §3commands %s");
         defaultTranslations.put("set.allowHomesOf", "§3Toogled §dhomeOf §3commands %s");
+        defaultTranslations.put("set.allowByPass", "§3Toogled ByPass %s");
         defaultTranslations.put("set.useCustomTranslations", "§3Toogled translations %s");
         defaultTranslations.put("set.msgToActionBar", "§3Toogled messages to action bar %s");
-        defaultTranslations.put("set.errorToActionBar", "§3Toogled error messages to action bar %s");
         defaultTranslations.put("set.maxHomes", "§3The maximum number of homes per player is now %s");
         defaultTranslations.put("set.minOpLevelExeHomes", "§3The OP level required to use the §dhome §3commands is now %s");
         defaultTranslations.put("set.minOpLevelExeEditConfig", "§3The minimum OP level to edit the config is now %s");
-        defaultTranslations.put("set.minOpLevelExeMisc", "§3The minimum OP level required to bypass permissions is now %s");
 
         defaultTranslations.put("error.playerOnlyCmd", "This command can only be executed by a player");
         defaultTranslations.put("error.notOp", "§cYou don't have the required permission to do that");

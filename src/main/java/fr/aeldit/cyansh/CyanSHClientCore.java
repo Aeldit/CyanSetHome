@@ -18,7 +18,6 @@
 package fr.aeldit.cyansh;
 
 import eu.midnightdust.lib.config.MidnightConfig;
-import fr.aeldit.cyanlib.util.FileUtils;
 import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
@@ -30,7 +29,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import static fr.aeldit.cyansh.homes.Trusts.TRUST_PATH;
+import static fr.aeldit.cyansh.config.CyanSHMidnightConfig.generateAllOptionsMap;
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
 import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -46,8 +45,6 @@ public class CyanSHClientCore implements ClientModInitializer
         HomesObj = new Homes();
         TrustsObj = new Trusts();
 
-        FileUtils.removeEmptyFiles(TRUST_PATH);
-
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             ConfigCommands.register(dispatcher);
             HomeCommands.register(dispatcher);
@@ -60,6 +57,8 @@ public class CyanSHClientCore implements ClientModInitializer
         {
             CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
         }
+
+        generateAllOptionsMap();
 
         // Join World Event
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
