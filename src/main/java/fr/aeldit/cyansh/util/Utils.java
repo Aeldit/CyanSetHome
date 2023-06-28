@@ -24,6 +24,7 @@ import fr.aeldit.cyansh.homes.Homes;
 import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Utils
 {
@@ -52,7 +56,6 @@ public class Utils
     public static LanguageUtils CyanSHLanguageUtils = new LanguageUtils(MODID);
     // Utils
     public static CyanLibUtils CyanLibUtils = new CyanLibUtils(Utils.MODID, CyanSHLanguageUtils, CyanSHMidnightConfig.msgToActionBar, CyanSHMidnightConfig.useCustomTranslations);
-    public static LinkedHashMap<String, String> defaultTranslations = new LinkedHashMap<>();
 
     public static Map<String, List<String>> getOptionsList()
     {
@@ -149,8 +152,10 @@ public class Utils
     }
 
     // Language Utils
-    public static void generateDefaultTranslations()
+    public static @NotNull Map<String, String> getDefaultTranslations()
     {
+        Map<String, String> defaultTranslations = new HashMap<>();
+
         defaultTranslations.put("desc.sethome", "§3The §d/sethome §3command saves your current location");
         defaultTranslations.put("desc.home", "§3The §d/home §3command teleports you to the given home");
         defaultTranslations.put("desc.removehome", "§3The §d/removehome §3command removes the given home");
@@ -183,8 +188,8 @@ public class Utils
         defaultTranslations.put("getCfg.useCustomTranslations", "§6- §3Use custom translations : %s");
         defaultTranslations.put("getCfg.msgToActionBar", "§6- §3Messages to action bar : %s");
         defaultTranslations.put("getCfg.maxHomes", "§6- §3Max homes per player : %s");
-        defaultTranslations.put("getCfg.minOpLevelExeEditConfig", "§6- §3Minimum OP level to edit config : %s");
         defaultTranslations.put("getCfg.minOpLevelExeHomes", "§6- §3Minimum OP level for §dhome §3commands : %s");
+        defaultTranslations.put("getCfg.minOpLevelExeEditConfig", "§6- §3Minimum OP level to edit config : %s");
 
         defaultTranslations.put("set.allowHomes", "§3Toogled §dhome §3commands %s");
         defaultTranslations.put("set.allowHomesOf", "§3Toogled §dhomeOf §3commands %s");
@@ -212,6 +217,7 @@ public class Utils
         defaultTranslations.put("error.noHomes", "§cYou don't have any home");
         defaultTranslations.put("error.noHomesOf", "§cThis player doesn't have any home");
         defaultTranslations.put("error.useSelfHomes", "§cPlease use the normal commands to use your homes");
+        defaultTranslations.put("error.optionNotFound", "§cThis option does not exist");
 
         defaultTranslations.put("setHome", "§3The home %s §3have been created");
         defaultTranslations.put("goToHome", "§3You have been teleported to the home %s");
@@ -227,23 +233,7 @@ public class Utils
         defaultTranslations.put("translationsReloaded", "§3Translations have been reloaded");
         defaultTranslations.put("currentValue", "§7Current value : %s");
         defaultTranslations.put("setValue", "§7Set value to : %s  %s  %s  %s %s");
-    }
 
-    public static LinkedHashMap<String, String> getDefaultTranslations()
-    {
-        if (defaultTranslations.isEmpty())
-        {
-            generateDefaultTranslations();
-        }
-        return defaultTranslations;
-    }
-
-    public static LinkedHashMap<String, String> getDefaultTranslations(boolean reloadAll)
-    {
-        if (defaultTranslations.isEmpty() || reloadAll)
-        {
-            generateDefaultTranslations();
-        }
         return defaultTranslations;
     }
 }

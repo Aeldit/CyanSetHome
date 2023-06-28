@@ -20,6 +20,7 @@
   "cyansh.message.noHomes": "§cYou don't have any home",
   "cyansh.message.noHomesOf": "§cThis player doesn't have any home",
   "cyansh.message.useSelfHomes": "§cPlease use the normal commands to use your homes",
+  "cyansh.message.optionNotFound": "§cThis option does not exist",
   "---------------------------------------------------MESSAGES----------------------------------------------------": "",
   "cyansh.message.setHome": "§3The home %s §3have been created",
   "cyansh.message.goToHome": "§3You have been teleported to the home %s",

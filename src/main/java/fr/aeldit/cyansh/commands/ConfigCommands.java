@@ -91,7 +91,7 @@ public class ConfigCommands
 
         if (CyanLibUtils.isPlayer(context.getSource()))
         {
-            CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations(true));
+            CyanSHLanguageUtils.loadLanguage(Utils.getDefaultTranslations());
             CyanLibUtils.sendPlayerMessage(player,
                     CyanSHLanguageUtils.getTranslation("translationsReloaded"),
                     "cyansh.message.translationsReloaded"
