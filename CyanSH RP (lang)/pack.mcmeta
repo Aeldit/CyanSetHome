@@ -1,13 +1,13 @@
 {
   "pack": {
-    "pack_format": 12,
+    "pack_format": 15,
     "description": [
       {
         "text": "CyanSetHome",
         "color": "dark_aqua"
       },
       {
-        "text": " MC 1.19.4",
+        "text": " MC 1.20.x",
         "color": "gold"
       },
       {
