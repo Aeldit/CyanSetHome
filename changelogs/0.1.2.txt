@@ -6,9 +6,9 @@ made here just in case)
 Fixed :
 - FileInputStream not being closed, resulting in some errors when trying to delete the file
 - A trusted player could remove another player's home
-- Home in solo where all saved at the same place, they are now in separate folders (same name as the world they are created for)
+- Homes in solo where all saved at the same place, they are now in separate folders (same name as the world they are created for)
 - Homes and Trust systems now use thread-safe classes (`ConcurrentHashMap` and `Collections.synchronizedList`) to prevent any problem
-with concurrent modifications (basically 2 people editing the files at the same time)
+with concurrent modifications (basically 2 people editing the homes (which then writes in the files) at the same time)
 
 Changed :
 - Use CyanLib 0.3.1
