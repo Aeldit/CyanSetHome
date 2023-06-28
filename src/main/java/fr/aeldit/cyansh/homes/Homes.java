@@ -20,7 +20,6 @@ package fr.aeldit.cyansh.homes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -41,6 +40,7 @@ public class Homes
     private ConcurrentHashMap<String, List<Home>> homes;
     private final TypeToken<List<Home>> HOMES_TYPE = new TypeToken<>() {};
     private final ArrayList<String> editingFiles = new ArrayList<>();
+    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
 
 
     public Homes()
@@ -223,7 +223,7 @@ public class Homes
     {
         if (this.homes.containsKey(playerKey))
         {
-            return this.homes.get(playerKey).size() >= CyanSHMidnightConfig.maxHomes;
+            return this.homes.get(playerKey).size() >= LibConfig.getIntOption("maxHomes");
         }
         return false;
     }

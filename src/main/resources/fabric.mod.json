@@ -9,7 +9,8 @@
   ],
   "contact": {
     "homepage": "https://modrinth.com/user/Aeldit",
-    "sources": "https://github.com/Aeldit/CyanSetHome"
+    "sources": "https://github.com/Aeldit/CyanSetHome",
+    "issues": "https://github.com/Aeldit/CyanSetHome/issues"
   },
   "license": "CC0-1.0",
   "icon": "assets/cyansh/icon.png",
@@ -20,15 +21,19 @@
     ],
     "client": [
       "fr.aeldit.cyansh.CyanSHClientCore"
-    ],
-    "modmenu": [
-      "fr.aeldit.cyansh.config.ModMenuApiImpl"
     ]
   },
   "depends": {
     "fabricloader": ">=0.14.21",
     "fabric": "*",
-    "minecraft": "1.19.4",
+    "minecraft": "1.20.x",
     "java": ">=17"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/JJMnf62Kuj"
+      }
+    }
   }
 }

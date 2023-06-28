@@ -10,6 +10,7 @@
 |    `1.19-1.19.2`     |     ✅      |
 |       `1.19.3`       | ❌ (0.1.0)  |
 |       `1.19.4`       |     ✅      |
+|       `1.20.x`       |     ✅      |
 
 ### 💲```Features```
 
@@ -33,33 +34,34 @@
 > If you have any question, you can ask them on my Discord server
 >
 > ![discord_badge](https://img.shields.io/discord/750243612473819188?color=7289da&label=DISCORD&logo=discord&logoColor=7289da&style=for-the-badge)
->
-
 
 ***
 
 ### ✅ ```List of commands (and their aliases)```
 
-|                  Command                  |                    Description                    |              Alias               |
-|:-----------------------------------------:|:-------------------------------------------------:|:--------------------------------:|
-|          `/sethome <home_name>`           |        Creates a home with the given name         |        `/sh <home_name>`         |
-|            `/home <home_name>`            |          Teleports you to the given home          |         `/h <home_name>`         |
-|         `/removehome <home_name>`         |              Removes the given home               |        `/rh <home_name>`         |
-|             `/removeallhomes`             |              Removes all your homes               |                ❌                 |
-|                `/gethomes`                |        Displays all your homes in the chat        |              `/gh`               |
-|                                           |                                                   |                                  |
-|               `/hometrust`                |     Adds the given player to your trust list      |                ❌                 |
-|              `/homeuntrust`               |   Removes the given player from your trust list   |                ❌                 |
-|           `/gettrustingplayers`           | Displays in the chat every player that trusts you |                ❌                 |
-|           `/gettrustedplayers`            | Displays in the chat every player that you trust  |                ❌                 |
-|                                           |                                                   |                                  |
-|    `/homeof <player_name> <home_name>`    |   Teleports you to the home of the given player   | `/ho <player_name> <home_name>`  |
-| `/removehomeof <player_name> <home_name>` |       Removes the home of the given player        | `/rho <player_name> <home_name>` |
-|        `/gethomesof <player_name>`        | Displays all the given player's homes in the chat |       `/gho <player_name>`       |
+|                  Command                  |                             Description                              |              Alias               |
+|:-----------------------------------------:|:--------------------------------------------------------------------:|:--------------------------------:|
+|          `/sethome <home_name>`           |                  Creates a home with the given name                  |        `/sh <home_name>`         |
+|            `/home <home_name>`            |                   Teleports you to the given home                    |         `/h <home_name>`         |
+|         `/removehome <home_name>`         |                        Removes the given home                        |        `/rh <home_name>`         |
+|             `/removeallhomes`             |                        Removes all your homes                        |                ❌                 |
+|                `/gethomes`                |                 Displays all your homes in the chat                  |              `/gh`               |
+|                                           |                                                                      |                                  |
+|               `/hometrust`                |               Adds the given player to your trust list               |                ❌                 |
+|              `/homeuntrust`               |            Removes the given player from your trust list             |                ❌                 |
+|           `/gettrustingplayers`           |          Displays in the chat every player that trusts you           |                ❌                 |
+|           `/gettrustedplayers`            |           Displays in the chat every player that you trust           |                ❌                 |
+|                                           |                                                                      |                                  |
+| `/removehomeof <player_name> <home_name>` |                 Removes the home of the given player                 | `/rho <player_name> <home_name>` |
+|    `/homeof <player_name> <home_name>`    |            Teleports you to the home of the given player             | `/ho <player_name> <home_name>`  |
+|        `/gethomesof <player_name>`        |          Displays all the given player's homes in the chat           |       `/gho <player_name>`       |
+|                                           |                                                                      |                                  |
+|           `/reloadTranslations`           |            Reloads the custom translations from the file             |                ❌                 |
+|         `/removePropertiesFiles`          | Removes the properties files after they have been transfered to json |                ❌                 |
 
 > ### ❗ Important :
 >
->If you are not using this mod on client but only on server side, download the resource pack for messages translations
+> If you are not using this mod on client but only on server side, download the resource pack for messages translations
 > (CyanSetHome 1.1X.x located in this mod's github repository)
 
 > 📖 If you launch the mod on server side, it will use the latest version of minecraft, but if you use it on client side,

@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Trusts

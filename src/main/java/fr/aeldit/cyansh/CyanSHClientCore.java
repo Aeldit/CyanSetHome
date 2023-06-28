@@ -17,19 +17,16 @@
 
 package fr.aeldit.cyansh;
 
-import eu.midnightdust.lib.config.MidnightConfig;
 import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
-import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.homes.Homes;
 import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import static fr.aeldit.cyansh.config.CyanSHMidnightConfig.generateAllOptionsMap;
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
 import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -39,9 +36,6 @@ public class CyanSHClientCore implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
-        MidnightConfig.init(MODID, CyanSHMidnightConfig.class);
-        LOGGER.info("[CyanSetHome] Successfully initialized config");
-
         HomesObj = new Homes();
         TrustsObj = new Trusts();
 
@@ -53,12 +47,10 @@ public class CyanSHClientCore implements ClientModInitializer
         });
         LOGGER.info("[CyanSetHome] Successfully initialized commands");
 
-        if (CyanSHMidnightConfig.useCustomTranslations)
+        if (LibConfig.getBoolOption("useCustomTranslations"))
         {
-            CyanSHLanguageUtils.loadLanguage(getDefaultTranslations());
+            LanguageUtils.loadLanguage(getDefaultTranslations());
         }
-
-        generateAllOptionsMap();
 
         // Join World Event
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

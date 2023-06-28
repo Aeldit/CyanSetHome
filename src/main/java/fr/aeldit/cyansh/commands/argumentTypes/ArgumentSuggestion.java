@@ -19,7 +19,6 @@ package fr.aeldit.cyansh.commands.argumentTypes;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import fr.aeldit.cyansh.config.CyanSHMidnightConfig;
 import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -30,8 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.util.Utils.HomesObj;
-import static fr.aeldit.cyansh.util.Utils.TrustsObj;
+import static fr.aeldit.cyansh.util.Utils.*;
 
 public final class ArgumentSuggestion
 {
@@ -42,11 +40,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getOptions(@NotNull SuggestionsBuilder builder)
     {
-        List<String> options = new ArrayList<>();
-        options.addAll(Utils.getOptionsList().get("booleans"));
-        options.addAll(Utils.getOptionsList().get("integers"));
-
-        return CommandSource.suggestMatching(options, builder);
+        return CommandSource.suggestMatching(Utils.getOptions().keySet(), builder);
     }
 
     /**
@@ -83,7 +77,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        if ((CyanSHMidnightConfig.allowByPass && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
+        if ((LibConfig.getBoolOption("allowByPass") && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
         {
             return CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder);
         }
@@ -128,7 +122,7 @@ public final class ArgumentSuggestion
 
         if (player != null)
         {
-            if (player.hasPermissionLevel(4) && CyanSHMidnightConfig.allowByPass)
+            if (player.hasPermissionLevel(4) && LibConfig.getBoolOption("allowByPass"))
             {
                 return CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder);
             }
