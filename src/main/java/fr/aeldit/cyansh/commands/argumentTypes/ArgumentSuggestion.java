@@ -19,7 +19,6 @@ package fr.aeldit.cyansh.commands.argumentTypes;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import fr.aeldit.cyansh.util.Utils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,33 +32,6 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public final class ArgumentSuggestion
 {
-    /**
-     * Called for the command {@code /cyansh config <optionName>}
-     *
-     * @return a suggestion with the available options
-     */
-    public static CompletableFuture<Suggestions> getOptions(@NotNull SuggestionsBuilder builder)
-    {
-        return CommandSource.suggestMatching(Utils.getOptions().keySet(), builder);
-    }
-
-    /**
-     * Called for the command {@code /cyansh config optionName [integer]}
-     *
-     * @return a suggestion with all the available integers for the configurations
-     */
-    public static CompletableFuture<Suggestions> getInts(@NotNull SuggestionsBuilder builder)
-    {
-        List<String> ints = new ArrayList<>();
-        ints.add("0");
-        ints.add("1");
-        ints.add("2");
-        ints.add("3");
-        ints.add("4");
-
-        return CommandSource.suggestMatching(ints, builder);
-    }
-
     /**
      * Called for the command {@code /get-homes} or the suggestions of the {@code home} commands
      *

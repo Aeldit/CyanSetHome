@@ -17,7 +17,6 @@
 
 package fr.aeldit.cyansh;
 
-import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
@@ -47,11 +46,11 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            ConfigCommands.register(dispatcher);
+            LibConfigCommands.register(dispatcher);
             HomeCommands.register(dispatcher);
             HomeOfCommands.register(dispatcher);
             PermissionCommands.register(dispatcher);
         });
-        LOGGER.info("[CyanSetHome] Successfully completed initialization");
+        LOGGER.info("[CyanSetHome] Successfully initialized");
     }
 }

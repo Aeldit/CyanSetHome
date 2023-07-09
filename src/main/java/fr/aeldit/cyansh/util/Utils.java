@@ -20,6 +20,7 @@ package fr.aeldit.cyansh.util;
 import fr.aeldit.cyanlib.lib.CyanLib;
 import fr.aeldit.cyanlib.lib.CyanLibConfig;
 import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
+import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
 import fr.aeldit.cyanlib.lib.utils.RULES;
 import fr.aeldit.cyansh.homes.Homes;
 import fr.aeldit.cyansh.homes.Trusts;
@@ -49,6 +50,7 @@ public class Utils
     public static CyanLibConfig LibConfig = new CyanLibConfig(MODID, getOptions(), getRules());
     public static CyanLibLanguageUtils LanguageUtils = new CyanLibLanguageUtils(MODID, LibConfig);
     public static CyanLib LibUtils = new CyanLib(MODID, LibConfig, LanguageUtils);
+    public static CyanLibConfigCommands LibConfigCommands = new CyanLibConfigCommands(MODID, LibUtils, getDefaultTranslations());
 
     private static Map<String, String> defaultTranslations;
 
@@ -72,6 +74,8 @@ public class Utils
     public static @NotNull Map<String, Object> getRules()
     {
         Map<String, Object> rules = new HashMap<>();
+
+        rules.put("useCustomTranslations", RULES.LOAD_CUSTOM_TRANSLATIONS);
 
         rules.put("maxHomes", RULES.POSITIVE_VALUE);
         rules.put("minOpLevelExeHomes", RULES.OP_LEVELS);

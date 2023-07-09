@@ -17,7 +17,6 @@
 
 package fr.aeldit.cyansh;
 
-import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
@@ -26,7 +25,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
-import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHClientCore implements ClientModInitializer
@@ -48,15 +46,14 @@ public class CyanSHClientCore implements ClientModInitializer
             TrustsObj.readClient(server.getIconFile().toString().replace("icon.png]", "")
                     .split("\\\\")[server.getIconFile().toString().split("\\\\").length - 2]
             );
-            transferPropertiesToGson();
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            ConfigCommands.register(dispatcher);
+            LibConfigCommands.register(dispatcher);
             HomeCommands.register(dispatcher);
             HomeOfCommands.register(dispatcher);
             PermissionCommands.register(dispatcher);
         });
-        LOGGER.info("[CyanSetHome] Successfully completed initialization");
+        LOGGER.info("[CyanSetHome] Successfully initialized");
     }
 }
