@@ -61,7 +61,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called for the command {@code /gethomes} or the suggestions of the {@code home} commands
+     * Called for the command {@code /get-homes} or the suggestions of the {@code home} commands
      *
      * @return A suggestion with all the player's homes
      */
@@ -71,7 +71,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called for the command {@code /gethomesof} or the suggestions of the {@code homeOf} commands
+     * Called for the command {@code /get-homes-of} or the suggestions of the {@code homeOf} commands
      *
      * @return A suggestion with all the trusting player's homes
      */
@@ -85,7 +85,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called for the command {@code /hometrust}
+     * Called for the command {@code /home-trust}
      *
      * @return A suggestion with all the online players
      */
@@ -99,7 +99,7 @@ public final class ArgumentSuggestion
     }
 
     /**
-     * Called for the command {@code /homeuntrust}
+     * Called for the command {@code /home-untrust}
      *
      * @return A suggestion with all the trusted players
      */

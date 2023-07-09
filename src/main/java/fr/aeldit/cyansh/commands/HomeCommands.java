@@ -21,9 +21,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
-import fr.aeldit.cyansh.homes.Home;
+import fr.aeldit.cyansh.homes.Homes;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,14 +34,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Objects;
 
-import static fr.aeldit.cyanlib.lib.TranslationsPrefixes.ERROR;
+import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
-        dispatcher.register(CommandManager.literal("sethome")
+        dispatcher.register(CommandManager.literal("set-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .executes(HomeCommands::setHome)
                 )
@@ -66,7 +65,7 @@ public class HomeCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("removehome")
+        dispatcher.register(CommandManager.literal("remove-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
@@ -79,11 +78,11 @@ public class HomeCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("removeallhomes")
+        dispatcher.register(CommandManager.literal("remove-all-homes")
                 .executes(HomeCommands::removeAllHomes)
         );
 
-        dispatcher.register(CommandManager.literal("gethomes")
+        dispatcher.register(CommandManager.literal("get-homes")
                 .executes(HomeCommands::getHomesList)
         );
         dispatcher.register(CommandManager.literal("gh")
@@ -93,7 +92,7 @@ public class HomeCommands
     }
 
     /**
-     * Called by the command {@code /sethome <home_name>} or {@code /sh <home_name>}
+     * Called by the command {@code /set-home <home_name>} or {@code /sh <home_name>}
      * <p>
      * Creates a home with the player current position (dimension, x, y, z, yaw, pitch, date)
      */
@@ -117,7 +116,7 @@ public class HomeCommands
                             if (player.getWorld() == player.getServer().getWorld(World.OVERWORLD))
                             {
                                 HomesObj.addHome(playerKey,
-                                        new Home(homeName, "overworld", player.getX(), player.getY(), player.getZ(),
+                                        new Homes.Home(homeName, "overworld", player.getX(), player.getY(), player.getZ(),
                                                 player.getYaw(), player.getPitch(),
                                                 new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
                                         ));
@@ -125,7 +124,7 @@ public class HomeCommands
                             else if (player.getWorld() == player.getServer().getWorld(World.NETHER))
                             {
                                 HomesObj.addHome(playerKey,
-                                        new Home(homeName, "nether", player.getX(), player.getY(), player.getZ(),
+                                        new Homes.Home(homeName, "nether", player.getX(), player.getY(), player.getZ(),
                                                 player.getYaw(), player.getPitch(),
                                                 new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
                                         ));
@@ -133,13 +132,13 @@ public class HomeCommands
                             else
                             {
                                 HomesObj.addHome(playerKey,
-                                        new Home(homeName, "end", player.getX(), player.getY(), player.getZ(),
+                                        new Homes.Home(homeName, "end", player.getX(), player.getY(), player.getZ(),
                                                 player.getYaw(), player.getPitch(),
                                                 new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
                                         ));
                             }
 
-                            CyanLibLanguageUtils.sendPlayerMessage(player,
+                            LanguageUtils.sendPlayerMessage(player,
                                     LanguageUtils.getTranslation("setHome"),
                                     "cyansh.msg.setHome",
                                     Formatting.YELLOW + homeName
@@ -147,7 +146,7 @@ public class HomeCommands
                         }
                         else
                         {
-                            CyanLibLanguageUtils.sendPlayerMessage(player,
+                            LanguageUtils.sendPlayerMessage(player,
                                     LanguageUtils.getTranslation(ERROR + "homeAlreadyExists"),
                                     "cyansh.msg.homeAlreadyExists"
                             );
@@ -155,7 +154,7 @@ public class HomeCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "maxHomesReached"),
                                 "cyansh.msg.maxHomesReached",
                                 Formatting.GOLD + String.valueOf(LibConfig.getIntOption("maxHomes"))
@@ -168,7 +167,7 @@ public class HomeCommands
     }
 
     /**
-     * Called by the command {@code /removehome <home_name>} or {@code /rh <home_name>}
+     * Called by the command {@code /remove-home <home_name>} or {@code /rh <home_name>}
      * <p>
      * Removes the given home
      */
@@ -189,7 +188,7 @@ public class HomeCommands
                     {
                         HomesObj.removeHome(playerKey, homeName);
 
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation("removeHome"),
                                 "cyansh.msg.removeHome",
                                 Formatting.YELLOW + homeName
@@ -197,7 +196,7 @@ public class HomeCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
@@ -210,7 +209,7 @@ public class HomeCommands
     }
 
     /**
-     * Called by the command {@code /removeallhomes}
+     * Called by the command {@code /remove-all-homes}
      * <p>
      * Removes all the homes
      */
@@ -226,14 +225,14 @@ public class HomeCommands
                 {
                     if (HomesObj.removeAll(player.getUuidAsString() + " " + player.getName().getString()))
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation("removeAllHomes"),
                                 "cyansh.msg.removeAllHomes"
                         );
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "noHomes"),
                                 "cyansh.msg.noHomes"
                         );
@@ -264,7 +263,7 @@ public class HomeCommands
 
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
-                        Home home = HomesObj.getPlayerHome(playerKey, homeName);
+                        Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
 
                         switch (home.dimension())
                         {
@@ -276,7 +275,7 @@ public class HomeCommands
                                     home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                         }
 
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation("goToHome"),
                                 "cyansh.msg.goToHome",
                                 Formatting.YELLOW + homeName
@@ -284,7 +283,7 @@ public class HomeCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
@@ -298,7 +297,7 @@ public class HomeCommands
 
 
     /**
-     * Called by the command {@code /gethomes} or {@code /gh}
+     * Called by the command {@code /get-homes} or {@code /gh}
      * <p>
      * Sends a message in the player's chat with all its homes
      */
@@ -316,18 +315,18 @@ public class HomeCommands
 
                     if (!HomesObj.isEmpty(playerKey))
                     {
-                        CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        LanguageUtils.sendPlayerMessageActionBar(player,
                                 LanguageUtils.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
-                        CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        LanguageUtils.sendPlayerMessageActionBar(player,
                                 LanguageUtils.getTranslation("listHomes"),
                                 "cyansh.msg.listHomes",
                                 false
                         );
 
-                        HomesObj.getPlayerHomes(playerKey).forEach(home -> CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        HomesObj.getPlayerHomes(playerKey).forEach(home -> LanguageUtils.sendPlayerMessageActionBar(player,
                                         LanguageUtils.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
@@ -337,7 +336,7 @@ public class HomeCommands
                                 )
                         );
 
-                        CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        LanguageUtils.sendPlayerMessageActionBar(player,
                                 LanguageUtils.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
@@ -345,7 +344,7 @@ public class HomeCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "noHomes"),
                                 "cyansh.msg.noHomes"
                         );

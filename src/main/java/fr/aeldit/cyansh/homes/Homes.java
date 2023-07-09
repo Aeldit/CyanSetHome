@@ -37,11 +37,13 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
+    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date) {}
+
     private ConcurrentHashMap<String, List<Home>> homes;
     private final TypeToken<List<Home>> HOMES_TYPE = new TypeToken<>() {};
-    private final ArrayList<String> editingFiles = new ArrayList<>();
-    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
+    private final List<String> editingFiles = Collections.synchronizedList(new ArrayList<>());
 
+    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
 
     public Homes()
     {
@@ -122,9 +124,9 @@ public class Homes
     /**
      * @return An ArrayList containing the names of all the players that have at least 1 home
      */
-    public ArrayList<String> getPlayersWithHomes(String excludedPlayer)
+    public List<String> getPlayersWithHomes(String excludedPlayer)
     {
-        ArrayList<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<>();
 
         for (String key : this.homes.keySet())
         {
@@ -139,9 +141,9 @@ public class Homes
     /**
      * @return An ArrayList containing all the homes names of the player {@code playerName}
      */
-    public ArrayList<String> getHomesNames(String playerKey)
+    public List<String> getHomesNames(String playerKey)
     {
-        ArrayList<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<>();
 
         if (this.homes.containsKey(playerKey))
         {
@@ -156,9 +158,9 @@ public class Homes
      *
      * @return An ArrayList containing all the homes names of the player {@code playerName}
      */
-    public ArrayList<String> getHomesNamesOf(String playerName)
+    public List<String> getHomesNamesOf(String playerName)
     {
-        ArrayList<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<>();
 
         for (String key : this.homes.keySet())
         {
@@ -261,7 +263,7 @@ public class Homes
         return false;
     }
 
-    public void renameIfUsernameChanged(String playerKey, String playerUUID, String playerName)
+    public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)
     {
         if (Files.exists(HOMES_PATH))
         {
@@ -373,6 +375,7 @@ public class Homes
                 if (Files.exists(path))
                 {
                     Files.delete(path);
+                    removeEmptyModDir();
                 }
             }
             else
@@ -412,7 +415,7 @@ public class Homes
 
                     if (!couldWrite)
                     {
-                        LOGGER.info("[CyanSetHome] Could not write the file %s because it is already beeing written (for more than 1 sec)".formatted(path.getFileName().toString()));
+                        LOGGER.info("[CyanSetHome] Could not write the file %s because it is already being written (for more than 1 sec)".formatted(path.getFileName().toString()));
                     }
                 }
             }

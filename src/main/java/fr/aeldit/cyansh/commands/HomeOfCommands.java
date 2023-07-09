@@ -21,9 +21,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
-import fr.aeldit.cyansh.homes.Home;
+import fr.aeldit.cyansh.homes.Homes;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,14 +30,14 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import static fr.aeldit.cyanlib.lib.TranslationsPrefixes.ERROR;
+import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
-        dispatcher.register(CommandManager.literal("homeof")
+        dispatcher.register(CommandManager.literal("home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
@@ -57,7 +56,7 @@ public class HomeOfCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("removehomeof")
+        dispatcher.register(CommandManager.literal("remove-home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .then(CommandManager.argument("home_name", StringArgumentType.string())
@@ -76,7 +75,7 @@ public class HomeOfCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("gethomesof")
+        dispatcher.register(CommandManager.literal("get-homes-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
                         .executes(HomeOfCommands::getHomesOfList)
@@ -91,7 +90,7 @@ public class HomeOfCommands
     }
 
     /**
-     * Called by the command {@code /removehomeof <home_name>} or {@code /rho <home_name>}
+     * Called by the command {@code /remove-home-of <home_name>} or {@code /rho <home_name>}
      * <p>
      * Removes the given home of the given player
      */
@@ -113,7 +112,7 @@ public class HomeOfCommands
                     {
                         HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation("removeHomeOf"),
                                 "cyansh.msg.removeHomeOf",
                                 Formatting.YELLOW + homeName,
@@ -122,7 +121,7 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
@@ -131,7 +130,7 @@ public class HomeOfCommands
                 }
                 else
                 {
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation(ERROR + "notOpOrTrusted"),
                             "cyansh.msg.notOpOrTrusted"
                     );
@@ -142,7 +141,7 @@ public class HomeOfCommands
     }
 
     /**
-     * Called by the command {@code /homeof <player_name> <home_name>} or {@code /ho <player_name> <home_name>}
+     * Called by the command {@code /home-of <player_name> <home_name>} or {@code /ho <player_name> <home_name>}
      * <p>
      * Teleports the player to the given home
      */
@@ -162,7 +161,7 @@ public class HomeOfCommands
 
                     if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
                     {
-                        Home home = HomesObj.getPlayerHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
+                        Homes.Home home = HomesObj.getPlayerHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
                         switch (home.dimension())
                         {
@@ -174,7 +173,7 @@ public class HomeOfCommands
                                     home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                         }
 
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation("goToHome"),
                                 "cyansh.msg.goToHome",
                                 Formatting.YELLOW + homeName
@@ -182,7 +181,7 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
@@ -191,7 +190,7 @@ public class HomeOfCommands
                 }
                 else
                 {
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation(ERROR + "notOpOrTrusted"),
                             "cyansh.msg.notOpOrTrusted"
                     );
@@ -202,7 +201,7 @@ public class HomeOfCommands
     }
 
     /**
-     * Called by the command {@code /gethomesof} or {@code /gho}
+     * Called by the command {@code /get-homes-of} or {@code /gho}
      * <p>
      * Sends a message in the player's chat with all the given player's homes
      */
@@ -218,7 +217,7 @@ public class HomeOfCommands
 
                 if (player.getName().getString().equals(trustingPlayer))
                 {
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation(ERROR + "useSelfHomes"),
                             "cyansh.msg.useSelfHomes"
                     );
@@ -227,19 +226,19 @@ public class HomeOfCommands
                 {
                     if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {
-                        CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        LanguageUtils.sendPlayerMessageActionBar(player,
                                 LanguageUtils.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
-                        CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        LanguageUtils.sendPlayerMessageActionBar(player,
                                 LanguageUtils.getTranslation("listHomesOf"),
                                 "cyansh.msg.listHomesOf",
                                 false,
                                 Formatting.AQUA + trustingPlayer
                         );
 
-                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer)).forEach(home -> CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer)).forEach(home -> LanguageUtils.sendPlayerMessageActionBar(player,
                                         LanguageUtils.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
@@ -249,7 +248,7 @@ public class HomeOfCommands
                                 )
                         );
 
-                        CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                        LanguageUtils.sendPlayerMessageActionBar(player,
                                 LanguageUtils.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
@@ -257,7 +256,7 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "noHomesOf"),
                                 "cyansh.msg.noHomesOf"
                         );
@@ -265,7 +264,7 @@ public class HomeOfCommands
                 }
                 else
                 {
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation(ERROR + "notOpOrTrusted"),
                             "cyansh.msg.notOpOrTrusted"
                     );

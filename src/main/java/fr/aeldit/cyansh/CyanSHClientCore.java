@@ -21,8 +21,6 @@ import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
-import fr.aeldit.cyansh.homes.Homes;
-import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -36,17 +34,6 @@ public class CyanSHClientCore implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
-        HomesObj = new Homes();
-        TrustsObj = new Trusts();
-
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            ConfigCommands.register(dispatcher);
-            HomeCommands.register(dispatcher);
-            HomeOfCommands.register(dispatcher);
-            PermissionCommands.register(dispatcher);
-        });
-        LOGGER.info("[CyanSetHome] Successfully initialized commands");
-
         if (LibConfig.getBoolOption("useCustomTranslations"))
         {
             LanguageUtils.loadLanguage(getDefaultTranslations());
@@ -56,11 +43,20 @@ public class CyanSHClientCore implements ClientModInitializer
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             renameFileIfUsernameChanged(handler);
             HomesObj.readClient(server.getIconFile().toString().replace("icon.png]", "")
-                    .split("\\\\")[server.getIconFile().toString().split("\\\\").length - 2]);
-            TrustsObj.readClient();
+                    .split("\\\\")[server.getIconFile().toString().split("\\\\").length - 2]
+            );
+            TrustsObj.readClient(server.getIconFile().toString().replace("icon.png]", "")
+                    .split("\\\\")[server.getIconFile().toString().split("\\\\").length - 2]
+            );
             transferPropertiesToGson();
         });
 
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
+            ConfigCommands.register(dispatcher);
+            HomeCommands.register(dispatcher);
+            HomeOfCommands.register(dispatcher);
+            PermissionCommands.register(dispatcher);
+        });
         LOGGER.info("[CyanSetHome] Successfully completed initialization");
     }
 }
