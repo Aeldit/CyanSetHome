@@ -78,5 +78,7 @@
   "cyansh.msg.getCfg.minOpLevelExeEditConfig": "§6- §3Minimum OP level required to edit the config : %s",
   "-----------------------------------------------CYAN_LIB----------------------------------------------------": "",
   "cyansh.msg.optionNotFound": "§cThis option does not exist",
-  "cyansh.msg.wrongType": "§cThis option can only be set to the %s §ctype"
+  "cyansh.msg.wrongType": "§cThis option can only be set to the %s §ctype",
+  "cyansh.msg.rule.opLevels": "§cThe OP level must be between 0 and 4 (both included)",
+  "cyansh.msg.rule.positiveValue": "§cThe value must be positive"
 }

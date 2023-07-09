@@ -42,7 +42,6 @@ public class Utils
     public static final String MODID = "cyansh";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    private static Map<String, String> defaultTranslations;
 
     public static Homes HomesObj = new Homes();
     public static Trusts TrustsObj = new Trusts();
@@ -50,6 +49,8 @@ public class Utils
     public static CyanLibConfig LibConfig = new CyanLibConfig(MODID, getOptions(), getRules());
     public static CyanLibLanguageUtils LanguageUtils = new CyanLibLanguageUtils(MODID, LibConfig);
     public static CyanLib LibUtils = new CyanLib(MODID, LibConfig, LanguageUtils);
+
+    private static Map<String, String> defaultTranslations;
 
     public static @NotNull Map<String, Object> getOptions()
     {
