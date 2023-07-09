@@ -1,0 +1,6 @@
+✏️ Added :
+- Folders created by this mod are now removed if they are empty
+
+🫧 Changed :
+- The commands that contains more than 1 word are now separated by a "-" ("/sethome" -> "/set-home")
+- Use CyanLib 0.3.4

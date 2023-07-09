@@ -41,7 +41,6 @@ public class Trusts
     public static Path TRUST_PATH = Path.of(MOD_PATH + "/trusted_players.json");
     private boolean isEditingFile = false;
 
-
     public Trusts()
     {
         this.trusts = new ConcurrentHashMap<>();
@@ -57,6 +56,9 @@ public class Trusts
         this.trusts = trusts;
     }
 
+    /**
+     * Can only be called if the result of {@link Trusts#isPlayerTrustingFromName} is false
+     */
     public void trustPlayer(String trustingPlayerKey, String trustedPlayerKey)
     {
         if (!this.trusts.containsKey(trustingPlayerKey))
@@ -202,7 +204,7 @@ public class Trusts
             {
                 Gson gsonReader = new Gson();
                 Reader reader = Files.newBufferedReader(TRUST_PATH);
-                this.trusts = gsonReader.fromJson(reader, TRUST_TYPE);
+                this.trusts.putAll(gsonReader.fromJson(reader, TRUST_TYPE));
                 reader.close();
             }
             catch (IOException e)
@@ -216,9 +218,9 @@ public class Trusts
         }
     }
 
-    public void readClient()
+    public void readClient(String saveName)
     {
-        TRUST_PATH = Path.of(HOMES_PATH + "/trusted_players.json");
+        TRUST_PATH = Path.of(HOMES_PATH + "/" + saveName + "/trusted_players.json");
 
         if (Files.exists(TRUST_PATH))
         {
@@ -226,7 +228,7 @@ public class Trusts
             {
                 Gson gsonReader = new Gson();
                 Reader reader = Files.newBufferedReader(TRUST_PATH);
-                this.trusts = gsonReader.fromJson(reader, TRUST_TYPE);
+                this.trusts.putAll(gsonReader.fromJson(reader, TRUST_TYPE));
                 reader.close();
             }
             catch (IOException e)
@@ -251,6 +253,7 @@ public class Trusts
                 if (Files.exists(TRUST_PATH))
                 {
                     Files.delete(TRUST_PATH);
+                    removeEmptyModDir();
                 }
             }
             else

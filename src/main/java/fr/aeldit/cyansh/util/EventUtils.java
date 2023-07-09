@@ -17,9 +17,7 @@
 
 package fr.aeldit.cyansh.util;
 
-import fr.aeldit.cyansh.homes.Home;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import fr.aeldit.cyansh.homes.Homes;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +49,7 @@ public class EventUtils
         String playerName = handler.getPlayer().getName().getString();
         String playerKey = playerUUID + " " + playerName;
 
-        HomesObj.renameIfUsernameChanged(playerKey, playerUUID, playerName);
+        HomesObj.renameChangedUsernames(playerKey, playerUUID, playerName);
         TrustsObj.renameChangedUsernames(playerKey, playerUUID, playerName);
     }
 
@@ -93,19 +91,10 @@ public class EventUtils
                                     );
 
                                     TrustsObj.setTrusts(trusts);
-                                    LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
+                                    LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
                                 }
                                 else
                                 {
-                                    if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
-                                    {
-                                        TrustsObj.readServer();
-                                    }
-                                    else
-                                    {
-                                        TrustsObj.readClient();
-                                    }
-
                                     if (TrustsObj.isNotEmpty())
                                     {
                                         trusts.putAll(TrustsObj.getTrusts());
@@ -122,7 +111,7 @@ public class EventUtils
                                             }
                                     );
 
-                                    LOGGER.info("[CyanSetHome] Transfered the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
+                                    LOGGER.info("[CyanSetHome] Transferred the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
                                 }
 
                                 TrustsObj.write();
@@ -135,9 +124,9 @@ public class EventUtils
                                 {
                                     if (HomesObj.isEmpty(file.getName().split("\\.")[0]))
                                     {
-                                        List<Home> homes = Collections.synchronizedList(new ArrayList<>());
+                                        List<Homes.Home> homes = Collections.synchronizedList(new ArrayList<>());
 
-                                        properties.stringPropertyNames().forEach(s -> homes.add(new Home(
+                                        properties.stringPropertyNames().forEach(s -> homes.add(new Homes.Home(
                                                         s,
                                                         properties.getProperty(s).split(" ")[0],
                                                         Double.parseDouble(properties.getProperty(s).split(" ")[1]),
@@ -159,7 +148,7 @@ public class EventUtils
 
                                             if (currentHome.split(" ").length == 7)
                                             {
-                                                HomesObj.addHome(file.getName().split("\\.")[0], new Home(
+                                                HomesObj.addHome(file.getName().split("\\.")[0], new Homes.Home(
                                                         name,
                                                         currentHome.split(" ")[0],
                                                         Double.parseDouble(currentHome.split(" ")[1]),
@@ -178,7 +167,7 @@ public class EventUtils
 
                                 if (changed)
                                 {
-                                    LOGGER.info("[CyanSetHome] Transfered the home file " + file.getName() + " to a json file.");
+                                    LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
                                 }
                             }
                         }

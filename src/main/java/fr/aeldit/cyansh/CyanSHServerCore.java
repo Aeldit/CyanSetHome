@@ -21,8 +21,6 @@ import fr.aeldit.cyansh.commands.ConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
-import fr.aeldit.cyansh.homes.Homes;
-import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -37,18 +35,8 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
     @Override
     public void onInitializeServer()
     {
-        HomesObj = new Homes();
         HomesObj.readServer();
-        TrustsObj = new Trusts();
         TrustsObj.readServer();
-
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            ConfigCommands.register(dispatcher);
-            HomeCommands.register(dispatcher);
-            HomeOfCommands.register(dispatcher);
-            PermissionCommands.register(dispatcher);
-        });
-        LOGGER.info("[CyanSetHome] Successfully initialized commands");
 
         if (LibConfig.getBoolOption("useCustomTranslations"))
         {
@@ -58,6 +46,12 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         ServerLifecycleEvents.SERVER_STARTED.register(server -> transferPropertiesToGson());
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
 
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
+            ConfigCommands.register(dispatcher);
+            HomeCommands.register(dispatcher);
+            HomeOfCommands.register(dispatcher);
+            PermissionCommands.register(dispatcher);
+        });
         LOGGER.info("[CyanSetHome] Successfully completed initialization");
     }
 }

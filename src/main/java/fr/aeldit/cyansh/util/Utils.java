@@ -20,6 +20,7 @@ package fr.aeldit.cyansh.util;
 import fr.aeldit.cyanlib.lib.CyanLib;
 import fr.aeldit.cyanlib.lib.CyanLibConfig;
 import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
+import fr.aeldit.cyanlib.lib.utils.RULES;
 import fr.aeldit.cyansh.homes.Homes;
 import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.loader.api.FabricLoader;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,13 +42,13 @@ public class Utils
     public static final String MODID = "cyansh";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
-    public static Map<String, String> defaultTranslations;
+    private static Map<String, String> defaultTranslations;
 
-    public static Homes HomesObj;
-    public static Trusts TrustsObj;
+    public static Homes HomesObj = new Homes();
+    public static Trusts TrustsObj = new Trusts();
 
-    public static CyanLibConfig LibConfig = new CyanLibConfig(MODID, getOptions());
-    public static CyanLibLanguageUtils LanguageUtils = new CyanLibLanguageUtils(MODID);
+    public static CyanLibConfig LibConfig = new CyanLibConfig(MODID, getOptions(), getRules());
+    public static CyanLibLanguageUtils LanguageUtils = new CyanLibLanguageUtils(MODID, LibConfig);
     public static CyanLib LibUtils = new CyanLib(MODID, LibConfig, LanguageUtils);
 
     public static @NotNull Map<String, Object> getOptions()
@@ -64,6 +66,17 @@ public class Utils
         options.put("minOpLevelExeEditConfig", 4);
 
         return options;
+    }
+
+    public static @NotNull Map<String, Object> getRules()
+    {
+        Map<String, Object> rules = new HashMap<>();
+
+        rules.put("maxHomes", RULES.POSITIVE_VALUE);
+        rules.put("minOpLevelExeHomes", RULES.OP_LEVELS);
+        rules.put("minOpLevelExeEditConfig", RULES.OP_LEVELS);
+
+        return rules;
     }
 
     public static void checkOrCreateHomesDir()
@@ -93,6 +106,43 @@ public class Utils
         }
     }
 
+    public static void removeEmptyModDir()
+    {
+        if (Files.exists(HOMES_PATH))
+        {
+            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
+
+            if (listOfFiles.length == 0)
+            {
+                try
+                {
+                    Files.delete(HOMES_PATH);
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        if (Files.exists(MOD_PATH))
+        {
+            File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
+
+            if (listOfFiles.length == 0)
+            {
+                try
+                {
+                    Files.delete(MOD_PATH);
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
     public static @NotNull Map<String, String> getDefaultTranslations()
     {
         if (defaultTranslations == null)
@@ -105,7 +155,7 @@ public class Utils
             defaultTranslations.put("error.incorrectIntOp", "§cThe OP level must be in [0;4]");
             defaultTranslations.put("error.incorrectIntMaxHomes", "§cThe number must be in [1;128]");
             defaultTranslations.put("error.disabled.homes", "§cThe home commands are disabled. To enable them, enter '/cyansh config booleanOptions allowHomes true' in chat");
-            defaultTranslations.put("error.homeAlreadyExists", "§cThis home alreay exists");
+            defaultTranslations.put("error.homeAlreadyExists", "§cThis home already exists");
             defaultTranslations.put("error.homeNotFound", "§cThis home doesn't exist (check the spelling)");
             defaultTranslations.put("error.maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
             defaultTranslations.put("error.playerNotOnline", "§cThis player is not online");
@@ -134,11 +184,11 @@ public class Utils
             defaultTranslations.put("setValue", "§7Set value to : %s  %s  %s  %s  %s");
             defaultTranslations.put("getHome", "%s §3(%s§3, created on the %s§3)");
 
-            defaultTranslations.put("set.allowHomes", "§3Toogled §dhome §3commands %s");
-            defaultTranslations.put("set.allowHomesOf", "§3Toogled §dhomeOf §3commands %s");
-            defaultTranslations.put("set.allowByPass", "§3Toogled ByPass %s");
-            defaultTranslations.put("set.useCustomTranslations", "§3Toogled translations %s");
-            defaultTranslations.put("set.msgToActionBar", "§3Toogled messages to action bar %s");
+            defaultTranslations.put("set.allowHomes", "§3Toggled §dhome §3commands %s");
+            defaultTranslations.put("set.allowHomesOf", "§3Toggled §dhomeOf §3commands %s");
+            defaultTranslations.put("set.allowByPass", "§3Toggled ByPass %s");
+            defaultTranslations.put("set.useCustomTranslations", "§3Toggled translations %s");
+            defaultTranslations.put("set.msgToActionBar", "§3Toggled messages to action bar %s");
             defaultTranslations.put("set.maxHomes", "§3The maximum number of homes per player is now %s");
             defaultTranslations.put("set.minOpLevelExeHomes", "§3The OP level required to use the §dhome §3commands is now %s");
             defaultTranslations.put("set.minOpLevelExeEditConfig", "§3The minimum OP level to edit the config is now %s");
@@ -147,20 +197,20 @@ public class Utils
             defaultTranslations.put("listHomes", "§6CyanSetHome - YOUR HOMES :\n");
             defaultTranslations.put("listHomesOf", "§6CyanSetHome - HOMES OF %s :\n");
 
-            defaultTranslations.put("desc.sethome", "§3The §d/sethome §3command saves your current location");
+            defaultTranslations.put("desc.sethome", "§3The §d/set-home §3command saves your current location");
             defaultTranslations.put("desc.home", "§3The §d/home §3command teleports you to the given home");
-            defaultTranslations.put("desc.removehome", "§3The §d/removehome §3command removes the given home");
-            defaultTranslations.put("desc.removeallhomes", "§3The §d/removeallhomes §3command removes all your homes");
-            defaultTranslations.put("desc.gethomes", "§3The §d/gethomes §3command lists all your homes");
-            defaultTranslations.put("desc.homeof", "§3The §d/homeof <player_name> <home_name> §3command teleports you to the home of the player");
-            defaultTranslations.put("desc.removehomeof", "§3The §d/removehomeof <player_name> <home_name> §3command removes the home of the player");
-            defaultTranslations.put("desc.gethomesof", "§3The §d/gethomesof <player_name> §3command lists all the player's homes");
+            defaultTranslations.put("desc.removehome", "§3The §d/remove-home §3command removes the given home");
+            defaultTranslations.put("desc.removeallhomes", "§3The §d/remove-all-homes §3command removes all your homes");
+            defaultTranslations.put("desc.gethomes", "§3The §d/get-homes §3command lists all your homes");
+            defaultTranslations.put("desc.homeof", "§3The §d/home-of <player_name> <home_name> §3command teleports you to the home of the player");
+            defaultTranslations.put("desc.removehomeof", "§3The §d/remove-home-of <player_name> <home_name> §3command removes the home of the player");
+            defaultTranslations.put("desc.gethomesof", "§3The §d/get-homes-of <player_name> §3command lists all the player's homes");
 
-            defaultTranslations.put("desc.allowHomes", "§3The §dallowHomes §3option defines wether the home commands are enabled or not");
-            defaultTranslations.put("desc.allowHomesOf", "§3The §dallowHomesOf §3option defines wether the homeOf commands are enabled or not");
-            defaultTranslations.put("desc.allowByPass", "§3The §dallowByPass §3option defines wether admins with the correct OP level can bypass permissions like trust between players");
-            defaultTranslations.put("desc.useCustomTranslations", "§3The §duseTranslations §3option defines wether the translation will be used or not");
-            defaultTranslations.put("desc.msgToActionBar", "§3The §dmsgToActionBar §3option defines wether the messages will be sent to the action bar or not");
+            defaultTranslations.put("desc.allowHomes", "§3The §dallowHomes §3option defines whether the home commands are enabled or not");
+            defaultTranslations.put("desc.allowHomesOf", "§3The §dallowHomesOf §3option defines whether the homeOf commands are enabled or not");
+            defaultTranslations.put("desc.allowByPass", "§3The §dallowByPass §3option defines whether admins with the correct OP level can bypass permissions like trust between players");
+            defaultTranslations.put("desc.useCustomTranslations", "§3The §duseTranslations §3option defines whether the translation will be used or not");
+            defaultTranslations.put("desc.msgToActionBar", "§3The §dmsgToActionBar §3option defines whether the messages will be sent to the action bar or not");
             defaultTranslations.put("desc.maxHomes", "§3The §dmaxHomes §3option defines the maximum number of homes a player can have");
             defaultTranslations.put("desc.minOpLevelExeHomes", "§3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands");
             defaultTranslations.put("desc.minOpLevelExeEditConfig", "§3The §dminOpLevelExeEditConfig §3option defines the OP level required to edit the config");

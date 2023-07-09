@@ -63,32 +63,32 @@ public class ConfigCommands
                                 .executes(ConfigCommands::getOptionChatConfig)
                         )
                 )
-                .then(CommandManager.literal("getConfig")
+                .then(CommandManager.literal("get-config")
                         .executes(ConfigCommands::getConfigOptions)
                 )
-                .then(CommandManager.literal("reloadTranslations")
+                .then(CommandManager.literal("reload-translations")
                         .executes(ConfigCommands::reloadTranslations)
                 )
-                .then(CommandManager.literal("removepropertiesfiles")
+                .then(CommandManager.literal("remove-properties-files")
                         .executes(ConfigCommands::removePropertiesFiles)
                 )
         );
     }
 
     /**
-     * Called by the command {@code /cyansh reloadTranslations}
+     * Called by the command {@code /cyansh reload-translations}
      * <p>
      * Reloads the custom translations
      */
     public static int reloadTranslations(@NotNull CommandContext<ServerCommandSource> context)
     {
-        CyanLibCommands.reloadTranslations(context, defaultTranslations, LibUtils);
+        CyanLibCommands.reloadTranslations(context, getDefaultTranslations(), LibUtils);
 
         return Command.SINGLE_SUCCESS;
     }
 
     /**
-     * Called by the command {@code /cyan removepropertiesfiles}
+     * Called by the command {@code /cyan remove-properties-files}
      * <p>
      * Removes all the properties files
      */
@@ -139,7 +139,7 @@ public class ConfigCommands
      */
     public static int setBoolOption(@NotNull CommandContext<ServerCommandSource> context)
     {
-        CyanLibCommands.setBoolOption(context, defaultTranslations, LibUtils,
+        CyanLibCommands.setBoolOption(context, getDefaultTranslations(), LibUtils,
                 StringArgumentType.getString(context, "optionName"), BoolArgumentType.getBool(context, "booleanValue"),
                 false, BoolArgumentType.getBool(context, "mode")
         );
@@ -153,7 +153,7 @@ public class ConfigCommands
      */
     public static int setBoolOptionFromCommand(@NotNull CommandContext<ServerCommandSource> context)
     {
-        CyanLibCommands.setBoolOption(context, defaultTranslations, LibUtils,
+        CyanLibCommands.setBoolOption(context, getDefaultTranslations(), LibUtils,
                 StringArgumentType.getString(context, "optionName"), BoolArgumentType.getBool(context, "booleanValue"),
                 true, false
         );
@@ -203,7 +203,7 @@ public class ConfigCommands
     }
 
     /**
-     * Called by the command {@code /cyansh getConfig}
+     * Called by the command {@code /cyansh get-config}
      * <p>
      * Send a messsage in the player's chat with all the mod's options and their values
      */

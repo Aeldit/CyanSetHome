@@ -21,7 +21,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
 import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -32,37 +31,37 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.aeldit.cyanlib.lib.TranslationsPrefixes.ERROR;
+import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class PermissionCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
-        dispatcher.register(CommandManager.literal("hometrust")
+        dispatcher.register(CommandManager.literal("home-trust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getOnlinePlayersName(builder, context.getSource()))
                         .executes(PermissionCommands::trustPlayer)
                 )
         );
 
-        dispatcher.register(CommandManager.literal("homeuntrust")
+        dispatcher.register(CommandManager.literal("home-untrust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustedPlayersName(builder, context.getSource()))
                         .executes(PermissionCommands::untrustPlayer)
                 )
         );
 
-        dispatcher.register(CommandManager.literal("gettrustingplayers")
+        dispatcher.register(CommandManager.literal("get-trusting-players")
                 .executes(PermissionCommands::getTrustingPlayers)
         );
-        dispatcher.register(CommandManager.literal("gettrustedplayers")
+        dispatcher.register(CommandManager.literal("get-trusted-players")
                 .executes(PermissionCommands::getTrustedPlayers)
         );
     }
 
     /**
-     * Called by the command {@code /hometrust <player>}
+     * Called by the command {@code /home-trust <player>}
      * <p>
      * Used to define which players can use the homes of the trusting player
      */
@@ -77,10 +76,9 @@ public class PermissionCommands
 
             if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
             {
-                CyanLibLanguageUtils.sendPlayerMessage(player,
+                LanguageUtils.sendPlayerMessage(player,
                         LanguageUtils.getTranslation(ERROR + "playerNotOnline"),
-                        "cyansh.msg.playerNotOnline",
-                        playerName
+                        "cyansh.msg.playerNotOnline"
                 );
             }
             else
@@ -94,7 +92,7 @@ public class PermissionCommands
                     {
                         TrustsObj.trustPlayer(trustingPlayer, trustedPlayer);
 
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation("playerTrusted"),
                                 "cyansh.msg.playerTrusted",
                                 Formatting.AQUA + playerName
@@ -102,7 +100,7 @@ public class PermissionCommands
                     }
                     else
                     {
-                        CyanLibLanguageUtils.sendPlayerMessage(player,
+                        LanguageUtils.sendPlayerMessage(player,
                                 LanguageUtils.getTranslation(ERROR + "playerAlreadyTrusted"),
                                 "cyansh.msg.playerAlreadyTrusted"
                         );
@@ -110,7 +108,7 @@ public class PermissionCommands
                 }
                 else
                 {
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation(ERROR + "selfTrust"),
                             "cyansh.msg.selfTrust"
                     );
@@ -121,7 +119,7 @@ public class PermissionCommands
     }
 
     /**
-     * Called by the command {@code /homeuntrust <player>}
+     * Called by the command {@code /home-untrust <player>}
      * <p>
      * Used to remove a player from the trust list
      */
@@ -139,7 +137,7 @@ public class PermissionCommands
                 {
                     TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
 
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation("playerUnTrusted"),
                             "cyansh.msg.playerUnTrusted",
                             Formatting.AQUA + untrustedPlayerName
@@ -147,7 +145,7 @@ public class PermissionCommands
                 }
                 else
                 {
-                    CyanLibLanguageUtils.sendPlayerMessage(player,
+                    LanguageUtils.sendPlayerMessage(player,
                             LanguageUtils.getTranslation(ERROR + "playerNotTrusted"),
                             "cyansh.msg.playerNotTrusted"
                     );
@@ -155,7 +153,7 @@ public class PermissionCommands
             }
             else
             {
-                CyanLibLanguageUtils.sendPlayerMessage(player,
+                LanguageUtils.sendPlayerMessage(player,
                         LanguageUtils.getTranslation(ERROR + "selfTrust"),
                         "cyansh.msg.selfTrust"
                 );
@@ -165,7 +163,7 @@ public class PermissionCommands
     }
 
     /**
-     * Called by the command {@code /gettrustingplayers}
+     * Called by the command {@code /get-trusting-players}
      * <p>
      * Send a message to the player with all the players that trust her/him
      */
@@ -197,7 +195,7 @@ public class PermissionCommands
                     }
                 }
 
-                CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                LanguageUtils.sendPlayerMessageActionBar(player,
                         LanguageUtils.getTranslation("getTrustingPlayers"),
                         "cyansh.msg.getTrustingPlayers",
                         false,
@@ -206,7 +204,7 @@ public class PermissionCommands
             }
             else
             {
-                CyanLibLanguageUtils.sendPlayerMessage(player,
+                LanguageUtils.sendPlayerMessage(player,
                         LanguageUtils.getTranslation("noTrustingPlayer"),
                         "cyansh.msg.noTrustingPlayer"
                 );
@@ -216,7 +214,7 @@ public class PermissionCommands
     }
 
     /**
-     * Called by the command {@code /gettrustedplayers}
+     * Called by the command {@code /get-trusted-players}
      * <p>
      * Send a message to the player with all the players that she/he trusts
      */
@@ -248,7 +246,7 @@ public class PermissionCommands
                     }
                 }
 
-                CyanLibLanguageUtils.sendPlayerMessageActionBar(player,
+                LanguageUtils.sendPlayerMessageActionBar(player,
                         LanguageUtils.getTranslation("getTrustedPlayers"),
                         "cyansh.msg.getTrustedPlayers",
                         false,
@@ -257,7 +255,7 @@ public class PermissionCommands
             }
             else
             {
-                CyanLibLanguageUtils.sendPlayerMessage(player,
+                LanguageUtils.sendPlayerMessage(player,
                         LanguageUtils.getTranslation("noTrustedPlayer"),
                         "cyansh.msg.noTrustedPlayer"
                 );
