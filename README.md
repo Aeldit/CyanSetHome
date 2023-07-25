@@ -1,6 +1,6 @@
 ![banner](https://github.com/Aeldit/CyanSetHome/blob/1.19.4/images/BANNER_CyanSetHome.png?raw=true)
 
-> ❌ I do NOT allow this mod to be ported on the Forge loader
+> ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
 
 ![java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![LICENSE_PLATE](https://img.shields.io/github/license/Aeldit/CyanSetHome?style=for-the-badge)
