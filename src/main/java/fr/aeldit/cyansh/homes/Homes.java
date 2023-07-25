@@ -37,7 +37,74 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
-    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date) {}
+    public static class Home
+    {
+        private String name;
+        private final String dimension;
+        private final double x;
+        private final double y;
+        private final double z;
+        private final float yaw;
+        private final float pitch;
+        private final String date;
+
+        public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
+        {
+            this.name = name;
+            this.dimension = dimension;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.date = date;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+        public String getDimension()
+        {
+            return dimension;
+        }
+
+        public double getX()
+        {
+            return x;
+        }
+
+        public double getY()
+        {
+            return y;
+        }
+
+        public double getZ()
+        {
+            return z;
+        }
+
+        public float getYaw()
+        {
+            return yaw;
+        }
+
+        public float getPitch()
+        {
+            return pitch;
+        }
+
+        public String getDate()
+        {
+            return date;
+        }
+    }
 
     private ConcurrentHashMap<String, List<Home>> homes;
     private final TypeToken<List<Home>> HOMES_TYPE = new TypeToken<>() {};
@@ -102,6 +169,18 @@ public class Homes
     }
 
     /**
+     * Renames the home of the player
+     */
+    public void rename(String playerKey, String homeName, String newHomeName)
+    {
+        if (homeExists(playerKey, homeName))
+        {
+            this.homes.get(playerKey).get(getHomeIndex(playerKey, homeName)).setName(newHomeName);
+            writeHomes(playerKey);
+        }
+    }
+
+    /**
      * Can be called if and only if the result of {@link Homes#homeExists} is true
      *
      * @return The home with the name {@code homeName}
@@ -147,7 +226,7 @@ public class Homes
 
         if (this.homes.containsKey(playerKey))
         {
-            this.homes.get(playerKey).forEach(home -> names.add(home.name()));
+            this.homes.get(playerKey).forEach(home -> names.add(home.getName()));
         }
         return names;
     }
@@ -166,7 +245,7 @@ public class Homes
         {
             if (key.split(" ")[1].equals(playerName))
             {
-                this.homes.get(key).forEach(home -> names.add(home.name()));
+                this.homes.get(key).forEach(home -> names.add(home.getName()));
                 break;
             }
         }
@@ -180,7 +259,7 @@ public class Homes
     {
         for (Home home : this.homes.get(playerKey))
         {
-            if (home.name().equals(homeName))
+            if (home.getName().equals(homeName))
             {
                 return this.homes.get(playerKey).indexOf(home);
             }
@@ -236,7 +315,7 @@ public class Homes
         {
             for (Home home : this.homes.get(playerKey))
             {
-                if (home.name().equals(homeName))
+                if (home.getName().equals(homeName))
                 {
                     return true;
                 }
@@ -253,7 +332,7 @@ public class Homes
             {
                 for (Home home : this.homes.get(key))
                 {
-                    if (home.name().equals(homeName))
+                    if (home.getName().equals(homeName))
                     {
                         return true;
                     }

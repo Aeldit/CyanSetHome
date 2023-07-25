@@ -78,6 +78,16 @@ public class HomeCommands
                 )
         );
 
+
+        dispatcher.register(CommandManager.literal("rename-home")
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .then(CommandManager.argument("new_home_name", StringArgumentType.string())
+                                .executes(HomeCommands::renameHome)
+                        )
+                )
+        );
+
         dispatcher.register(CommandManager.literal("remove-all-homes")
                 .executes(HomeCommands::removeAllHomes)
         );
@@ -244,6 +254,51 @@ public class HomeCommands
     }
 
     /**
+     * Called by the command {@code /rename-home <home_name> <new_home_name>}
+     * <p>
+     * Renames the location
+     */
+    public static int renameHome(@NotNull CommandContext<ServerCommandSource> context)
+    {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+
+        if (LibUtils.isPlayer(context.getSource()))
+        {
+            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "locationsDisabled"))
+            {
+                if (LibUtils.hasPermission(player, LibConfig.getIntOption("minOpLevelExeEditLocation")))
+                {
+                    String homeName = StringArgumentType.getString(context, "home_name");
+                    String newHomeName = StringArgumentType.getString(context, "new_home_name");
+
+                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+
+                    if (HomesObj.homeExists(playerKey, homeName))
+                    {
+                        HomesObj.rename(playerKey, homeName, newHomeName);
+
+                        LanguageUtils.sendPlayerMessage(player,
+                                LanguageUtils.getTranslation("renameHome"),
+                                "cyansh.msg.renameHome",
+                                Formatting.YELLOW + homeName,
+                                Formatting.YELLOW + newHomeName
+                        );
+                    }
+                    else
+                    {
+                        LanguageUtils.sendPlayerMessage(player,
+                                LanguageUtils.getTranslation(ERROR + "homeNotFound"),
+                                "cyansh.msg.homeNotFound",
+                                homeName
+                        );
+                    }
+                }
+            }
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    /**
      * Called by the command {@code /home <home_name>} or {@code /h <home_name>}
      * <p>
      * Teleports the player to the given home
@@ -265,14 +320,14 @@ public class HomeCommands
                     {
                         Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
 
-                        switch (home.dimension())
+                        switch (home.getDimension())
                         {
-                            case "overworld" -> player.teleport(player.getServer().getWorld(World.OVERWORLD),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "nether" -> player.teleport(player.getServer().getWorld(World.NETHER),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "end" -> player.teleport(player.getServer().getWorld(World.END),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
+                            case "overworld" ->
+                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                            case "nether" ->
+                                    player.teleport(player.getServer().getWorld(World.NETHER), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                            case "end" ->
+                                    player.teleport(player.getServer().getWorld(World.END), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
                         }
 
                         LanguageUtils.sendPlayerMessage(player,
@@ -294,7 +349,6 @@ public class HomeCommands
         }
         return Command.SINGLE_SUCCESS;
     }
-
 
     /**
      * Called by the command {@code /get-homes} or {@code /gh}
@@ -330,9 +384,9 @@ public class HomeCommands
                                         LanguageUtils.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
-                                        Formatting.YELLOW + home.name(),
-                                        Formatting.DARK_AQUA + home.dimension(),
-                                        Formatting.DARK_AQUA + home.date()
+                                        Formatting.YELLOW + home.getName(),
+                                        Formatting.DARK_AQUA + home.getDimension(),
+                                        Formatting.DARK_AQUA + home.getDate()
                                 )
                         );
 

@@ -1,6 +1,0 @@
-Fixed :
-- When deserializing the json file, I was using 2 map or arrays instead of using a mutable type for the deserialization,
-which may have caused some really small performance issues with a lot of players
-
-Dev :
-- Other internal changes to make the code smaller and more readable

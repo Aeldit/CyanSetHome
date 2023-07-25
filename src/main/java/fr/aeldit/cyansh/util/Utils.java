@@ -59,7 +59,6 @@ public class Utils
         Map<String, Object> options = new HashMap<>();
 
         options.put("allowHomes", true);
-        options.put("allowHomesOf", true);
         options.put("allowByPass", false);
         options.put("useCustomTranslations", false);
         options.put("msgToActionBar", true);
@@ -157,8 +156,6 @@ public class Utils
             defaultTranslations.put("error.playerOnlyCmd", "This command can only be executed by a player");
             defaultTranslations.put("error.notOp", "§cYou don't have the required permission to do that");
             defaultTranslations.put("error.notOpOrTrusted", "§cThis player doesn't trust you or you don't have the required permission");
-            defaultTranslations.put("error.incorrectIntOp", "§cThe OP level must be in [0;4]");
-            defaultTranslations.put("error.incorrectIntMaxHomes", "§cThe number must be in [1;128]");
             defaultTranslations.put("error.disabled.homes", "§cThe home commands are disabled. To enable them, enter '/cyansh config booleanOptions allowHomes true' in chat");
             defaultTranslations.put("error.homeAlreadyExists", "§cThis home already exists");
             defaultTranslations.put("error.homeNotFound", "§cThis home doesn't exist (check the spelling)");
@@ -178,6 +175,7 @@ public class Utils
             defaultTranslations.put("removeHome", "§3The home %s §3have been removed");
             defaultTranslations.put("removeAllHomes", "§3All your homes have been removed");
             defaultTranslations.put("removeHomeOf", "§3The home %s §3have been removed from %s§3's homes");
+            defaultTranslations.put("renameHome", "§3The home %s §3have been renamed to %s");
             defaultTranslations.put("getTrustingPlayers", "§3Players that trust you : %s");
             defaultTranslations.put("getTrustedPlayers", "§3Players that you trust : %s");
             defaultTranslations.put("noTrustingPlayer", "§3No player trusts you");
@@ -190,7 +188,6 @@ public class Utils
             defaultTranslations.put("getHome", "%s §3(%s§3, created on the %s§3)");
 
             defaultTranslations.put("set.allowHomes", "§3Toggled §dhome §3commands %s");
-            defaultTranslations.put("set.allowHomesOf", "§3Toggled §dhomeOf §3commands %s");
             defaultTranslations.put("set.allowByPass", "§3Toggled ByPass %s");
             defaultTranslations.put("set.useCustomTranslations", "§3Toggled translations %s");
             defaultTranslations.put("set.msgToActionBar", "§3Toggled messages to action bar %s");
@@ -212,7 +209,6 @@ public class Utils
             defaultTranslations.put("desc.gethomesof", "§3The §d/get-homes-of <player_name> §3command lists all the player's homes");
 
             defaultTranslations.put("desc.allowHomes", "§3The §dallowHomes §3option defines whether the home commands are enabled or not");
-            defaultTranslations.put("desc.allowHomesOf", "§3The §dallowHomesOf §3option defines whether the homeOf commands are enabled or not");
             defaultTranslations.put("desc.allowByPass", "§3The §dallowByPass §3option defines whether admins with the correct OP level can bypass permissions like trust between players");
             defaultTranslations.put("desc.useCustomTranslations", "§3The §duseTranslations §3option defines whether the translation will be used or not");
             defaultTranslations.put("desc.msgToActionBar", "§3The §dmsgToActionBar §3option defines whether the messages will be sent to the action bar or not");
@@ -222,7 +218,6 @@ public class Utils
 
             defaultTranslations.put("getCfg.header", "§6CyanSetHome - OPTIONS :\n");
             defaultTranslations.put("getCfg.allowHomes", "§6- §dhome §3commands : %s");
-            defaultTranslations.put("getCfg.allowHomesOf", "§6- §dhomeOf §3commands : %s");
             defaultTranslations.put("getCfg.allowByPass", "§6- §3Allow bypass for OPs : %s");
             defaultTranslations.put("getCfg.useCustomTranslations", "§6- §3Use custom translations : %s");
             defaultTranslations.put("getCfg.msgToActionBar", "§6- §3Messages to action bar : %s");

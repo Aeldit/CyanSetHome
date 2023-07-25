@@ -1,2 +1,0 @@
-🫧 Changed :
-- Use CyanLib 0.3.5 (which allows me to remove the config commands from this mod, as they are now handled in the CyanLib)

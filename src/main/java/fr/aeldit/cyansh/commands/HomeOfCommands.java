@@ -100,7 +100,7 @@ public class HomeOfCommands
 
         if (LibUtils.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomesOf"), "homesOfDisabled"))
+            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
@@ -113,8 +113,8 @@ public class HomeOfCommands
                         HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
                         LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation("removeHomeOf"),
-                                "cyansh.msg.removeHomeOf",
+                                LanguageUtils.getTranslation("removeHome"),
+                                "cyansh.msg.removeHome",
                                 Formatting.YELLOW + homeName,
                                 Formatting.AQUA + trustingPlayer
                         );
@@ -151,7 +151,7 @@ public class HomeOfCommands
 
         if (LibUtils.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomesOf"), "homesOfDisabled"))
+            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
@@ -163,14 +163,14 @@ public class HomeOfCommands
                     {
                         Homes.Home home = HomesObj.getPlayerHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
-                        switch (home.dimension())
+                        switch (home.getDimension())
                         {
-                            case "overworld" -> player.teleport(player.getServer().getWorld(World.OVERWORLD),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "nether" -> player.teleport(player.getServer().getWorld(World.NETHER),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "end" -> player.teleport(player.getServer().getWorld(World.END),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
+                            case "overworld" ->
+                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                            case "nether" ->
+                                    player.teleport(player.getServer().getWorld(World.NETHER), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                            case "end" ->
+                                    player.teleport(player.getServer().getWorld(World.END), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
                         }
 
                         LanguageUtils.sendPlayerMessage(player,
@@ -211,7 +211,7 @@ public class HomeOfCommands
 
         if (LibUtils.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomesOf"), "homesOfDisabled"))
+            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
@@ -242,9 +242,9 @@ public class HomeOfCommands
                                         LanguageUtils.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
-                                        Formatting.YELLOW + home.name(),
-                                        Formatting.DARK_AQUA + home.dimension(),
-                                        Formatting.DARK_AQUA + home.date()
+                                        Formatting.YELLOW + home.getName(),
+                                        Formatting.DARK_AQUA + home.getDimension(),
+                                        Formatting.DARK_AQUA + home.getDate()
                                 )
                         );
 
