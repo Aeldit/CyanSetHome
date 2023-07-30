@@ -35,6 +35,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
+import static fr.aeldit.cyansh.config.CyanSHConfig.*;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeCommands
@@ -78,6 +79,16 @@ public class HomeCommands
                 )
         );
 
+
+        dispatcher.register(CommandManager.literal("rename-home")
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .then(CommandManager.argument("new_home_name", StringArgumentType.string())
+                                .executes(HomeCommands::renameHome)
+                        )
+                )
+        );
+
         dispatcher.register(CommandManager.literal("remove-all-homes")
                 .executes(HomeCommands::removeAllHomes)
         );
@@ -100,11 +111,11 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (LibUtils.hasPermission(player, LibConfig.getIntOption("minOpLevelExeHomes")))
+                if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
@@ -138,26 +149,26 @@ public class HomeCommands
                                         ));
                             }
 
-                            LanguageUtils.sendPlayerMessage(player,
-                                    LanguageUtils.getTranslation("setHome"),
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                    CYANSH_LANGUAGE_UTILS.getTranslation("setHome"),
                                     "cyansh.msg.setHome",
                                     Formatting.YELLOW + homeName
                             );
                         }
                         else
                         {
-                            LanguageUtils.sendPlayerMessage(player,
-                                    LanguageUtils.getTranslation(ERROR + "homeAlreadyExists"),
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                    CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeAlreadyExists"),
                                     "cyansh.msg.homeAlreadyExists"
                             );
                         }
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "maxHomesReached"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "maxHomesReached"),
                                 "cyansh.msg.maxHomesReached",
-                                Formatting.GOLD + String.valueOf(LibConfig.getIntOption("maxHomes"))
+                                Formatting.GOLD + String.valueOf(MAX_HOMES.getValue())
                         );
                     }
                 }
@@ -175,11 +186,11 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (LibUtils.hasPermission(player, LibConfig.getIntOption("minOpLevelExeHomes")))
+                if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
@@ -188,16 +199,16 @@ public class HomeCommands
                     {
                         HomesObj.removeHome(playerKey, homeName);
 
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation("removeHome"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("removeHome"),
                                 "cyansh.msg.removeHome",
                                 Formatting.YELLOW + homeName
                         );
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "homeNotFound"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
@@ -217,24 +228,69 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (LibUtils.hasPermission(player, LibConfig.getIntOption("minOpLevelExeHomes")))
+                if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     if (HomesObj.removeAll(player.getUuidAsString() + " " + player.getName().getString()))
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation("removeAllHomes"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("removeAllHomes"),
                                 "cyansh.msg.removeAllHomes"
                         );
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "noHomes"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomes"),
                                 "cyansh.msg.noHomes"
+                        );
+                    }
+                }
+            }
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Called by the command {@code /rename-home <home_name> <new_home_name>}
+     * <p>
+     * Renames the location
+     */
+    public static int renameHome(@NotNull CommandContext<ServerCommandSource> context)
+    {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        {
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            {
+                if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
+                {
+                    String homeName = StringArgumentType.getString(context, "home_name");
+                    String newHomeName = StringArgumentType.getString(context, "new_home_name");
+
+                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+
+                    if (HomesObj.homeExists(playerKey, homeName))
+                    {
+                        HomesObj.rename(playerKey, homeName, newHomeName);
+
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("renameHome"),
+                                "cyansh.msg.renameHome",
+                                Formatting.YELLOW + homeName,
+                                Formatting.YELLOW + newHomeName
+                        );
+                    }
+                    else
+                    {
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
+                                "cyansh.msg.homeNotFound",
+                                homeName
                         );
                     }
                 }
@@ -252,11 +308,11 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (LibUtils.hasPermission(player, LibConfig.getIntOption("minOpLevelExeHomes")))
+                if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
@@ -265,26 +321,26 @@ public class HomeCommands
                     {
                         Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
 
-                        switch (home.dimension())
+                        switch (home.getDimension())
                         {
-                            case "overworld" -> player.teleport(player.getServer().getWorld(World.OVERWORLD),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "nether" -> player.teleport(player.getServer().getWorld(World.NETHER),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "end" -> player.teleport(player.getServer().getWorld(World.END),
-                                    home.x(), home.y(), home.z(), home.yaw(), home.pitch());
+                            case "overworld" ->
+                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                            case "nether" ->
+                                    player.teleport(player.getServer().getWorld(World.NETHER), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                            case "end" ->
+                                    player.teleport(player.getServer().getWorld(World.END), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
                         }
 
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation("goToHome"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("goToHome"),
                                 "cyansh.msg.goToHome",
                                 Formatting.YELLOW + homeName
                         );
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "homeNotFound"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
@@ -295,7 +351,6 @@ public class HomeCommands
         return Command.SINGLE_SUCCESS;
     }
 
-
     /**
      * Called by the command {@code /get-homes} or {@code /gh}
      * <p>
@@ -305,47 +360,47 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (LibUtils.hasPermission(player, LibConfig.getIntOption("minOpLevelExeHomes")))
+                if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
                     if (!HomesObj.isEmpty(playerKey))
                     {
-                        LanguageUtils.sendPlayerMessageActionBar(player,
-                                LanguageUtils.getTranslation("dashSeparation"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
-                        LanguageUtils.sendPlayerMessageActionBar(player,
-                                LanguageUtils.getTranslation("listHomes"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("listHomes"),
                                 "cyansh.msg.listHomes",
                                 false
                         );
 
-                        HomesObj.getPlayerHomes(playerKey).forEach(home -> LanguageUtils.sendPlayerMessageActionBar(player,
-                                        LanguageUtils.getTranslation("getHome"),
+                        HomesObj.getPlayerHomes(playerKey).forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                        CYANSH_LANGUAGE_UTILS.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
-                                        Formatting.YELLOW + home.name(),
-                                        Formatting.DARK_AQUA + home.dimension(),
-                                        Formatting.DARK_AQUA + home.date()
+                                        Formatting.YELLOW + home.getName(),
+                                        Formatting.DARK_AQUA + home.getDimension(),
+                                        Formatting.DARK_AQUA + home.getDate()
                                 )
                         );
 
-                        LanguageUtils.sendPlayerMessageActionBar(player,
-                                LanguageUtils.getTranslation("dashSeparation"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "noHomes"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomes"),
                                 "cyansh.msg.noHomes"
                         );
                     }

@@ -21,6 +21,9 @@
     ],
     "client": [
       "fr.aeldit.cyansh.CyanSHClientCore"
+    ],
+    "modmenu": [
+      "fr.aeldit.cyansh.config.ModMenuApiImpl"
     ]
   },
   "depends": {

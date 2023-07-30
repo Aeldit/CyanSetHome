@@ -33,41 +33,103 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.aeldit.cyansh.config.CyanSHConfig.MAX_HOMES;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
-    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date) {}
-
-    private ConcurrentHashMap<String, List<Home>> homes;
-    private final TypeToken<List<Home>> HOMES_TYPE = new TypeToken<>() {};
-    private final List<String> editingFiles = Collections.synchronizedList(new ArrayList<>());
-
-    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
-
-    public Homes()
+    public static class Home
     {
-        this.homes = new ConcurrentHashMap<>();
+        private String name;
+        private final String dimension;
+        private final double x;
+        private final double y;
+        private final double z;
+        private final float yaw;
+        private final float pitch;
+        private final String date;
+
+        public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
+        {
+            this.name = name;
+            this.dimension = dimension;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.date = date;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+        public String getDimension()
+        {
+            return dimension;
+        }
+
+        public double getX()
+        {
+            return x;
+        }
+
+        public double getY()
+        {
+            return y;
+        }
+
+        public double getZ()
+        {
+            return z;
+        }
+
+        public float getYaw()
+        {
+            return yaw;
+        }
+
+        public float getPitch()
+        {
+            return pitch;
+        }
+
+        public String getDate()
+        {
+            return date;
+        }
     }
 
+    private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
+    private final TypeToken<List<Home>> homesType = new TypeToken<>() {};
+    private final List<String> editingFiles = Collections.synchronizedList(new ArrayList<>());
+    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
+
     /**
-     * Adds an entry to the map {@code this.homes} with all the player's homes
+     * Adds an entry to the map {@code homes} with all the player's homes
      */
     public void addPlayer(String playerKey, List<Home> playerHomes)
     {
-        this.homes.put(playerKey, playerHomes);
+        homes.put(playerKey, playerHomes);
         writeHomes(playerKey);
     }
 
     public void addHome(String playerKey, Home home)
     {
-        if (!this.homes.containsKey(playerKey))
+        if (!homes.containsKey(playerKey))
         {
-            this.homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
+            homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
         }
         else
         {
-            this.homes.get(playerKey).add(home);
+            homes.get(playerKey).add(home);
         }
         writeHomes(playerKey);
     }
@@ -77,7 +139,7 @@ public class Homes
      */
     public void removeHome(@NotNull String playerKey, String homeName)
     {
-        this.homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+        homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
         writeHomes(playerKey);
     }
 
@@ -88,11 +150,11 @@ public class Homes
      */
     public boolean removeAll(String playerKey)
     {
-        if (this.homes.containsKey(playerKey))
+        if (homes.containsKey(playerKey))
         {
-            if (!this.homes.get(playerKey).isEmpty())
+            if (!homes.get(playerKey).isEmpty())
             {
-                this.homes.get(playerKey).clear();
+                homes.get(playerKey).clear();
                 writeHomes(playerKey);
 
                 return true;
@@ -102,13 +164,25 @@ public class Homes
     }
 
     /**
+     * Renames the home of the player
+     */
+    public void rename(String playerKey, String homeName, String newHomeName)
+    {
+        if (homeExists(playerKey, homeName))
+        {
+            homes.get(playerKey).get(getHomeIndex(playerKey, homeName)).setName(newHomeName);
+            writeHomes(playerKey);
+        }
+    }
+
+    /**
      * Can be called if and only if the result of {@link Homes#homeExists} is true
      *
      * @return The home with the name {@code homeName}
      */
     public Home getPlayerHome(String playerName, String homeName)
     {
-        return this.homes.get(playerName).get(getHomeIndex(playerName, homeName));
+        return homes.get(playerName).get(getHomeIndex(playerName, homeName));
     }
 
     /**
@@ -118,7 +192,7 @@ public class Homes
      */
     public List<Home> getPlayerHomes(String playerName)
     {
-        return this.homes.get(playerName);
+        return homes.get(playerName);
     }
 
     /**
@@ -128,7 +202,7 @@ public class Homes
     {
         List<String> names = new ArrayList<>();
 
-        for (String key : this.homes.keySet())
+        for (String key : homes.keySet())
         {
             if (!key.split(" ")[1].equals(excludedPlayer))
             {
@@ -145,9 +219,9 @@ public class Homes
     {
         List<String> names = new ArrayList<>();
 
-        if (this.homes.containsKey(playerKey))
+        if (homes.containsKey(playerKey))
         {
-            this.homes.get(playerKey).forEach(home -> names.add(home.name()));
+            homes.get(playerKey).forEach(home -> names.add(home.getName()));
         }
         return names;
     }
@@ -162,11 +236,11 @@ public class Homes
     {
         List<String> names = new ArrayList<>();
 
-        for (String key : this.homes.keySet())
+        for (String key : homes.keySet())
         {
             if (key.split(" ")[1].equals(playerName))
             {
-                this.homes.get(key).forEach(home -> names.add(home.name()));
+                homes.get(key).forEach(home -> names.add(home.getName()));
                 break;
             }
         }
@@ -178,11 +252,11 @@ public class Homes
      */
     public int getHomeIndex(String playerKey, String homeName)
     {
-        for (Home home : this.homes.get(playerKey))
+        for (Home home : homes.get(playerKey))
         {
-            if (home.name().equals(homeName))
+            if (home.getName().equals(homeName))
             {
-                return this.homes.get(playerKey).indexOf(home);
+                return homes.get(playerKey).indexOf(home);
             }
         }
         return 0;
@@ -190,7 +264,7 @@ public class Homes
 
     public String getKeyFromName(String playerName)
     {
-        for (String key : this.homes.keySet())
+        for (String key : homes.keySet())
         {
             if (key.split(" ")[1].equals(playerName))
             {
@@ -202,20 +276,16 @@ public class Homes
 
     public boolean isEmpty(String playerKey)
     {
-        if (this.homes.containsKey(playerKey))
-        {
-            return this.homes.get(playerKey).isEmpty();
-        }
-        return true;
+        return !homes.containsKey(playerKey) || homes.get(playerKey).isEmpty();
     }
 
     public boolean isEmptyFromName(String playerName)
     {
-        for (String playerKey : this.homes.keySet())
+        for (String playerKey : homes.keySet())
         {
             if (playerKey.split(" ")[1].equals(playerName))
             {
-                return this.homes.get(playerKey).isEmpty();
+                return homes.get(playerKey).isEmpty();
             }
         }
         return true;
@@ -223,20 +293,16 @@ public class Homes
 
     public boolean maxHomesReached(String playerKey)
     {
-        if (this.homes.containsKey(playerKey))
-        {
-            return this.homes.get(playerKey).size() >= LibConfig.getIntOption("maxHomes");
-        }
-        return false;
+        return homes.containsKey(playerKey) && homes.get(playerKey).size() >= MAX_HOMES.getValue();
     }
 
     public boolean homeExists(String playerKey, String homeName)
     {
-        if (this.homes.containsKey(playerKey))
+        if (homes.containsKey(playerKey))
         {
-            for (Home home : this.homes.get(playerKey))
+            for (Home home : homes.get(playerKey))
             {
-                if (home.name().equals(homeName))
+                if (home.getName().equals(homeName))
                 {
                     return true;
                 }
@@ -247,13 +313,13 @@ public class Homes
 
     public boolean homeExistsFromName(String playerName, String homeName)
     {
-        for (String key : this.homes.keySet())
+        for (String key : homes.keySet())
         {
             if (key.split(" ")[1].equals(playerName))
             {
-                for (Home home : this.homes.get(key))
+                for (Home home : homes.get(key))
                 {
-                    if (home.name().equals(homeName))
+                    if (home.getName().equals(homeName))
                     {
                         return true;
                     }
@@ -278,12 +344,15 @@ public class Homes
                         String[] splitedFileName = file.getName().split(" ");
                         String[] splitedFileNameOld = file.getName().split("_");
 
-                        if (splitedFileName[0].equals(playerUUID) && !splitedFileName[1].equals(playerName + ".json") || (splitedFileNameOld.length == 2 && splitedFileNameOld[0].equals(playerUUID) && !splitedFileNameOld[1].equals(playerName + ".json")))
+                        if (splitedFileName[0].equals(playerUUID)
+                                && !splitedFileName[1].equals(playerName + ".json")
+                                || (splitedFileNameOld.length == 2 && splitedFileNameOld[0].equals(playerUUID) && !splitedFileNameOld[1].equals(playerName + ".json"))
+                        )
                         {
                             try
                             {
                                 Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
-                                LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
+                                CYANSH_LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
                             }
                             catch (IOException e)
                             {
@@ -302,7 +371,6 @@ public class Homes
      */
     public void readServer()
     {
-        this.homes = new ConcurrentHashMap<>();
         File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
         if (listOfFiles != null)
@@ -315,7 +383,7 @@ public class Homes
                     {
                         Gson gsonReader = new Gson();
                         Reader reader = Files.newBufferedReader(file.toPath());
-                        addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, HOMES_TYPE))));
+                        addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType))));
                         reader.close();
                     }
                     catch (IOException e)
@@ -332,7 +400,6 @@ public class Homes
      */
     public void readClient(String saveName)
     {
-        this.homes = new ConcurrentHashMap<>();
         HOMES_PATH = Path.of(MOD_PATH + "/" + saveName);
         checkOrCreateHomesDir();
         File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
@@ -349,7 +416,7 @@ public class Homes
                         {
                             Gson gsonReader = new Gson();
                             Reader reader = Files.newBufferedReader(file.toPath());
-                            addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, HOMES_TYPE))));
+                            addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType))));
                             reader.close();
                         }
                         catch (IOException e)
@@ -370,7 +437,7 @@ public class Homes
         {
             Path path = Path.of(HOMES_PATH + "/" + playerKey + ".json");
 
-            if (this.homes.get(playerKey).isEmpty())
+            if (homes.get(playerKey).isEmpty())
             {
                 if (Files.exists(path))
                 {
@@ -380,16 +447,16 @@ public class Homes
             }
             else
             {
-                if (!this.editingFiles.contains(path.getFileName().toString()))
+                if (!editingFiles.contains(path.getFileName().toString()))
                 {
-                    this.editingFiles.add(path.getFileName().toString());
+                    editingFiles.add(path.getFileName().toString());
 
                     Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                     Writer writer = Files.newBufferedWriter(path);
-                    gsonWriter.toJson(this.homes.get(playerKey), writer);
+                    gsonWriter.toJson(homes.get(playerKey), writer);
                     writer.close();
 
-                    this.editingFiles.remove(path.getFileName().toString());
+                    editingFiles.remove(path.getFileName().toString());
                 }
                 else
                 {
@@ -398,24 +465,24 @@ public class Homes
 
                     while (System.currentTimeMillis() < end)
                     {
-                        if (!this.editingFiles.contains(path.getFileName().toString()))
+                        if (!editingFiles.contains(path.getFileName().toString()))
                         {
-                            this.editingFiles.add(path.getFileName().toString());
+                            editingFiles.add(path.getFileName().toString());
 
                             Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                             Writer writer = Files.newBufferedWriter(path);
-                            gsonWriter.toJson(this.homes.get(playerKey), writer);
+                            gsonWriter.toJson(homes.get(playerKey), writer);
                             writer.close();
 
                             couldWrite = true;
-                            this.editingFiles.remove(path.getFileName().toString());
+                            editingFiles.remove(path.getFileName().toString());
                             break;
                         }
                     }
 
                     if (!couldWrite)
                     {
-                        LOGGER.info("[CyanSetHome] Could not write the file %s because it is already being written (for more than 1 sec)".formatted(path.getFileName().toString()));
+                        CYANSH_LOGGER.info("[CyanSetHome] Could not write the file %s because it is already being written (for more than 1 sec)".formatted(path.getFileName().toString()));
                     }
                 }
             }
