@@ -20,7 +20,9 @@ package fr.aeldit.cyansh;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
+import fr.aeldit.cyansh.config.CyanSHConfig;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
@@ -32,10 +34,7 @@ public class CyanSHClientCore implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
-        if (LibConfig.getBoolOption("useCustomTranslations"))
-        {
-            LanguageUtils.loadLanguage(getDefaultTranslations());
-        }
+        CYANSH_LIB_UTILS.init(CYANSH_MODID, CYANSH_OPTIONS_STORAGE, CyanSHConfig.class);
 
         // Join World Event
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -49,11 +48,14 @@ public class CyanSHClientCore implements ClientModInitializer
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            LibConfigCommands.register(dispatcher);
+            CYANSH_CONFIG_COMMANDS.register(dispatcher);
             HomeCommands.register(dispatcher);
             HomeOfCommands.register(dispatcher);
             PermissionCommands.register(dispatcher);
         });
-        LOGGER.info("[CyanSetHome] Successfully initialized");
+
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> removeEmptyModDir());
+
+        CYANSH_LOGGER.info("[CyanSetHome] Successfully initialized");
     }
 }

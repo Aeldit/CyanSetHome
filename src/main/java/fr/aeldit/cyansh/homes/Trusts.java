@@ -36,24 +36,19 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Trusts
 {
-    private ConcurrentHashMap<String, List<String>> trusts;
-    public final TypeToken<ConcurrentHashMap<String, List<String>>> TRUST_TYPE = new TypeToken<>() {};
-    public static Path TRUST_PATH = Path.of(MOD_PATH + "/trusted_players.json");
+    private final ConcurrentHashMap<String, List<String>> trusts = new ConcurrentHashMap<>();
+    public final TypeToken<ConcurrentHashMap<String, List<String>>> trustType = new TypeToken<>() {};
     private boolean isEditingFile = false;
-
-    public Trusts()
-    {
-        this.trusts = new ConcurrentHashMap<>();
-    }
+    public static Path TRUST_PATH = Path.of(MOD_PATH + "/trusted_players.json");
 
     public ConcurrentHashMap<String, List<String>> getTrusts()
     {
-        return this.trusts;
+        return trusts;
     }
 
     public void setTrusts(ConcurrentHashMap<String, List<String>> trusts)
     {
-        this.trusts = trusts;
+        this.trusts.putAll(trusts);
     }
 
     /**
@@ -61,21 +56,20 @@ public class Trusts
      */
     public void trustPlayer(String trustingPlayerKey, String trustedPlayerKey)
     {
-        if (!this.trusts.containsKey(trustingPlayerKey))
+        if (!trusts.containsKey(trustingPlayerKey))
         {
-            this.trusts.put(trustingPlayerKey, Collections.synchronizedList(new ArrayList<>(Collections.singletonList(trustedPlayerKey))));
-            write();
+            trusts.put(trustingPlayerKey, Collections.synchronizedList(new ArrayList<>(Collections.singletonList(trustedPlayerKey))));
         }
         else
         {
-            this.trusts.get(trustingPlayerKey).add(trustedPlayerKey);
-            write();
+            trusts.get(trustingPlayerKey).add(trustedPlayerKey);
         }
+        write();
     }
 
     public void untrustPlayer(String trustingPlayerName, String trustedPlayerName)
     {
-        for (ConcurrentHashMap.Entry<String, List<String>> entry : this.trusts.entrySet())
+        for (ConcurrentHashMap.Entry<String, List<String>> entry : trusts.entrySet())
         {
             if (entry.getKey().split(" ")[1].equals(trustingPlayerName))
             {
@@ -83,11 +77,11 @@ public class Trusts
                 {
                     if (name.split(" ")[1].equals(trustedPlayerName))
                     {
-                        this.trusts.get(entry.getKey()).remove(name);
+                        trusts.get(entry.getKey()).remove(name);
 
-                        if (this.trusts.get(entry.getKey()).isEmpty())
+                        if (trusts.get(entry.getKey()).isEmpty())
                         {
-                            this.trusts.remove(entry.getKey());
+                            trusts.remove(entry.getKey());
                         }
 
                         write();
@@ -109,14 +103,14 @@ public class Trusts
 
             if (isNotEmpty())
             {
-                for (String key : this.trusts.keySet())
+                for (String key : trusts.keySet())
                 {
                     // Changes the player username when it is a key
                     if (key.split(" ")[0].equals(playerUUID) && !key.split(" ")[1].equals(playerName))
                     {
                         prevName = key.split(" ")[1];
-                        this.trusts.put(playerKey, Collections.synchronizedList(new ArrayList<>(this.trusts.get(key))));
-                        this.trusts.remove(key);
+                        trusts.put(playerKey, Collections.synchronizedList(new ArrayList<>(trusts.get(key))));
+                        trusts.remove(key);
                         changed = true;
                     }
 
@@ -126,15 +120,15 @@ public class Trusts
                     }
 
                     // Changes the player's username when it is in a list of trusted players
-                    for (String listKey : this.trusts.get(key))
+                    for (String listKey : trusts.get(key))
                     {
                         if (listKey.split(" ")[0].equals(playerUUID) && !listKey.split(" ")[1].equals(playerName))
                         {
                             prevName = listKey.split(" ")[1];
                             changed = true;
 
-                            this.trusts.get(key).add(playerKey);
-                            this.trusts.get(key).remove(listKey);
+                            trusts.get(key).add(playerKey);
+                            trusts.get(key).remove(listKey);
                             write();
                         }
                     }
@@ -144,7 +138,7 @@ public class Trusts
             if (changed)
             {
                 write();
-                LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", playerName, prevName);
+                CYANSH_LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", playerName, prevName);
             }
         }
     }
@@ -153,7 +147,7 @@ public class Trusts
     {
         ArrayList<String> names = new ArrayList<>();
 
-        for (ConcurrentHashMap.Entry<String, List<String>> entry : this.trusts.entrySet())
+        for (ConcurrentHashMap.Entry<String, List<String>> entry : trusts.entrySet())
         {
             if (entry.getValue().contains(playerKey))
             {
@@ -165,20 +159,16 @@ public class Trusts
 
     public List<String> getTrustedPlayers(String playerKey)
     {
-        if (this.trusts.containsKey(playerKey))
-        {
-            return this.trusts.get(playerKey);
-        }
-        return new ArrayList<>();
+        return trusts.containsKey(playerKey) ? trusts.get(playerKey) : new ArrayList<>();
     }
 
     public boolean isPlayerTrustingFromName(String trustingPlayerName, String trustedPlayerName)
     {
-        for (String playerKey : this.trusts.keySet())
+        for (String playerKey : trusts.keySet())
         {
             if (playerKey.split(" ")[1].equals(trustingPlayerName))
             {
-                for (String trustedKey : this.trusts.get(playerKey))
+                for (String trustedKey : trusts.get(playerKey))
                 {
                     if (trustedKey.split(" ")[1].equals(trustedPlayerName))
                     {
@@ -193,7 +183,7 @@ public class Trusts
 
     public boolean isNotEmpty()
     {
-        return !this.trusts.isEmpty();
+        return !trusts.isEmpty();
     }
 
     public void readServer()
@@ -204,17 +194,13 @@ public class Trusts
             {
                 Gson gsonReader = new Gson();
                 Reader reader = Files.newBufferedReader(TRUST_PATH);
-                this.trusts.putAll(gsonReader.fromJson(reader, TRUST_TYPE));
+                trusts.putAll(gsonReader.fromJson(reader, trustType));
                 reader.close();
             }
             catch (IOException e)
             {
                 throw new RuntimeException(e);
             }
-        }
-        else
-        {
-            this.trusts = new ConcurrentHashMap<>();
         }
     }
 
@@ -228,17 +214,13 @@ public class Trusts
             {
                 Gson gsonReader = new Gson();
                 Reader reader = Files.newBufferedReader(TRUST_PATH);
-                this.trusts.putAll(gsonReader.fromJson(reader, TRUST_TYPE));
+                trusts.putAll(gsonReader.fromJson(reader, trustType));
                 reader.close();
             }
             catch (IOException e)
             {
                 throw new RuntimeException(e);
             }
-        }
-        else
-        {
-            this.trusts = new ConcurrentHashMap<>();
         }
     }
 
@@ -248,7 +230,7 @@ public class Trusts
 
         try
         {
-            if (this.trusts.isEmpty())
+            if (trusts.isEmpty())
             {
                 if (Files.exists(TRUST_PATH))
                 {
@@ -258,16 +240,16 @@ public class Trusts
             }
             else
             {
-                if (!this.isEditingFile)
+                if (!isEditingFile)
                 {
-                    this.isEditingFile = true;
+                    isEditingFile = true;
 
                     Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                     Writer writer = Files.newBufferedWriter(TRUST_PATH);
-                    gsonWriter.toJson(this.trusts, writer);
+                    gsonWriter.toJson(trusts, writer);
                     writer.close();
 
-                    this.isEditingFile = false;
+                    isEditingFile = false;
                 }
                 else
                 {
@@ -276,24 +258,24 @@ public class Trusts
 
                     while (System.currentTimeMillis() < end)
                     {
-                        if (!this.isEditingFile)
+                        if (!isEditingFile)
                         {
-                            this.isEditingFile = true;
+                            isEditingFile = true;
 
                             Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                             Writer writer = Files.newBufferedWriter(TRUST_PATH);
-                            gsonWriter.toJson(this.trusts, writer);
+                            gsonWriter.toJson(trusts, writer);
                             writer.close();
 
                             couldWrite = true;
-                            this.isEditingFile = false;
+                            isEditingFile = false;
                             break;
                         }
                     }
 
                     if (!couldWrite)
                     {
-                        LOGGER.info("[CyanSetHome] Could not write the trusting_players.json file because it is already being written");
+                        CYANSH_LOGGER.info("[CyanSetHome] Could not write the trusting_players.json file because it is already being written");
                     }
                 }
             }

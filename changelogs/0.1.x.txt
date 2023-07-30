@@ -50,6 +50,8 @@
 
     🫧 Changed :
     - Use CyanLib 0.3.5 (which allows me to remove the config commands from this mod, as they are now handled in the CyanLib)
+    - *(Only uses the last version, it's just to separate the features of each version)* Use CyanLib 0.4.1
+      (which adds screen for the configuration on the client, only in solo for now)
 
     ❌ Removed :
     - The `allowHomesOf` option (you can still use the `home-of` command and the trust system, its just the option that was removed)

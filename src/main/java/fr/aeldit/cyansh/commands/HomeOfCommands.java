@@ -31,6 +31,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
+import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_BYPASS;
+import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_HOMES;
 import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
@@ -98,13 +100,13 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (LibConfig.getBoolOption("allowByPass") && player.hasPermissionLevel(4))
+                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
@@ -112,8 +114,8 @@ public class HomeOfCommands
                     {
                         HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation("removeHome"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("removeHome"),
                                 "cyansh.msg.removeHome",
                                 Formatting.YELLOW + homeName,
                                 Formatting.AQUA + trustingPlayer
@@ -121,8 +123,8 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "homeNotFound"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
@@ -130,8 +132,8 @@ public class HomeOfCommands
                 }
                 else
                 {
-                    LanguageUtils.sendPlayerMessage(player,
-                            LanguageUtils.getTranslation(ERROR + "notOpOrTrusted"),
+                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "notOpOrTrusted"),
                             "cyansh.msg.notOpOrTrusted"
                     );
                 }
@@ -149,13 +151,13 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if ((LibConfig.getBoolOption("allowByPass") && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
+                if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
@@ -173,16 +175,16 @@ public class HomeOfCommands
                                     player.teleport(player.getServer().getWorld(World.END), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
                         }
 
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation("goToHome"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("goToHome"),
                                 "cyansh.msg.goToHome",
                                 Formatting.YELLOW + homeName
                         );
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "homeNotFound"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
@@ -190,8 +192,8 @@ public class HomeOfCommands
                 }
                 else
                 {
-                    LanguageUtils.sendPlayerMessage(player,
-                            LanguageUtils.getTranslation(ERROR + "notOpOrTrusted"),
+                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "notOpOrTrusted"),
                             "cyansh.msg.notOpOrTrusted"
                     );
                 }
@@ -209,37 +211,37 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        if (LibUtils.isPlayer(context.getSource()))
+        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (LibUtils.isOptionAllowed(player, LibConfig.getBoolOption("allowHomes"), "homesDisabled"))
+            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
                 if (player.getName().getString().equals(trustingPlayer))
                 {
-                    LanguageUtils.sendPlayerMessage(player,
-                            LanguageUtils.getTranslation(ERROR + "useSelfHomes"),
+                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "useSelfHomes"),
                             "cyansh.msg.useSelfHomes"
                     );
                 }
-                else if ((LibConfig.getBoolOption("allowByPass") && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
+                else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
                 {
                     if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {
-                        LanguageUtils.sendPlayerMessageActionBar(player,
-                                LanguageUtils.getTranslation("dashSeparation"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
-                        LanguageUtils.sendPlayerMessageActionBar(player,
-                                LanguageUtils.getTranslation("listHomesOf"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("listHomesOf"),
                                 "cyansh.msg.listHomesOf",
                                 false,
                                 Formatting.AQUA + trustingPlayer
                         );
 
-                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer)).forEach(home -> LanguageUtils.sendPlayerMessageActionBar(player,
-                                        LanguageUtils.getTranslation("getHome"),
+                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer)).forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                        CYANSH_LANGUAGE_UTILS.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
                                         Formatting.YELLOW + home.getName(),
@@ -248,24 +250,24 @@ public class HomeOfCommands
                                 )
                         );
 
-                        LanguageUtils.sendPlayerMessageActionBar(player,
-                                LanguageUtils.getTranslation("dashSeparation"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
                     }
                     else
                     {
-                        LanguageUtils.sendPlayerMessage(player,
-                                LanguageUtils.getTranslation(ERROR + "noHomesOf"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomesOf"),
                                 "cyansh.msg.noHomesOf"
                         );
                     }
                 }
                 else
                 {
-                    LanguageUtils.sendPlayerMessage(player,
-                            LanguageUtils.getTranslation(ERROR + "notOpOrTrusted"),
+                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "notOpOrTrusted"),
                             "cyansh.msg.notOpOrTrusted"
                     );
                 }

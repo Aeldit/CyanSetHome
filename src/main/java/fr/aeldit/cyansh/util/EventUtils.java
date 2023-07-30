@@ -67,7 +67,7 @@ public class EventUtils
 
                     try
                     {
-                        if (splitedFileName[splitedFileName.length - 1].equals("properties") && Files.readAllLines(file.toPath()).size() >= 1)
+                        if (splitedFileName[splitedFileName.length - 1].equals("properties") && !Files.readAllLines(file.toPath()).isEmpty())
                         {
                             Properties properties = new Properties();
                             FileInputStream fis = new FileInputStream(file);
@@ -91,7 +91,7 @@ public class EventUtils
                                     );
 
                                     TrustsObj.setTrusts(trusts);
-                                    LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
+                                    CYANSH_LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
                                 }
                                 else
                                 {
@@ -111,7 +111,7 @@ public class EventUtils
                                             }
                                     );
 
-                                    LOGGER.info("[CyanSetHome] Transferred the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
+                                    CYANSH_LOGGER.info("[CyanSetHome] Transferred the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
                                 }
 
                                 TrustsObj.write();
@@ -167,7 +167,7 @@ public class EventUtils
 
                                 if (changed)
                                 {
-                                    LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
+                                    CYANSH_LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
                                 }
                             }
                         }
