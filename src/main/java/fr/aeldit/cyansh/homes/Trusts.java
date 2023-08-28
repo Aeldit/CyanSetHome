@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -145,16 +146,8 @@ public class Trusts
 
     public ArrayList<String> getTrustingPlayers(String playerKey)
     {
-        ArrayList<String> names = new ArrayList<>();
-
-        for (ConcurrentHashMap.Entry<String, List<String>> entry : trusts.entrySet())
-        {
-            if (entry.getValue().contains(playerKey))
-            {
-                names.add(entry.getKey().split(" ")[1]);
-            }
-        }
-        return names;
+        return trusts.entrySet().stream().filter(entry -> entry.getValue().contains(playerKey))
+                .map(entry -> entry.getKey().split(" ")[1]).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<String> getTrustedPlayers(String playerKey)

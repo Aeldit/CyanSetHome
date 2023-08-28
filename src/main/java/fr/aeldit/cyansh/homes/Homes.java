@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansh.config.CyanSHConfig.MAX_HOMES;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -200,16 +201,7 @@ public class Homes
      */
     public List<String> getPlayersWithHomes(String excludedPlayer)
     {
-        List<String> names = new ArrayList<>();
-
-        for (String key : homes.keySet())
-        {
-            if (!key.split(" ")[1].equals(excludedPlayer))
-            {
-                names.add(key.split(" ")[1]);
-            }
-        }
-        return names;
+        return homes.keySet().stream().filter(key -> !key.split(" ")[1].equals(excludedPlayer)).map(key -> key.split(" ")[1]).collect(Collectors.toList());
     }
 
     /**
@@ -252,26 +244,12 @@ public class Homes
      */
     public int getHomeIndex(String playerKey, String homeName)
     {
-        for (Home home : homes.get(playerKey))
-        {
-            if (home.getName().equals(homeName))
-            {
-                return homes.get(playerKey).indexOf(home);
-            }
-        }
-        return 0;
+        return homes.get(playerKey).stream().filter(home -> home.getName().equals(homeName)).findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);
     }
 
     public String getKeyFromName(String playerName)
     {
-        for (String key : homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                return key;
-            }
-        }
-        return null;
+        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName)).findFirst().orElse(null);
     }
 
     public boolean isEmpty(String playerKey)
@@ -281,14 +259,7 @@ public class Homes
 
     public boolean isEmptyFromName(String playerName)
     {
-        for (String playerKey : homes.keySet())
-        {
-            if (playerKey.split(" ")[1].equals(playerName))
-            {
-                return homes.get(playerKey).isEmpty();
-            }
-        }
-        return true;
+        return homes.keySet().stream().filter(playerKey -> playerKey.split(" ")[1].equals(playerName)).findFirst().map(playerKey -> homes.get(playerKey).isEmpty()).orElse(true);
     }
 
     public boolean maxHomesReached(String playerKey)
@@ -300,33 +271,14 @@ public class Homes
     {
         if (homes.containsKey(playerKey))
         {
-            for (Home home : homes.get(playerKey))
-            {
-                if (home.getName().equals(homeName))
-                {
-                    return true;
-                }
-            }
+            return homes.get(playerKey).stream().anyMatch(home -> home.getName().equals(homeName));
         }
         return false;
     }
 
     public boolean homeExistsFromName(String playerName, String homeName)
     {
-        for (String key : homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                for (Home home : homes.get(key))
-                {
-                    if (home.getName().equals(homeName))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName)).flatMap(key -> homes.get(key).stream()).anyMatch(home -> home.getName().equals(homeName));
     }
 
     public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)
