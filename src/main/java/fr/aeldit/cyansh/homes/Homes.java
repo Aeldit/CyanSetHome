@@ -228,14 +228,8 @@ public class Homes
     {
         List<String> names = new ArrayList<>();
 
-        for (String key : homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                homes.get(key).forEach(home -> names.add(home.getName()));
-                break;
-            }
-        }
+        homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName))
+                .findFirst().ifPresent(key -> homes.get(key).forEach(home -> names.add(home.getName())));
         return names;
     }
 
@@ -244,7 +238,8 @@ public class Homes
      */
     public int getHomeIndex(String playerKey, String homeName)
     {
-        return homes.get(playerKey).stream().filter(home -> home.getName().equals(homeName)).findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);
+        return homes.get(playerKey).stream().filter(home -> home.getName().equals(homeName))
+                .findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);
     }
 
     public String getKeyFromName(String playerName)
@@ -259,7 +254,8 @@ public class Homes
 
     public boolean isEmptyFromName(String playerName)
     {
-        return homes.keySet().stream().filter(playerKey -> playerKey.split(" ")[1].equals(playerName)).findFirst().map(playerKey -> homes.get(playerKey).isEmpty()).orElse(true);
+        return homes.keySet().stream().filter(playerKey -> playerKey.split(" ")[1].equals(playerName))
+                .findFirst().map(playerKey -> homes.get(playerKey).isEmpty()).orElse(true);
     }
 
     public boolean maxHomesReached(String playerKey)
@@ -278,7 +274,8 @@ public class Homes
 
     public boolean homeExistsFromName(String playerName, String homeName)
     {
-        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName)).flatMap(key -> homes.get(key).stream()).anyMatch(home -> home.getName().equals(homeName));
+        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName))
+                .flatMap(key -> homes.get(key).stream()).anyMatch(home -> home.getName().equals(homeName));
     }
 
     public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)
