@@ -2,17 +2,21 @@
 
 > ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
 
-![java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![LICENSE_PLATE](https://img.shields.io/github/license/Aeldit/CyanSetHome?style=for-the-badge)
-![loader](https://img.shields.io/badge/modloader-Fabric-1976d2?style=for-the-badge)
+![LICENSE_PLATE](https://img.shields.io/github/license/Aeldit/CyanSetHome?style=for-the-badge&color=2e0078&labelColor=2e0078)
 ![modrinth downloads](https://img.shields.io/modrinth/dt/CyanSetHome?color=2e0078&labelColor=2e0078&label=downloads&logo=modrinth&style=for-the-badge)
 
-| MC Version  | Up to date |
-|:-----------:|:----------:|
-| 1.19-1.19.2 |     ✅      |
-|   1.19.3    | ❌ (0.1.0)  |
-|   1.19.4    |     ✅      |
-|   1.20.x    |     ✅      |
+[![fabric-api](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg)](https://modrinth.com/mod/fabric-api)
+or
+[![quilted-fabric-api](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/quilted-fabric-api_vector.svg)](https://modrinth.com/mod/qsl)
+
+| MC Version  | Up to date | Latest Version |
+|:-----------:|:----------:|:--------------:|
+| 1.19-1.19.2 |     ❌      |     0.1.4      |
+|   1.19.3    |     ❌      |     0.1.0      |
+|   1.19.4    |     ✅      |     latest     |
+|   1.20.x    |     ✅      |     latest     |
+
+***
 
 ### 💲```Features```
 
@@ -29,7 +33,7 @@
 >
 > [![github_issues](https://img.shields.io/github/issues/Aeldit/CyanSetHome?color=red&style=for-the-badge&logo=github)](https://github.com/Aeldit/CyanSetHome/issues)
 >
-> If you have a suggestion, you can go on my discord server and create a post in 🖍️-suggestion
+> If you have a suggestion, you can go on my discord server and create a post in 🗽-suggestions-forum
 >
 > [![discord_badge](https://img.shields.io/discord/750243612473819188?color=7289da&label=DISCORD&logo=discord&logoColor=7289da&style=for-the-badge)](https://discord.gg/PcYPpqzhKS)
 

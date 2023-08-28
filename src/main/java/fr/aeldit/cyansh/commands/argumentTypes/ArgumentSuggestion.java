@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_BYPASS;
 import static fr.aeldit.cyansh.util.Utils.HomesObj;
@@ -51,11 +52,8 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
     {
-        if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
-        {
-            return CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder);
-        }
-        return new CompletableFuture<>();
+        return (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+                ? CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder) : new CompletableFuture<>();
     }
 
     /**
@@ -65,8 +63,7 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        List<String> players = new ArrayList<>();
-        source.getServer().getPlayerManager().getPlayerList().forEach(player -> players.add(player.getName().getString()));
+        List<String> players = source.getServer().getPlayerManager().getPlayerList().stream().map(player -> player.getName().getString()).collect(Collectors.toList());
         players.remove(source.getPlayer().getName().getString());
 
         return CommandSource.suggestMatching(players, builder);
@@ -79,8 +76,8 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        ArrayList<String> names = new ArrayList<>();
-        TrustsObj.getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString()).forEach(s -> names.add(s.split(" ")[1]));
+        ArrayList<String> names = TrustsObj.getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString())
+                .stream().map(s -> s.split(" ")[1]).collect(Collectors.toCollection(ArrayList::new));
 
         return CommandSource.suggestMatching(names, builder);
     }
@@ -96,14 +93,9 @@ public final class ArgumentSuggestion
 
         if (player != null)
         {
-            if (player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue())
-            {
-                return CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder);
-            }
-            else
-            {
-                return CommandSource.suggestMatching(TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()), builder);
-            }
+            return player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue()
+                    ? CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder)
+                    : CommandSource.suggestMatching(TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()), builder);
         }
         return CommandSource.suggestMatching(new ArrayList<>(), builder);
     }
