@@ -1,13 +1,11 @@
-![banner](https://github.com/Aeldit/CyanSetHome/blob/1.19.4/images/BANNER_CyanSetHome.png?raw=true)
+![banner](images/BANNER_CyanSetHome.png)
 
 > ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
-
-![LICENSE_PLATE](https://img.shields.io/github/license/Aeldit/CyanSetHome?style=for-the-badge&color=2e0078&labelColor=2e0078)
-![modrinth downloads](https://img.shields.io/modrinth/dt/CyanSetHome?color=2e0078&labelColor=2e0078&label=downloads&logo=modrinth&style=for-the-badge)
 
 [![fabric-api](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg)](https://modrinth.com/mod/fabric-api)
 or
 [![quilted-fabric-api](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/quilted-fabric-api_vector.svg)](https://modrinth.com/mod/qsl)
+[![cyanlib_badge_use](https://raw.githubusercontent.com/Aeldit/Aeldit/e84549f8cef529270bd41775357d577e1f71978a/images/cyanlib-cozy.svg)](https://modrinth.com/mod/cyanlib)
 
 | MC Version  | Up to date | Latest Version |
 |:-----------:|:----------:|:--------------:|
@@ -68,3 +66,17 @@ or
 
 > 📖 If you launch the mod on server side, it will use the latest version of minecraft, but if you use it on client side,
 > it will allow you to play any version of the same number (ex: 1.17, 1.17.1 ...)
+
+***
+
+### Check out the rest of my projects !
+
+[![cyan_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/bef8e5f6a837ee8c3479a2550e92c0ac028200f3/images/cyan-cozy-minimal.svg)](https://modrinth.com/mod/cyan)
+[![ctms_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/d668bc7cd71d654d2331905a5ad425283dedab94/images/ctms-cozy-minimal.svg)](https://modrinth.com/mod/ctm-selector)
+[![cyanlib_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/bef8e5f6a837ee8c3479a2550e92c0ac028200f3/images/cyanlib-cozy-minimal.svg)](https://modrinth.com/mod/cyanlib)
+[![ctm_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/e2fb5f7ffe92301f627540cebca28d9aa90c641d/images/ctm-cozy-minimal.svg)](https://modrinth.com/resourcepack/ctm-of-fabric)
+[![ctm_faithful_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/54529d9dbb33d35184f386269c889cef818e7e79/images/ctm-faithful-cozy-minimal.svg)](https://modrinth.com/resourcepack/ctm-faithful)
+[![ctm_create_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/54529d9dbb33d35184f386269c889cef818e7e79/images/ctm-create-cozy-minimal.svg)](https://modrinth.com/resourcepack/ctm-create)
+[![dark_gui_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/2f4a47b3752b28cbcd13c6d76c66a803d7fe1df5/images/dark-gui-cozy-minimal.svg)](https://modrinth.com/resourcepack/dark-smooth-gui)
+[![light_gui_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/2f4a47b3752b28cbcd13c6d76c66a803d7fe1df5/images/light-gui-cozy-minimal.svg)](https://modrinth.com/resourcepack/light-smooth-gui)
+[![floating_texts_badge](https://raw.githubusercontent.com/Aeldit/Aeldit/c4163b0470c0d710ba2cd3314cd241b5669ef175/images/floating-texts-cozy-minimal.svg)](https://modrinth.com/datapack/floating-texts)
