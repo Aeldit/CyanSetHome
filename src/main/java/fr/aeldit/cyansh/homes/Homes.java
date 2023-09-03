@@ -242,7 +242,7 @@ public class Homes
     /**
      * Can be called if and only if the result of {@link Homes#homeExists} is true
      */
-    public int getHomeIndex(String playerKey, String homeName)
+    private int getHomeIndex(String playerKey, String homeName)
     {
         return homes.get(playerKey).stream().filter(home -> home.getName().equals(homeName))
                 .findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);

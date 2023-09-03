@@ -1,11 +1,14 @@
 ![banner](images/BANNER_CyanSetHome.png)
-
+<!-- modrinth_exclude.start -->
 > ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
-
+<!-- modrinth_exclude.end -->
 [![fabric-api](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg)](https://modrinth.com/mod/fabric-api)
 or
 [![quilted-fabric-api](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/quilted-fabric-api_vector.svg)](https://modrinth.com/mod/qsl)
 [![cyanlib_badge_use](https://raw.githubusercontent.com/Aeldit/Aeldit/e84549f8cef529270bd41775357d577e1f71978a/images/cyanlib-cozy.svg)](https://modrinth.com/mod/cyanlib)
+
+<details>
+<summary>🎴 Show available versions</summary>
 
 | MC Version  | Up to date | Latest Version |
 |:-----------:|:----------:|:--------------:|
@@ -14,9 +17,11 @@ or
 |   1.19.4    |     ✅      |     latest     |
 |   1.20.x    |     ✅      |     latest     |
 
+</details>
+
 ***
 
-### 💲```Features```
+### 💲Features
 
 1. Create homes and teleport to them (you can also delete them)
 
@@ -24,20 +29,8 @@ or
 
 3. See and edit plenty of options, like the minimum OP level required to run a command or simply toggle a functionality
 
-***
-
-> If you find any issue, please make sure to report it on github so I can fix it (both badges can be clicked on to
-> follow the link)
->
-> [![github_issues](https://img.shields.io/github/issues/Aeldit/CyanSetHome?color=red&style=for-the-badge&logo=github)](https://github.com/Aeldit/CyanSetHome/issues)
->
-> If you have a suggestion, you can go on my discord server and create a post in 🗽-suggestions-forum
->
-> [![discord_badge](https://img.shields.io/discord/750243612473819188?color=7289da&label=DISCORD&logo=discord&logoColor=7289da&style=for-the-badge)](https://discord.gg/PcYPpqzhKS)
-
-***
-
-### ✅ ```List of commands (and their aliases)```
+<details>
+<summary>✅ List of commands (and their aliases)</summary>
 
 |                   Command                   |                             Description                              |              Alias               |
 |:-------------------------------------------:|:--------------------------------------------------------------------:|:--------------------------------:|
@@ -59,6 +52,8 @@ or
 |           `/reload-translations`            |            Reloads the custom translations from the file             |                ❌                 |
 |         `/remove-properties-files`          | Removes the properties files after they have been transfered to json |                ❌                 |
 
+</details>
+
 > ### ❗ Important :
 >
 > If you are not using this mod on client but only on server side, download the resource pack for messages translations
@@ -68,6 +63,15 @@ or
 > it will allow you to play any version of the same number (ex: 1.17, 1.17.1 ...)
 
 ***
+
+> If you find any issue, please make sure to report it on github so I can fix it (both badges can be clicked on to
+> follow the link)
+>
+> [![github_issues](https://img.shields.io/github/issues/Aeldit/CyanSetHome?color=red&style=for-the-badge&logo=github)](https://github.com/Aeldit/CyanSetHome/issues)
+>
+> If you have a suggestion, you can go on my discord server and create a post in 🗽-suggestions-forum
+>
+> [![discord_badge](https://img.shields.io/discord/750243612473819188?color=7289da&label=DISCORD&logo=discord&logoColor=7289da&style=for-the-badge)](https://discord.gg/PcYPpqzhKS)
 
 ### Check out the rest of my projects !
 

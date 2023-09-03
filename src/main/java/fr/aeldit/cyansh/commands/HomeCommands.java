@@ -21,7 +21,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
+import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansh.homes.Homes;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -55,34 +55,33 @@ public class HomeCommands
 
         dispatcher.register(CommandManager.literal("home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .executes(HomeCommands::goToHome)
                 )
         );
         dispatcher.register(CommandManager.literal("h")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .executes(HomeCommands::goToHome)
                 )
         );
 
         dispatcher.register(CommandManager.literal("remove-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
                 )
         );
         dispatcher.register(CommandManager.literal("rh")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
                 )
         );
 
-
         dispatcher.register(CommandManager.literal("rename-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .then(CommandManager.argument("new_home_name", StringArgumentType.string())
                                 .executes(HomeCommands::renameHome)
                         )
