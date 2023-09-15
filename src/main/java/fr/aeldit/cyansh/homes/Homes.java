@@ -39,74 +39,7 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
-    public static class Home
-    {
-        private String name;
-        private final String dimension;
-        private final double x;
-        private final double y;
-        private final double z;
-        private final float yaw;
-        private final float pitch;
-        private final String date;
-
-        public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
-        {
-            this.name = name;
-            this.dimension = dimension;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.yaw = yaw;
-            this.pitch = pitch;
-            this.date = date;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
-        public String getDimension()
-        {
-            return dimension;
-        }
-
-        public double getX()
-        {
-            return x;
-        }
-
-        public double getY()
-        {
-            return y;
-        }
-
-        public double getZ()
-        {
-            return z;
-        }
-
-        public float getYaw()
-        {
-            return yaw;
-        }
-
-        public float getPitch()
-        {
-            return pitch;
-        }
-
-        public String getDate()
-        {
-            return date;
-        }
-    }
+    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date) {}
 
     private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
     private final TypeToken<List<Home>> homesType = new TypeToken<>() {};
@@ -171,7 +104,11 @@ public class Homes
     {
         if (homeExists(playerKey, homeName))
         {
-            homes.get(playerKey).get(getHomeIndex(playerKey, homeName)).setName(newHomeName);
+            Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
+            homes.get(playerKey).add(new Home(newHomeName,
+                    tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw, tmpHome.pitch, tmpHome.date
+            ));
+            homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
             writeHomes(playerKey);
         }
     }
@@ -213,7 +150,7 @@ public class Homes
 
         if (homes.containsKey(playerKey))
         {
-            homes.get(playerKey).forEach(home -> names.add(home.getName()));
+            homes.get(playerKey).forEach(home -> names.add(home.name));
         }
         return names;
     }
@@ -232,7 +169,7 @@ public class Homes
         {
             if (key.split(" ")[1].equals(playerName))
             {
-                homes.get(key).forEach(home -> names.add(home.getName()));
+                homes.get(key).forEach(home -> names.add(home.name));
                 break;
             }
         }
@@ -244,7 +181,7 @@ public class Homes
      */
     private int getHomeIndex(String playerKey, String homeName)
     {
-        return homes.get(playerKey).stream().filter(home -> home.getName().equals(homeName))
+        return homes.get(playerKey).stream().filter(home -> home.name.equals(homeName))
                 .findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);
     }
 
@@ -274,7 +211,7 @@ public class Homes
     {
         if (homes.containsKey(playerKey))
         {
-            return homes.get(playerKey).stream().anyMatch(home -> home.getName().equals(homeName));
+            return homes.get(playerKey).stream().anyMatch(home -> home.name.equals(homeName));
         }
         return false;
     }
@@ -282,7 +219,7 @@ public class Homes
     public boolean homeExistsFromName(String playerName, String homeName)
     {
         return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName))
-                .flatMap(key -> homes.get(key).stream()).anyMatch(home -> home.getName().equals(homeName));
+                .flatMap(key -> homes.get(key).stream()).anyMatch(home -> home.name.equals(homeName));
     }
 
     public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)

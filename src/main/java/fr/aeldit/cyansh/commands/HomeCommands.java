@@ -320,14 +320,14 @@ public class HomeCommands
                     {
                         Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
 
-                        switch (home.getDimension())
+                        switch (home.dimension())
                         {
                             case "overworld" ->
-                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                             case "nether" ->
-                                    player.teleport(player.getServer().getWorld(World.NETHER), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                                    player.teleport(player.getServer().getWorld(World.NETHER), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                             case "end" ->
-                                    player.teleport(player.getServer().getWorld(World.END), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                                    player.teleport(player.getServer().getWorld(World.END), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                         }
 
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
@@ -384,9 +384,9 @@ public class HomeCommands
                                         CYANSH_LANGUAGE_UTILS.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
-                                        Formatting.YELLOW + home.getName(),
-                                        Formatting.DARK_AQUA + home.getDimension(),
-                                        Formatting.DARK_AQUA + home.getDate()
+                                        Formatting.YELLOW + home.name(),
+                                        Formatting.DARK_AQUA + home.dimension(),
+                                        Formatting.DARK_AQUA + home.date()
                                 )
                         );
 
