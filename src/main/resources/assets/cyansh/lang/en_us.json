@@ -73,6 +73,7 @@
   "cyansh.config.option.allowHomes": "AllowHomes",
   "cyansh.config.option.allowByPass": "AllowByPass",
   "cyansh.config.option.minOpLvlHomes": "MinOpLvlHomes",
+  "cyansh.config.option.minOpLvlBypass": "MinOpLvlBypass",
   "cyansh.config.option.maxHomes": "MaxHomes",
   "cyansh.config.option.useCustomTranslations": "UseCustomTranslations"
 }

@@ -30,6 +30,11 @@ or
 
 3. See and edit plenty of options, like the minimum OP level required to run a command or simply toggle a functionality
 
+> The home-of commands require the player running the command to be trusted (for `/home-of` and `/get-homes-of`).
+>
+> All the commands that edit the homes of another player require the player running the command to be OP with
+> level `MIN_OP_LVL_BYPASS` and the allowBypass option to be set to `true`
+
 <details>
 <summary>✅ List of commands (and their aliases)</summary>
 

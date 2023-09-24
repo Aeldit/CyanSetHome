@@ -249,7 +249,7 @@ public class HomeOfCommands
      * <p>
      * Removes all the homes of the given player
      * <p>
-     * Succeeds only if the player running the command is OP with level {@code MIN_OP_LVL_BYPASS} and the allowByPass option is set to {@code true}
+     * Succeeds only if the player has OP level {@code MIN_OP_LVL_BYPASS} and the byPass option is set to {@code true}
      */
     public static int removeAllHomesOf(@NotNull CommandContext<ServerCommandSource> context) // TODO -> ask for confirmation
     {
@@ -352,7 +352,7 @@ public class HomeOfCommands
      * <p>
      * Teleports the player to the given home
      * <p>
-     * Succeeds only if the player is trusted or OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set to {@code true}
+     * Succeeds only if the player is trusted or has OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set to {@code true}
      */
     public static int goToHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
