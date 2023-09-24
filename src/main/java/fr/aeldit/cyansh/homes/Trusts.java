@@ -197,9 +197,9 @@ public class Trusts
         }
     }
 
-    public void readClient(String saveName)
+    public void readClient()
     {
-        TRUST_PATH = Path.of(HOMES_PATH + "/" + saveName + "/trusted_players.json");
+        TRUST_PATH = Path.of(HOMES_PATH + "/trusted_players.json");
 
         if (Files.exists(TRUST_PATH))
         {
