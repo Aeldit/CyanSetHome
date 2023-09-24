@@ -10,12 +10,13 @@ or
 <details>
 <summary>🎴 Show available versions</summary>
 
-| MC Version  | Up to date | Latest Version |
-|:-----------:|:----------:|:--------------:|
-| 1.19-1.19.2 |     ❌      |     0.1.4      |
-|   1.19.3    |     ❌      |     0.1.0      |
-|   1.19.4    |     ✅      |     latest     |
-|   1.20.x    |     ✅      |     latest     |
+|  MC Version   | Up to date | Latest Version |
+|:-------------:|:----------:|:--------------:|
+| 1.19 - 1.19.2 |     ❌      |     0.1.4      |
+|    1.19.3     |     ❌      |     0.1.0      |
+|    1.19.4     |     ❌      |     0.1.4      |
+| 1.20 - 1.20.1 |     ❌      |     0.1.4      |
+|    1.20.2     |     ✅      |     latest     |
 
 </details>
 
@@ -32,25 +33,28 @@ or
 <details>
 <summary>✅ List of commands (and their aliases)</summary>
 
-|                   Command                   |                             Description                              |              Alias               |
-|:-------------------------------------------:|:--------------------------------------------------------------------:|:--------------------------------:|
-|           `/set-home <home_name>`           |                  Creates a home with the given name                  |        `/sh <home_name>`         |
-|             `/home <home_name>`             |                   Teleports you to the given home                    |         `/h <home_name>`         |
-|         `/remove-home <home_name>`          |                        Removes the given home                        |        `/rh <home_name>`         |
-|             `/remove-all-homes`             |                        Removes all your homes                        |                ❌                 |
-|                `/get-homes`                 |                 Displays all your homes in the chat                  |              `/gh`               |
-|                                             |                                                                      |                                  |
-|                `/home-trust`                |               Adds the given player to your trust list               |                ❌                 |
-|               `/home-untrust`               |            Removes the given player from your trust list             |                ❌                 |
-|           `/get-trusting-players`           |          Displays in the chat every player that trusts you           |                ❌                 |
-|           `/get-trusted-players`            |           Displays in the chat every player that you trust           |                ❌                 |
-|                                             |                                                                      |                                  |
-| `/remove-home-of <player_name> <home_name>` |                 Removes the home of the given player                 | `/rho <player_name> <home_name>` |
-|    `/home-of <player_name> <home_name>`     |            Teleports you to the home of the given player             | `/ho <player_name> <home_name>`  |
-|        `/get-homes-of <player_name>`        |          Displays all the given player's homes in the chat           |       `/gho <player_name>`       |
-|                                             |                                                                      |                                  |
-|           `/reload-translations`            |            Reloads the custom translations from the file             |                ❌                 |
-|         `/remove-properties-files`          | Removes the properties files after they have been transfered to json |                ❌                 |
+|                        Command                        |                             Description                              |              Alias               |
+|:-----------------------------------------------------:|:--------------------------------------------------------------------:|:--------------------------------:|
+|                `/set-home <home_name>`                |                  Creates a home with the given name                  |        `/sh <home_name>`         |
+|                  `/home <home_name>`                  |                   Teleports you to the given home                    |         `/h <home_name>`         |
+|              `/remove-home <home_name>`               |                        Removes the given home                        |        `/rh <home_name>`         |
+|                  `/remove-all-homes`                  |                        Removes all your homes                        |                ❌                 |
+|                     `/get-homes`                      |                 Displays all your homes in the chat                  |              `/gh`               |
+|       `rename-home <home_name> <new_home_name>`       |                  Renames the home to the given name                  |                ❌                 |
+|                                                       |                                                                      |                                  |
+|                     `/home-trust`                     |               Adds the given player to your trust list               |                ❌                 |
+|                    `/home-untrust`                    |            Removes the given player from your trust list             |                ❌                 |
+|                `/get-trusting-players`                |          Displays in the chat every player that trusts you           |                ❌                 |
+|                `/get-trusted-players`                 |           Displays in the chat every player that you trust           |                ❌                 |
+|                                                       |                                                                      |                                  |
+|       `/set-home-of <player_name> <home_name>`        |       Creates a home for the given player with the given name        | `/sho <player_name> <home_name>` |
+|      `/remove-home-of <player_name> <home_name>`      |                 Removes the home of the given player                 | `/rho <player_name> <home_name>` |
+| `rename-home-of <player_name> <home_name> <new_name>` |        Renames the home of the given player to the given name        |                ❌                 |
+|         `/home-of <player_name> <home_name>`          |            Teleports you to the home of the given player             | `/ho <player_name> <home_name>`  |
+|             `/get-homes-of <player_name>`             |          Displays all the given player's homes in the chat           |       `/gho <player_name>`       |
+|                                                       |                                                                      |                                  |
+|                `/reload-translations`                 |            Reloads the custom translations from the file             |                ❌                 |
+|              `/remove-properties-files`               | Removes the properties files after they have been transfered to json |                ❌                 |
 
 </details>
 

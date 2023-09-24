@@ -202,11 +202,26 @@ public class Homes
                 .findFirst().map(playerKey -> homes.get(playerKey).isEmpty()).orElse(true);
     }
 
-    public boolean maxHomesReached(String playerKey)
+    /**
+     * Returns whether the given player has reached its maximum amount of homes
+     * <p>
+     * If the player is not found in the list (has no homes), this returns {@code false}
+     *
+     * @param playerKey The player key (in the form {@code playerUUID_playerName})
+     */
+    public boolean maxHomesNotReached(String playerKey)
     {
-        return homes.containsKey(playerKey) && homes.get(playerKey).size() >= MAX_HOMES.getValue();
+        return !homes.containsKey(playerKey) || homes.get(playerKey).size() < MAX_HOMES.getValue();
     }
 
+    /**
+     * Returns whether the home with the name {@code homeName} exists in the list of the player's homes
+     * <p>
+     * If the player is not found in the list, this returns {@code false}
+     *
+     * @param playerKey The player key (in the form {@code playerUUID_playerName})
+     * @param homeName  The name of the home
+     */
     public boolean homeExists(String playerKey, String homeName)
     {
         if (homes.containsKey(playerKey))

@@ -30,6 +30,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
 import static fr.aeldit.cyansh.config.CyanSHConfig.*;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -38,6 +41,23 @@ public class HomeOfCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
+        dispatcher.register(CommandManager.literal("set-home-of")
+                .then(CommandManager.argument("player_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .executes(HomeOfCommands::setHomeOf)
+                        )
+                )
+        );
+        dispatcher.register(CommandManager.literal("sho")
+                .then(CommandManager.argument("player_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .executes(HomeOfCommands::setHomeOf)
+                        )
+                )
+        );
+
         dispatcher.register(CommandManager.literal("home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
@@ -116,7 +136,7 @@ public class HomeOfCommands
      * <p>
      * Succeeds only if the player has OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set to {@code true}
      */
-    public static int setHomeOf(@NotNull CommandContext<ServerCommandSource> context) // TODO -> make
+    public static int setHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -124,30 +144,39 @@ public class HomeOfCommands
         {
             if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
-                String trustingPlayer = StringArgumentType.getString(context, "player_name");
-
                 if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
                 {
+                    String trustingPlayer = StringArgumentType.getString(context, "player_name");
                     String homeName = StringArgumentType.getString(context, "home_name");
+                    String playerKey = HomesObj.getKeyFromName(trustingPlayer);
 
-                    if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
+                    if (HomesObj.maxHomesNotReached(playerKey))
                     {
-                        HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
+                        if (!HomesObj.homeExists(playerKey, homeName))
+                        {
+                            HomesObj.addHome(playerKey,
+                                    new Homes.Home(homeName,
+                                            player.getWorld().getDimensionKey().getValue()
+                                                    .toString().replace("minecraft:", "").replace("the_", ""),
+                                            player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
+                                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                    )
+                            );
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("removeHome"),
-                                "cyansh.msg.removeHome",
-                                Formatting.YELLOW + homeName,
-                                Formatting.AQUA + trustingPlayer
-                        );
-                    }
-                    else
-                    {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
-                                "cyansh.msg.homeNotFound",
-                                Formatting.YELLOW + homeName
-                        );
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                    CYANSH_LANGUAGE_UTILS.getTranslation("setHomeOf"),
+                                    "cyansh.msg.setHomeOf",
+                                    Formatting.YELLOW + homeName,
+                                    Formatting.AQUA + trustingPlayer
+                            );
+                        }
+                        else
+                        {
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                                    CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeAlreadyExists"),
+                                    "cyansh.msg.homeAlreadyExists"
+                            );
+                        }
                     }
                 }
                 else
@@ -188,8 +217,8 @@ public class HomeOfCommands
                         HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
 
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("removeHome"),
-                                "cyansh.msg.removeHome",
+                                CYANSH_LANGUAGE_UTILS.getTranslation("removeHomeOf"),
+                                "cyansh.msg.removeHomeOf",
                                 Formatting.YELLOW + homeName,
                                 Formatting.AQUA + trustingPlayer
                         );
@@ -239,7 +268,7 @@ public class HomeOfCommands
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("removeAllHomesOf"),
                                 "cyansh.msg.removeAllHomesOf",
-                                trustingPlayer
+                                Formatting.AQUA + trustingPlayer
                         );
                     }
                     else
@@ -283,7 +312,6 @@ public class HomeOfCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String newHomeName = StringArgumentType.getString(context, "new_home_name");
-
                     String playerKey = HomesObj.getKeyFromName(trustingPlayer);
 
                     if (HomesObj.homeExists(playerKey, homeName))
@@ -291,10 +319,11 @@ public class HomeOfCommands
                         HomesObj.rename(playerKey, homeName, newHomeName);
 
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("renameHome"),
-                                "cyansh.msg.renameHome",
+                                CYANSH_LANGUAGE_UTILS.getTranslation("renameHomeOf"),
+                                "cyansh.msg.renameHomeOf",
                                 Formatting.YELLOW + homeName,
-                                Formatting.YELLOW + newHomeName
+                                Formatting.YELLOW + newHomeName,
+                                Formatting.AQUA + trustingPlayer
                         );
                     }
                     else

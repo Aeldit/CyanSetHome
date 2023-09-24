@@ -119,34 +119,17 @@ public class HomeCommands
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
-                    if (!HomesObj.maxHomesReached(playerKey))
+                    if (HomesObj.maxHomesNotReached(playerKey))
                     {
                         if (!HomesObj.homeExists(playerKey, homeName))
                         {
-                            if (player.getWorld() == player.getServer().getWorld(World.OVERWORLD))
-                            {
-                                HomesObj.addHome(playerKey,
-                                        new Homes.Home(homeName, "overworld", player.getX(), player.getY(), player.getZ(),
-                                                player.getYaw(), player.getPitch(),
-                                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                        ));
-                            }
-                            else if (player.getWorld() == player.getServer().getWorld(World.NETHER))
-                            {
-                                HomesObj.addHome(playerKey,
-                                        new Homes.Home(homeName, "nether", player.getX(), player.getY(), player.getZ(),
-                                                player.getYaw(), player.getPitch(),
-                                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                        ));
-                            }
-                            else
-                            {
-                                HomesObj.addHome(playerKey,
-                                        new Homes.Home(homeName, "end", player.getX(), player.getY(), player.getZ(),
-                                                player.getYaw(), player.getPitch(),
-                                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                        ));
-                            }
+                            HomesObj.addHome(playerKey,
+                                    new Homes.Home(homeName, player.getWorld().getDimensionKey().getValue()
+                                            .toString().replace("minecraft:", "").replace("the_", ""),
+                                            player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
+                                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                    )
+                            );
 
                             CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                     CYANSH_LANGUAGE_UTILS.getTranslation("setHome"),
