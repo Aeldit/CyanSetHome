@@ -207,7 +207,7 @@ public class Homes
      * <p>
      * If the player is not found in the list (has no homes), this returns {@code false}
      *
-     * @param playerKey The player key (in the form {@code playerUUID_playerName})
+     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
      */
     public boolean maxHomesNotReached(String playerKey)
     {
@@ -219,7 +219,7 @@ public class Homes
      * <p>
      * If the player is not found in the list, this returns {@code false}
      *
-     * @param playerKey The player key (in the form {@code playerUUID_playerName})
+     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
      * @param homeName  The name of the home
      */
     public boolean homeExists(String playerKey, String homeName)

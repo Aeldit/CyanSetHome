@@ -53,7 +53,13 @@ public class Trusts
     }
 
     /**
-     * Can only be called if the result of {@link Trusts#isPlayerTrustingFromName} is false
+     * Adds {@code trustedPlayerKey} in the list of trusted players of {@code trustingPlayerKey}
+     * and calls the {@link #write()} function
+     * <p>
+     * Can only be called if the result of {@link Trusts#isPlayerTrustingFromName} is {@code false}
+     *
+     * @param trustingPlayerKey The player running the command
+     * @param trustedPlayerKey  The player that will be added to the trusted players list
      */
     public void trustPlayer(String trustingPlayerKey, String trustedPlayerKey)
     {
@@ -68,6 +74,13 @@ public class Trusts
         write();
     }
 
+    /**
+     * Removes {@code trustedPlayerName} from the list of trusted players of {@code trustingPlayerName}
+     * and calls the {@link #write()} function
+     *
+     * @param trustingPlayerName The player running the command
+     * @param trustedPlayerName  The player that will be removed to the trusted players list
+     */
     public void untrustPlayer(String trustingPlayerName, String trustedPlayerName)
     {
         for (ConcurrentHashMap.Entry<String, List<String>> entry : trusts.entrySet())
@@ -144,17 +157,33 @@ public class Trusts
         }
     }
 
+    /**
+     * Returns an {@code Arraylist<String>} containing the names of all the players {@code TRUSTING} {@code playerKey}
+     *
+     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
+     */
     public ArrayList<String> getTrustingPlayers(String playerKey)
     {
         return trusts.entrySet().stream().filter(entry -> entry.getValue().contains(playerKey))
                 .map(entry -> entry.getKey().split(" ")[1]).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * Returns a {@code List<String>} containing the names of all the players {@code TRUSTED} by {@code playerKey}
+     *
+     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
+     */
     public List<String> getTrustedPlayers(String playerKey)
     {
         return trusts.containsKey(playerKey) ? trusts.get(playerKey) : new ArrayList<>();
     }
 
+    /**
+     * Returns whether the player {@code trustingPlayerName} trusts the player {@code trustedPlayerName}
+     *
+     * @param trustingPlayerName The trusting player's username
+     * @param trustedPlayerName  The trusted player's username
+     */
     public boolean isPlayerTrustingFromName(String trustingPlayerName, String trustedPlayerName)
     {
         for (String playerKey : trusts.keySet())
