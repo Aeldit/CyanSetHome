@@ -58,25 +58,6 @@ public class HomeOfCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("home-of")
-                .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
-                                .executes(HomeOfCommands::goToHomeOf)
-                        )
-                )
-        );
-        dispatcher.register(CommandManager.literal("ho")
-                .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
-                                .executes(HomeOfCommands::goToHomeOf)
-                        )
-                )
-        );
-
         dispatcher.register(CommandManager.literal("remove-home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
@@ -111,6 +92,25 @@ public class HomeOfCommands
                                 .then(CommandManager.argument("new_home_name", StringArgumentType.string())
                                         .executes(HomeOfCommands::renameHomeOf)
                                 )
+                        )
+                )
+        );
+
+        dispatcher.register(CommandManager.literal("home-of")
+                .then(CommandManager.argument("player_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
+                                .executes(HomeOfCommands::goToHomeOf)
+                        )
+                )
+        );
+        dispatcher.register(CommandManager.literal("ho")
+                .then(CommandManager.argument("player_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
+                                .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
         );

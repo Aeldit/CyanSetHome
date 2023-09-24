@@ -53,19 +53,6 @@ public class HomeCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("home")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .executes(HomeCommands::goToHome)
-                )
-        );
-        dispatcher.register(CommandManager.literal("h")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .executes(HomeCommands::goToHome)
-                )
-        );
-
         dispatcher.register(CommandManager.literal("remove-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
                         .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
@@ -92,12 +79,24 @@ public class HomeCommands
                 .executes(HomeCommands::removeAllHomes)
         );
 
+        dispatcher.register(CommandManager.literal("home")
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
+                        .executes(HomeCommands::goToHome)
+                )
+        );
+        dispatcher.register(CommandManager.literal("h")
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
+                        .executes(HomeCommands::goToHome)
+                )
+        );
+
         dispatcher.register(CommandManager.literal("get-homes")
                 .executes(HomeCommands::getHomesList)
         );
         dispatcher.register(CommandManager.literal("gh")
                 .executes(HomeCommands::getHomesList)
-
         );
     }
 
