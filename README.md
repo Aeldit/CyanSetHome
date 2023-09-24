@@ -1,4 +1,4 @@
-![banner](https://github.com/Aeldit/CyanSetHome/blob/1.20.x/images/banner.png)
+![banner](https://github.com/Aeldit/CyanSetHome/blob/1.20.2/images/banner.png?raw=true)
 <!-- modrinth_exclude.start -->
 > ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
 <!-- modrinth_exclude.end -->
@@ -14,8 +14,8 @@ or
 |:-------------:|:----------:|:--------------:|
 | 1.19 - 1.19.2 |     ❌      |     0.1.4      |
 |    1.19.3     |     ❌      |     0.1.0      |
-|    1.19.4     |     ❌      |     0.1.4      |
-| 1.20 - 1.20.1 |     ❌      |     0.1.4      |
+|    1.19.4     |     ✅      |     latest     |
+| 1.20 - 1.20.1 |     ✅      |     latest     |
 |    1.20.2     |     ✅      |     latest     |
 
 </details>
