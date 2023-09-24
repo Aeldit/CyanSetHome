@@ -99,18 +99,17 @@ public class Homes
 
     /**
      * Renames the home of the player
+     *
+     * @implNote Can only be called if the result of {@link #homeExists} is {@code true}
      */
     public void rename(String playerKey, String homeName, String newHomeName)
     {
-        if (homeExists(playerKey, homeName))
-        {
-            Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
-            homes.get(playerKey).add(new Home(newHomeName,
-                    tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw, tmpHome.pitch, tmpHome.date
-            ));
-            homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
-            writeHomes(playerKey);
-        }
+        Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
+        homes.get(playerKey).add(new Home(newHomeName,
+                tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw, tmpHome.pitch, tmpHome.date
+        ));
+        homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+        writeHomes(playerKey);
     }
 
     /**
@@ -177,7 +176,10 @@ public class Homes
     }
 
     /**
-     * Can be called if and only if the result of {@link Homes#homeExists} is true
+     * Returns the index of the home named {@code homeName} belonging
+     * to the player who's key is {@code playerKey}
+     *
+     * @implNote Can only be called if the result of {@link Homes#homeExists} is true
      */
     private int getHomeIndex(String playerKey, String homeName)
     {
@@ -185,6 +187,9 @@ public class Homes
                 .findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);
     }
 
+    /**
+     * Returns the key associated with the name {@code playerName}
+     */
     public String getKeyFromName(String playerName)
     {
         return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName))
@@ -202,11 +207,26 @@ public class Homes
                 .findFirst().map(playerKey -> homes.get(playerKey).isEmpty()).orElse(true);
     }
 
-    public boolean maxHomesReached(String playerKey)
+    /**
+     * Returns whether the given player has reached its maximum amount of homes
+     * <p>
+     * If the player is not found in the list (has no homes), this returns {@code false}
+     *
+     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
+     */
+    public boolean maxHomesNotReached(String playerKey)
     {
-        return homes.containsKey(playerKey) && homes.get(playerKey).size() >= MAX_HOMES.getValue();
+        return !homes.containsKey(playerKey) || homes.get(playerKey).size() < MAX_HOMES.getValue();
     }
 
+    /**
+     * Returns whether the home with the name {@code homeName} exists in the list of the player's homes
+     * <p>
+     * If the player is not found in the list, this returns {@code false}
+     *
+     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
+     * @param homeName  The name of the home
+     */
     public boolean homeExists(String playerKey, String homeName)
     {
         if (homes.containsKey(playerKey))
