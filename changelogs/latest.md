@@ -8,3 +8,4 @@
 🚧 Fixed :
 
 - The `/home-trust` command would not write the file when executed
+- Some translations were missing/incorrect
