@@ -15,7 +15,7 @@
  * in the repo of this mod (https://github.com/Aeldit/CyanSetHome)
  */
 
-package fr.aeldit.cyansh.commands.argumentTypes;
+package fr.aeldit.cyansh.commands.arguments;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -91,12 +91,8 @@ public final class ArgumentSuggestion
     {
         ServerPlayerEntity player = source.getPlayer();
 
-        if (player != null)
-        {
-            return player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue()
-                    ? CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder)
-                    : CommandSource.suggestMatching(TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()), builder);
-        }
-        return CommandSource.suggestMatching(new ArrayList<>(), builder);
+        return player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue()
+                ? CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder)
+                : CommandSource.suggestMatching(TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()), builder);
     }
 }

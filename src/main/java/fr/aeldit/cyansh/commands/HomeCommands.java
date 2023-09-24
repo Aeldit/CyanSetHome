@@ -21,7 +21,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyansh.commands.argumentTypes.ArgumentSuggestion;
+import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansh.homes.Homes;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -53,36 +53,22 @@ public class HomeCommands
                 )
         );
 
-        dispatcher.register(CommandManager.literal("home")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
-                        .executes(HomeCommands::goToHome)
-                )
-        );
-        dispatcher.register(CommandManager.literal("h")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
-                        .executes(HomeCommands::goToHome)
-                )
-        );
-
         dispatcher.register(CommandManager.literal("remove-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
                 )
         );
         dispatcher.register(CommandManager.literal("rh")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .executes(HomeCommands::removeHome)
                 )
         );
 
-
         dispatcher.register(CommandManager.literal("rename-home")
                 .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context4, builder4) -> ArgumentSuggestion.getHomes(builder4, Objects.requireNonNull(context4.getSource().getPlayer())))
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
                         .then(CommandManager.argument("new_home_name", StringArgumentType.string())
                                 .executes(HomeCommands::renameHome)
                         )
@@ -93,12 +79,24 @@ public class HomeCommands
                 .executes(HomeCommands::removeAllHomes)
         );
 
+        dispatcher.register(CommandManager.literal("home")
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
+                        .executes(HomeCommands::goToHome)
+                )
+        );
+        dispatcher.register(CommandManager.literal("h")
+                .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
+                        .executes(HomeCommands::goToHome)
+                )
+        );
+
         dispatcher.register(CommandManager.literal("get-homes")
                 .executes(HomeCommands::getHomesList)
         );
         dispatcher.register(CommandManager.literal("gh")
                 .executes(HomeCommands::getHomesList)
-
         );
     }
 
@@ -120,34 +118,17 @@ public class HomeCommands
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
-                    if (!HomesObj.maxHomesReached(playerKey))
+                    if (HomesObj.maxHomesNotReached(playerKey))
                     {
                         if (!HomesObj.homeExists(playerKey, homeName))
                         {
-                            if (player.getWorld() == player.getServer().getWorld(World.OVERWORLD))
-                            {
-                                HomesObj.addHome(playerKey,
-                                        new Homes.Home(homeName, "overworld", player.getX(), player.getY(), player.getZ(),
-                                                player.getYaw(), player.getPitch(),
-                                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                        ));
-                            }
-                            else if (player.getWorld() == player.getServer().getWorld(World.NETHER))
-                            {
-                                HomesObj.addHome(playerKey,
-                                        new Homes.Home(homeName, "nether", player.getX(), player.getY(), player.getZ(),
-                                                player.getYaw(), player.getPitch(),
-                                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                        ));
-                            }
-                            else
-                            {
-                                HomesObj.addHome(playerKey,
-                                        new Homes.Home(homeName, "end", player.getX(), player.getY(), player.getZ(),
-                                                player.getYaw(), player.getPitch(),
-                                                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                        ));
-                            }
+                            HomesObj.addHome(playerKey,
+                                    new Homes.Home(homeName, player.getWorld().getDimensionKey().getValue()
+                                            .toString().replace("minecraft:", "").replace("the_", ""),
+                                            player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
+                                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                    )
+                            );
 
                             CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                     CYANSH_LANGUAGE_UTILS.getTranslation("setHome"),
@@ -321,14 +302,14 @@ public class HomeCommands
                     {
                         Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
 
-                        switch (home.getDimension())
+                        switch (home.dimension())
                         {
                             case "overworld" ->
-                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                             case "nether" ->
-                                    player.teleport(player.getServer().getWorld(World.NETHER), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                                    player.teleport(player.getServer().getWorld(World.NETHER), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                             case "end" ->
-                                    player.teleport(player.getServer().getWorld(World.END), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch());
+                                    player.teleport(player.getServer().getWorld(World.END), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
                         }
 
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
@@ -385,9 +366,9 @@ public class HomeCommands
                                         CYANSH_LANGUAGE_UTILS.getTranslation("getHome"),
                                         "cyansh.msg.getHome",
                                         false,
-                                        Formatting.YELLOW + home.getName(),
-                                        Formatting.DARK_AQUA + home.getDimension(),
-                                        Formatting.DARK_AQUA + home.getDate()
+                                        Formatting.YELLOW + home.name(),
+                                        Formatting.DARK_AQUA + home.dimension(),
+                                        Formatting.DARK_AQUA + home.date()
                                 )
                         );
 
