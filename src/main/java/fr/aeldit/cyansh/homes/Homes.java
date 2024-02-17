@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023  -  Made by Aeldit
+ * Copyright (c) 2023-2024  -  Made by Aeldit
  *
  *              GNU LESSER GENERAL PUBLIC LICENSE
  *                  Version 3, 29 June 2007
@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansh.config.CyanSHConfig.MAX_HOMES;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -55,32 +55,47 @@ public class Homes
         writeHomes(playerKey);
     }
 
-    public void addHome(String playerKey, Home home)
+    /**
+     * @return {@code true} on success | {@code false} on failure
+     */
+    public boolean addHome(String playerKey, @NotNull Home home)
     {
-        if (!homes.containsKey(playerKey))
+        if (!homeExists(playerKey, home.name()))
         {
-            homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
+            if (!homes.containsKey(playerKey))
+            {
+                homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
+            }
+            else
+            {
+                homes.get(playerKey).add(home);
+            }
+            writeHomes(playerKey);
+
+            return true;
         }
-        else
-        {
-            homes.get(playerKey).add(home);
-        }
-        writeHomes(playerKey);
+        return false;
     }
 
     /**
-     * Can be called if and only if the result of {@link Homes#homeExists} is true
+     * @return {@code true} on success | {@code false} on failure
      */
-    public void removeHome(@NotNull String playerKey, String homeName)
+    public boolean removeHome(@NotNull String playerKey, String homeName)
     {
-        homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
-        writeHomes(playerKey);
+        if (homeExists(playerKey, homeName))
+        {
+            homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+            writeHomes(playerKey);
+
+            return true;
+        }
+        return false;
     }
 
     /**
      * Removes the key:value entry of the player {@code playerName} if it exists
      *
-     * @return true if the entry was removed | false otherwise
+     * @return {@code true} on success | {@code false} on failure
      */
     public boolean removeAll(String playerKey)
     {
@@ -100,16 +115,26 @@ public class Homes
     /**
      * Renames the home of the player
      *
-     * @implNote Can only be called if the result of {@link #homeExists} is {@code true}
+     * @return {@code true} on success | {@code false} on failure
      */
-    public void rename(String playerKey, String homeName, String newHomeName)
+    public boolean rename(String playerKey, String homeName, String newHomeName)
     {
-        Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
-        homes.get(playerKey).add(new Home(newHomeName,
-                tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw, tmpHome.pitch, tmpHome.date
-        ));
-        homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
-        writeHomes(playerKey);
+        if (homeExists(playerKey, homeName))
+        {
+            Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
+            // If we try to rename the home with the name of a home that already exists
+            if (!addHome(playerKey, new Home(newHomeName,
+                    tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw, tmpHome.pitch, tmpHome.date
+            )))
+            {
+                return false;
+            }
+            homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+            writeHomes(playerKey);
+
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -117,9 +142,14 @@ public class Homes
      *
      * @return The home with the name {@code homeName}
      */
-    public Home getPlayerHome(String playerName, String homeName)
+    public @Nullable Home getPlayerHome(String playerName, String homeName)
     {
-        return homes.get(playerName).get(getHomeIndex(playerName, homeName));
+        int idx = getHomeIndex(playerName, homeName);
+        if (idx != -1)
+        {
+            return homes.get(playerName).get(idx);
+        }
+        return null;
     }
 
     /**
@@ -137,7 +167,15 @@ public class Homes
      */
     public List<String> getPlayersWithHomes(String excludedPlayer)
     {
-        return homes.keySet().stream().filter(key -> !key.split(" ")[1].equals(excludedPlayer)).map(key -> key.split(" ")[1]).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (String key : homes.keySet())
+        {
+            if (!key.split(" ")[1].equals(excludedPlayer))
+            {
+                list.add(key.split(" ")[1]);
+            }
+        }
+        return list;
     }
 
     /**
@@ -179,12 +217,18 @@ public class Homes
      * Returns the index of the home named {@code homeName} belonging
      * to the player who's key is {@code playerKey}
      *
-     * @implNote Can only be called if the result of {@link Homes#homeExists} is true
+     * @return The index of the given home if it exists | {@code -1} otherwise
      */
     private int getHomeIndex(String playerKey, String homeName)
     {
-        return homes.get(playerKey).stream().filter(home -> home.name.equals(homeName))
-                .findFirst().map(home -> homes.get(playerKey).indexOf(home)).orElse(0);
+        for (Home home : homes.get(playerKey))
+        {
+            if (home.name.equals(homeName))
+            {
+                return homes.get(playerKey).indexOf(home);
+            }
+        }
+        return -1;
     }
 
     /**
@@ -192,8 +236,14 @@ public class Homes
      */
     public String getKeyFromName(String playerName)
     {
-        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName))
-                .findFirst().orElse(null);
+        for (String key : homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                return key;
+            }
+        }
+        return "";
     }
 
     public boolean isEmpty(String playerKey)
@@ -203,8 +253,14 @@ public class Homes
 
     public boolean isEmptyFromName(String playerName)
     {
-        return homes.keySet().stream().filter(playerKey -> playerKey.split(" ")[1].equals(playerName))
-                .findFirst().map(playerKey -> homes.get(playerKey).isEmpty()).orElse(true);
+        for (String s : homes.keySet())
+        {
+            if (s.split(" ")[1].equals(playerName))
+            {
+                return homes.get(s).isEmpty();
+            }
+        }
+        return true;
     }
 
     /**
@@ -231,15 +287,36 @@ public class Homes
     {
         if (homes.containsKey(playerKey))
         {
-            return homes.get(playerKey).stream().anyMatch(home -> home.name.equals(homeName));
+            for (Home home : homes.get(playerKey))
+            {
+                if (home.name.equals(homeName))
+                {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
+    /**
+     * Checks if a home exists for the player named {@code playerName}
+     */
     public boolean homeExistsFromName(String playerName, String homeName)
     {
-        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName))
-                .flatMap(key -> homes.get(key).stream()).anyMatch(home -> home.name.equals(homeName));
+        for (String key : homes.keySet())
+        {
+            if (key.split(" ")[1].equals(playerName))
+            {
+                for (Home home : homes.get(key))
+                {
+                    if (home.name.equals(homeName))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)

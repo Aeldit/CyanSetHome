@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023  -  Made by Aeldit
+ * Copyright (c) 2023-2024  -  Made by Aeldit
  *
  *              GNU LESSER GENERAL PUBLIC LICENSE
  *                  Version 3, 29 June 2007
@@ -148,7 +148,7 @@ public class EventUtils
 
                                             if (currentHome.split(" ").length == 7)
                                             {
-                                                HomesObj.addHome(file.getName().split("\\.")[0], new Homes.Home(
+                                                if (!HomesObj.addHome(file.getName().split("\\.")[0], new Homes.Home(
                                                         name,
                                                         currentHome.split(" ")[0],
                                                         Double.parseDouble(currentHome.split(" ")[1]),
@@ -157,7 +157,10 @@ public class EventUtils
                                                         Float.parseFloat(currentHome.split(" ")[4]),
                                                         Float.parseFloat(currentHome.split(" ")[5]),
                                                         currentHome.split(" ")[6]
-                                                ));
+                                                )))
+                                                {
+                                                    CYANSH_LOGGER.info("[CyanSetHome] Could not add the home " + name + " because it already exists.");
+                                                }
 
                                                 changed = true;
                                             }

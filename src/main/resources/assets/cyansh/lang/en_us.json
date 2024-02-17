@@ -8,6 +8,7 @@
   "cyansh.msg.homesDisabled": "§cThe /home command is disabled",
   "cyansh.msg.homeAlreadyExists": "§cThis home alreay exists",
   "cyansh.msg.homeNotFound": "§cThis home doesn't exist (check the spelling)",
+  "cyansh.msg.homeNotFoundOrExists": "The home doesn't exists or you tried to rename it with the name of an existing home",
   "cyansh.msg.maxHomesReached": "§cYou reached the maximum number of homes §6(%s§6)",
   "cyansh.msg.playerNotOnline": "§cThis player is not online",
   "cyansh.msg.playerNotTrusted": "§cYou don't trust this player",
