@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023  -  Made by Aeldit
+ * Copyright (c) 2023-2024  -  Made by Aeldit
  *
  *              GNU LESSER GENERAL PUBLIC LICENSE
  *                  Version 3, 29 June 2007
@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_BYPASS;
 import static fr.aeldit.cyansh.util.Utils.HomesObj;
@@ -63,7 +62,11 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        List<String> players = source.getServer().getPlayerManager().getPlayerList().stream().map(player -> player.getName().getString()).collect(Collectors.toList());
+        List<String> players = new ArrayList<>();
+        for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
+        {
+            players.add(player.getName().getString());
+        }
         players.remove(source.getPlayer().getName().getString());
 
         return CommandSource.suggestMatching(players, builder);
@@ -76,8 +79,12 @@ public final class ArgumentSuggestion
      */
     public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
     {
-        ArrayList<String> names = TrustsObj.getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString())
-                .stream().map(s -> s.split(" ")[1]).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<String> names = new ArrayList<>();
+        for (String s : TrustsObj.getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString()))
+        {
+            String string = s.split(" ")[1];
+            names.add(string);
+        }
 
         return CommandSource.suggestMatching(names, builder);
     }

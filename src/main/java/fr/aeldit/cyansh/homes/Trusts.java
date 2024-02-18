@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023  -  Made by Aeldit
+ * Copyright (c) 2023-2024  -  Made by Aeldit
  *
  *              GNU LESSER GENERAL PUBLIC LICENSE
  *                  Version 3, 29 June 2007
@@ -29,8 +29,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
 import static fr.aeldit.cyansh.util.Utils.*;
@@ -164,8 +164,15 @@ public class Trusts
      */
     public ArrayList<String> getTrustingPlayers(String playerKey)
     {
-        return trusts.entrySet().stream().filter(entry -> entry.getValue().contains(playerKey))
-                .map(entry -> entry.getKey().split(" ")[1]).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<String> trustingPlayers = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entry : trusts.entrySet())
+        {
+            if (entry.getValue().contains(playerKey))
+            {
+                trustingPlayers.add(entry.getKey().split(" ")[1]);
+            }
+        }
+        return trustingPlayers;
     }
 
     /**

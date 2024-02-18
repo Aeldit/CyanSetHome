@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023  -  Made by Aeldit
+ * Copyright (c) 2023-2024  -  Made by Aeldit
  *
  *              GNU LESSER GENERAL PUBLIC LICENSE
  *                  Version 3, 29 June 2007
@@ -120,16 +120,14 @@ public class HomeCommands
 
                     if (HomesObj.maxHomesNotReached(playerKey))
                     {
-                        if (!HomesObj.homeExists(playerKey, homeName))
+                        if (HomesObj.addHome(playerKey,
+                                new Homes.Home(homeName, player.getWorld().getDimensionKey().getValue()
+                                        .toString().replace("minecraft:", "").replace("the_", ""),
+                                        player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
+                                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                )
+                        ))
                         {
-                            HomesObj.addHome(playerKey,
-                                    new Homes.Home(homeName, player.getWorld().getDimensionKey().getValue()
-                                            .toString().replace("minecraft:", "").replace("the_", ""),
-                                            player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
-                                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                    )
-                            );
-
                             CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                     CYANSH_LANGUAGE_UTILS.getTranslation("setHome"),
                                     "cyansh.msg.setHome",
@@ -176,10 +174,8 @@ public class HomeCommands
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
-                    if (HomesObj.homeExists(playerKey, homeName))
+                    if (HomesObj.removeHome(playerKey, homeName))
                     {
-                        HomesObj.removeHome(playerKey, homeName);
-
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("removeHome"),
                                 "cyansh.msg.removeHome",
@@ -255,10 +251,8 @@ public class HomeCommands
 
                     String playerKey = player.getUuidAsString() + " " + player.getName().getString();
 
-                    if (HomesObj.homeExists(playerKey, homeName))
+                    if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
-                        HomesObj.rename(playerKey, homeName, newHomeName);
-
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("renameHome"),
                                 "cyansh.msg.renameHome",
@@ -269,8 +263,8 @@ public class HomeCommands
                     else
                     {
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
-                                "cyansh.msg.homeNotFound",
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFoundOrExists"),
+                                "cyansh.msg.homeNotFoundOrExists",
                                 homeName
                         );
                     }

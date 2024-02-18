@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023  -  Made by Aeldit
+ * Copyright (c) 2023-2024  -  Made by Aeldit
  *
  *              GNU LESSER GENERAL PUBLIC LICENSE
  *                  Version 3, 29 June 2007
@@ -152,17 +152,15 @@ public class HomeOfCommands
 
                     if (HomesObj.maxHomesNotReached(playerKey))
                     {
-                        if (!HomesObj.homeExists(playerKey, homeName))
+                        if (HomesObj.addHome(playerKey,
+                                new Homes.Home(homeName,
+                                        player.getWorld().getDimensionKey().getValue()
+                                                .toString().replace("minecraft:", "").replace("the_", ""),
+                                        player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
+                                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                )
+                        ))
                         {
-                            HomesObj.addHome(playerKey,
-                                    new Homes.Home(homeName,
-                                            player.getWorld().getDimensionKey().getValue()
-                                                    .toString().replace("minecraft:", "").replace("the_", ""),
-                                            player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
-                                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-                                    )
-                            );
-
                             CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                     CYANSH_LANGUAGE_UTILS.getTranslation("setHomeOf"),
                                     "cyansh.msg.setHomeOf",
@@ -212,10 +210,8 @@ public class HomeOfCommands
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
-                    if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
+                    if (HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName))
                     {
-                        HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
-
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("removeHomeOf"),
                                 "cyansh.msg.removeHomeOf",
@@ -314,10 +310,8 @@ public class HomeOfCommands
                     String newHomeName = StringArgumentType.getString(context, "new_home_name");
                     String playerKey = HomesObj.getKeyFromName(trustingPlayer);
 
-                    if (HomesObj.homeExists(playerKey, homeName))
+                    if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
-                        HomesObj.rename(playerKey, homeName, newHomeName);
-
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("renameHomeOf"),
                                 "cyansh.msg.renameHomeOf",
@@ -329,8 +323,8 @@ public class HomeOfCommands
                     else
                     {
                         CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
-                                "cyansh.msg.homeNotFound",
+                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFoundOrExists"),
+                                "cyansh.msg.homeNotFoundOrExists",
                                 homeName
                         );
                     }
@@ -433,7 +427,9 @@ public class HomeOfCommands
                             "cyansh.msg.useSelfHomes"
                     );
                 }
-                else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
+                else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                        || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+                )
                 {
                     if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {

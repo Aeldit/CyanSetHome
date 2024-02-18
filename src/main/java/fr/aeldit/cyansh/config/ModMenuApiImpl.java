@@ -19,8 +19,8 @@ package fr.aeldit.cyansh.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import fr.aeldit.cyanlib.lib.config.CyanLibConfigScreen;
 import fr.aeldit.cyanlib.lib.config.CyanLibOptionsStorage;
+import fr.aeldit.cyanlib.lib.gui.CyanLibConfigScreen;
 
 import static fr.aeldit.cyanlib.lib.CyanLib.CONFIG_CLASS_INSTANCES;
 import static fr.aeldit.cyansh.util.Utils.CYANSH_MODID;
