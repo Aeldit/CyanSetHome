@@ -1,19 +1,14 @@
 plugins {
-    id 'fabric-loom' version '1.3-SNAPSHOT'
+    id 'fabric-loom' version '1.5-SNAPSHOT'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
 archivesBaseName = project.archives_base_name
-version = project.mod_version + "+" + project.minecraft_version
-group = project.maven_group
 
 repositories {
     maven { url = "https://api.modrinth.com/maven" }
-    maven { url "https://maven.terraformersmc.com/releases" }
+    maven { url = "https://maven.terraformersmc.com/releases" }
 }
 
 dependencies {
@@ -27,15 +22,15 @@ dependencies {
     modImplementation(fabricApi.module("fabric-networking-api-v1", project.fabric_version))
     modImplementation(fabricApi.module("fabric-command-api-v2", project.fabric_version))
 
-    //ModMenu
+    // ModMenu
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
     modLocalRuntime("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-    //CyanLib
+    // CyanLib
     modImplementation "maven.modrinth:cyanlib:${project.cyanlib_version}"
     include "maven.modrinth:cyanlib:${project.cyanlib_version}"
 
-    //Gson
+    // Gson
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 
@@ -48,37 +43,16 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
     it.options.release.set(17)
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    //withSourcesJar()
+    // withSourcesJar()
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
+        rename { "${it}_${archivesBaseName}" }
     }
 }
 
@@ -86,8 +60,8 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
     projectId = "cyansethome" // This can be the project ID or the slug. Either will work!
-    versionName = "[$project.minecraft_version] $archivesBaseName $project.mod_version"
-    versionNumber = "$version"
+    versionName = "[$project.minecraft_version] $project.archives_base_name $project.mod_version"
+    versionNumber = "$project.mod_version + $project.minecraft_version"
     // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = "release" // This is the default -- can also be `beta` or `alpha`
     uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
@@ -97,7 +71,7 @@ modrinth {
         // scope.type
         // The scope can be `required`, `optional`, `incompatible`, or `embedded`
         // The type can either be `project` or `version`
-        required.project "fabric-api" // Creates a new required dependency on Fabric API
+        required.project "fabric-api", "$project.fabric_version" // Creates a new required dependency on Fabric API
         embedded.project "cyanlib"
         optional.version "modmenu", "$project.modmenu_version"
     }
