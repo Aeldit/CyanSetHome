@@ -39,10 +39,14 @@ import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
-    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date) {}
+    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
+    {
+    }
 
     private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
-    private final TypeToken<List<Home>> homesType = new TypeToken<>() {};
+    private final TypeToken<List<Home>> homesType = new TypeToken<>()
+    {
+    };
     private final List<String> editingFiles = Collections.synchronizedList(new ArrayList<>());
     public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
 
@@ -124,7 +128,8 @@ public class Homes
             Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
             // If we try to rename the home with the name of a home that already exists
             if (!addHome(playerKey, new Home(newHomeName,
-                    tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw, tmpHome.pitch, tmpHome.date
+                                             tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw,
+                                             tmpHome.pitch, tmpHome.date
             )))
             {
                 return false;
@@ -193,7 +198,7 @@ public class Homes
     }
 
     /**
-     * Can be called if an only if the player receiving the suggestion is trusted by the player {@code playerName}
+     * Can be called only if the player receiving the suggestion is trusted by the player {@code playerName}
      * (result of {@link Trusts#isPlayerTrustingFromName})
      *
      * @return An ArrayList containing all the homes names of the player {@code playerName}
@@ -215,7 +220,7 @@ public class Homes
 
     /**
      * Returns the index of the home named {@code homeName} belonging
-     * to the player who's key is {@code playerKey}
+     * to the player whose key is {@code playerKey}
      *
      * @return The index of the given home if it exists | {@code -1} otherwise
      */
@@ -331,18 +336,25 @@ public class Homes
                 {
                     if (file.isFile())
                     {
-                        String[] splitedFileName = file.getName().split(" ");
-                        String[] splitedFileNameOld = file.getName().split("_");
+                        String[] splitFileName = file.getName().split(" ");
+                        String[] splitFileNameOld = file.getName().split("_");
 
-                        if (splitedFileName[0].equals(playerUUID)
-                                && !splitedFileName[1].equals(playerName + ".json")
-                                || (splitedFileNameOld.length == 2 && splitedFileNameOld[0].equals(playerUUID) && !splitedFileNameOld[1].equals(playerName + ".json"))
+                        if (splitFileName[0].equals(playerUUID)
+                                && !splitFileName[1].equals(playerName + ".json")
+                                || (splitFileNameOld.length == 2 && splitFileNameOld[0].equals(
+                                playerUUID) && !splitFileNameOld[1].equals(playerName + ".json"))
                         )
                         {
                             try
                             {
-                                Files.move(file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json").resolveSibling(playerKey + ".json"));
-                                CYANSH_LOGGER.info("[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo", file.getName(), playerKey + ".json");
+                                Files.move(
+                                        file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json")
+                                                .resolveSibling(playerKey + ".json"));
+                                CYANSH_LOGGER.info(
+                                        "[CyanSetHome] Rename the file '{}' to '{}' because the player changed its " +
+                                                "pseudo",
+                                        file.getName(), playerKey + ".json"
+                                );
                             }
                             catch (IOException e)
                             {
@@ -373,7 +385,10 @@ public class Homes
                     {
                         Gson gsonReader = new Gson();
                         Reader reader = Files.newBufferedReader(file.toPath());
-                        addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType))));
+                        addPlayer(
+                                file.getName().split("\\.")[0],
+                                Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType)))
+                        );
                         reader.close();
                     }
                     catch (IOException e)
@@ -406,7 +421,9 @@ public class Homes
                         {
                             Gson gsonReader = new Gson();
                             Reader reader = Files.newBufferedReader(file.toPath());
-                            addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType))));
+                            addPlayer(
+                                    file.getName().split("\\.")[0], Collections.synchronizedList(
+                                            new ArrayList<>(gsonReader.fromJson(reader, homesType))));
                             reader.close();
                         }
                         catch (IOException e)
@@ -472,7 +489,10 @@ public class Homes
 
                     if (!couldWrite)
                     {
-                        CYANSH_LOGGER.info("[CyanSetHome] Could not write the file %s because it is already being written (for more than 1 sec)".formatted(path.getFileName().toString()));
+                        CYANSH_LOGGER.info(
+                                ("[CyanSetHome] Could not write the file %s because it is already being written (for " +
+                                        "more than 1 sec)").formatted(
+                                        path.getFileName().toString()));
                     }
                 }
             }

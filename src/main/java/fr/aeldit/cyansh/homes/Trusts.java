@@ -38,7 +38,9 @@ import static fr.aeldit.cyansh.util.Utils.*;
 public class Trusts
 {
     private final ConcurrentHashMap<String, List<String>> trusts = new ConcurrentHashMap<>();
-    public final TypeToken<ConcurrentHashMap<String, List<String>>> trustType = new TypeToken<>() {};
+    public final TypeToken<ConcurrentHashMap<String, List<String>>> trustType = new TypeToken<>()
+    {
+    };
     private boolean isEditingFile = false;
     public static Path TRUST_PATH = Path.of(MOD_PATH + "/trusted_players.json");
 
@@ -65,7 +67,10 @@ public class Trusts
     {
         if (!trusts.containsKey(trustingPlayerKey))
         {
-            trusts.put(trustingPlayerKey, Collections.synchronizedList(new ArrayList<>(Collections.singletonList(trustedPlayerKey))));
+            trusts.put(
+                    trustingPlayerKey,
+                    Collections.synchronizedList(new ArrayList<>(Collections.singletonList(trustedPlayerKey)))
+            );
         }
         else
         {
@@ -152,7 +157,8 @@ public class Trusts
             if (changed)
             {
                 write();
-                CYANSH_LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed its pseudo (previously {})", playerName, prevName);
+                CYANSH_LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed " +
+                                           "its pseudo (previously {})", playerName, prevName);
             }
         }
     }
@@ -182,7 +188,7 @@ public class Trusts
      */
     public List<String> getTrustedPlayers(String playerKey)
     {
-        return trusts.containsKey(playerKey) ? trusts.get(playerKey) : new ArrayList<>();
+        return trusts.containsKey(playerKey) ? trusts.get(playerKey) : new ArrayList<>(0);
     }
 
     /**
@@ -304,7 +310,8 @@ public class Trusts
 
                     if (!couldWrite)
                     {
-                        CYANSH_LOGGER.info("[CyanSetHome] Could not write the trusting_players.json file because it is already being written");
+                        CYANSH_LOGGER.info("[CyanSetHome] Could not write the trusting_players.json file because it " +
+                                                   "is already being written");
                     }
                 }
             }

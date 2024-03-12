@@ -23,6 +23,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansh.homes.Homes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,60 +44,88 @@ public class HomeCommands
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("set-home")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .executes(HomeCommands::setHome)
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .executes(HomeCommands::setHome)
+                                    )
         );
         dispatcher.register(CommandManager.literal("sh")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .executes(HomeCommands::setHome)
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .executes(HomeCommands::setHome)
+                                    )
         );
 
         dispatcher.register(CommandManager.literal("remove-home")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .executes(HomeCommands::removeHome)
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                                          builder,
+                                                          Objects.requireNonNull(
+                                                                  context.getSource()
+                                                                          .getPlayer())
+                                                  ))
+                                                  .executes(HomeCommands::removeHome)
+                                    )
         );
         dispatcher.register(CommandManager.literal("rh")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .executes(HomeCommands::removeHome)
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                                          builder,
+                                                          Objects.requireNonNull(
+                                                                  context.getSource()
+                                                                          .getPlayer())
+                                                  ))
+                                                  .executes(HomeCommands::removeHome)
+                                    )
         );
 
         dispatcher.register(CommandManager.literal("rename-home")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .then(CommandManager.argument("new_home_name", StringArgumentType.string())
-                                .executes(HomeCommands::renameHome)
-                        )
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                                          builder,
+                                                          Objects.requireNonNull(
+                                                                  context.getSource()
+                                                                          .getPlayer())
+                                                  ))
+                                                  .then(CommandManager.argument(
+                                                                        "new_home_name",
+                                                                        StringArgumentType.string()
+                                                                )
+                                                                .executes(HomeCommands::renameHome)
+                                                  )
+                                    )
         );
 
         dispatcher.register(CommandManager.literal("remove-all-homes")
-                .executes(HomeCommands::removeAllHomes)
+                                    .executes(HomeCommands::removeAllHomes)
         );
 
         dispatcher.register(CommandManager.literal("home")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .executes(HomeCommands::goToHome)
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                                          builder,
+                                                          Objects.requireNonNull(
+                                                                  context.getSource()
+                                                                          .getPlayer())
+                                                  ))
+                                                  .executes(HomeCommands::goToHome)
+                                    )
         );
         dispatcher.register(CommandManager.literal("h")
-                .then(CommandManager.argument("home_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getHomes(builder, Objects.requireNonNull(context.getSource().getPlayer())))
-                        .executes(HomeCommands::goToHome)
-                )
+                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                                          builder,
+                                                          Objects.requireNonNull(
+                                                                  context.getSource()
+                                                                          .getPlayer())
+                                                  ))
+                                                  .executes(HomeCommands::goToHome)
+                                    )
         );
 
         dispatcher.register(CommandManager.literal("get-homes")
-                .executes(HomeCommands::getHomesList)
+                                    .executes(HomeCommands::getHomesList)
         );
         dispatcher.register(CommandManager.literal("gh")
-                .executes(HomeCommands::getHomesList)
+                                    .executes(HomeCommands::getHomesList)
         );
     }
 
@@ -120,15 +149,19 @@ public class HomeCommands
 
                     if (HomesObj.maxHomesNotReached(playerKey))
                     {
-                        if (HomesObj.addHome(playerKey,
+                        if (HomesObj.addHome(
+                                playerKey,
                                 new Homes.Home(homeName, player.getWorld().getDimensionKey().getValue()
                                         .toString().replace("minecraft:", "").replace("the_", ""),
-                                        player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
-                                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                               player.getX(), player.getY(), player.getZ(),
+                                               player.getYaw(), player.getPitch(),
+                                               new SimpleDateFormat("dd/MM/yyyy HH:mm").format(
+                                                       Calendar.getInstance().getTime())
                                 )
                         ))
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                    player,
                                     CYANSH_LANGUAGE_UTILS.getTranslation("setHome"),
                                     "cyansh.msg.setHome",
                                     Formatting.YELLOW + homeName
@@ -136,16 +169,20 @@ public class HomeCommands
                         }
                         else
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                    CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeAlreadyExists"),
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                    player,
+                                    CYANSH_LANGUAGE_UTILS.getTranslation(
+                                            ERROR + "homeAlreadyExists"),
                                     "cyansh.msg.homeAlreadyExists"
                             );
                         }
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "maxHomesReached"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        ERROR + "maxHomesReached"),
                                 "cyansh.msg.maxHomesReached",
                                 Formatting.GOLD + String.valueOf(MAX_HOMES.getValue())
                         );
@@ -176,7 +213,8 @@ public class HomeCommands
 
                     if (HomesObj.removeHome(playerKey, homeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("removeHome"),
                                 "cyansh.msg.removeHome",
                                 Formatting.YELLOW + homeName
@@ -184,8 +222,10 @@ public class HomeCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
@@ -196,12 +236,14 @@ public class HomeCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    // TODO -> ask for confirmation
+
     /**
      * Called by the command {@code /remove-all-homes}
      * <p>
      * Removes all the homes
      */
-    public static int removeAllHomes(@NotNull CommandContext<ServerCommandSource> context) // TODO -> ask for confirmation
+    public static int removeAllHomes(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -213,14 +255,16 @@ public class HomeCommands
                 {
                     if (HomesObj.removeAll(player.getUuidAsString() + " " + player.getName().getString()))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("removeAllHomes"),
                                 "cyansh.msg.removeAllHomes"
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomes"),
                                 "cyansh.msg.noHomes"
                         );
@@ -253,7 +297,8 @@ public class HomeCommands
 
                     if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation("renameHome"),
                                 "cyansh.msg.renameHome",
                                 Formatting.YELLOW + homeName,
@@ -262,8 +307,10 @@ public class HomeCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFoundOrExists"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        ERROR + "homeNotFoundOrExists"),
                                 "cyansh.msg.homeNotFoundOrExists",
                                 homeName
                         );
@@ -295,27 +342,37 @@ public class HomeCommands
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
                         Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
+                        MinecraftServer server = player.getServer();
 
-                        switch (home.dimension())
+                        if (home != null && server != null)
                         {
-                            case "overworld" ->
-                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "nether" ->
-                                    player.teleport(player.getServer().getWorld(World.NETHER), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "end" ->
-                                    player.teleport(player.getServer().getWorld(World.END), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                        }
+                            switch (home.dimension())
+                            {
+                                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.x(),
+                                                                    home.y(), home.z(), home.yaw(), home.pitch()
+                                );
+                                case "nether" -> player.teleport(server.getWorld(World.NETHER), home.x(), home.y(),
+                                                                 home.z(), home.yaw(), home.pitch()
+                                );
+                                case "end" -> player.teleport(server.getWorld(World.END), home.x(), home.y(),
+                                                              home.z(), home.yaw(), home.pitch()
+                                );
+                            }
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("goToHome"),
-                                "cyansh.msg.goToHome",
-                                Formatting.YELLOW + homeName
-                        );
+                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                    player,
+                                    CYANSH_LANGUAGE_UTILS.getTranslation("goToHome"),
+                                    "cyansh.msg.goToHome",
+                                    Formatting.YELLOW + homeName
+                            );
+                        }
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        ERROR + "homeNotFound"),
                                 "cyansh.msg.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
@@ -345,36 +402,46 @@ public class HomeCommands
 
                     if (!HomesObj.isEmpty(playerKey))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        "dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("listHomes"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        "listHomes"),
                                 "cyansh.msg.listHomes",
                                 false
                         );
 
-                        HomesObj.getPlayerHomes(playerKey).forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                        CYANSH_LANGUAGE_UTILS.getTranslation("getHome"),
-                                        "cyansh.msg.getHome",
-                                        false,
-                                        Formatting.YELLOW + home.name(),
-                                        Formatting.DARK_AQUA + home.dimension(),
-                                        Formatting.DARK_AQUA + home.date()
-                                )
-                        );
+                        HomesObj.getPlayerHomes(playerKey)
+                                .forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                                                 player,
+                                                 CYANSH_LANGUAGE_UTILS.getTranslation(
+                                                         "getHome"),
+                                                 "cyansh.msg.getHome",
+                                                 false,
+                                                 Formatting.YELLOW + home.name(),
+                                                 Formatting.DARK_AQUA + home.dimension(),
+                                                 Formatting.DARK_AQUA + home.date()
+                                         )
+                                );
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                                player,
+                                CYANSH_LANGUAGE_UTILS.getTranslation(
+                                        "dashSeparation"),
                                 "cyansh.msg.dashSeparation",
                                 false
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
+                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                                player,
                                 CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomes"),
                                 "cyansh.msg.noHomes"
                         );

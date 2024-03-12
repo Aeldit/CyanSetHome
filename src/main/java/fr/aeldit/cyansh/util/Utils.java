@@ -48,10 +48,13 @@ public class Utils
     public static Homes HomesObj = new Homes();
     public static Trusts TrustsObj = new Trusts();
 
-    public static CyanLibOptionsStorage CYANSH_OPTIONS_STORAGE = new CyanLibOptionsStorage(CYANSH_MODID, CyanSHConfig.class);
-    public static CyanLibLanguageUtils CYANSH_LANGUAGE_UTILS = new CyanLibLanguageUtils(CYANSH_MODID, CYANSH_OPTIONS_STORAGE, getDefaultTranslations());
+    public static CyanLibOptionsStorage CYANSH_OPTIONS_STORAGE = new CyanLibOptionsStorage(
+            CYANSH_MODID, CyanSHConfig.class);
+    public static CyanLibLanguageUtils CYANSH_LANGUAGE_UTILS = new CyanLibLanguageUtils(
+            CYANSH_MODID, getDefaultTranslations());
     public static CyanLib CYANSH_LIB_UTILS = new CyanLib(CYANSH_MODID, CYANSH_OPTIONS_STORAGE, CYANSH_LANGUAGE_UTILS);
-    public static CyanLibConfigCommands CYANSH_CONFIG_COMMANDS = new CyanLibConfigCommands(CYANSH_MODID, CYANSH_LIB_UTILS);
+    public static CyanLibConfigCommands CYANSH_CONFIG_COMMANDS = new CyanLibConfigCommands(
+            CYANSH_MODID, CYANSH_LIB_UTILS);
 
     public static void checkOrCreateHomesDir()
     {
@@ -86,7 +89,7 @@ public class Utils
         {
             File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
-            if (listOfFiles.length == 0)
+            if (listOfFiles != null && listOfFiles.length == 0)
             {
                 try
                 {
@@ -103,7 +106,7 @@ public class Utils
         {
             File[] listOfFiles = new File(MOD_PATH.toUri()).listFiles();
 
-            if (listOfFiles.length == 0)
+            if (listOfFiles != null && listOfFiles.length == 0)
             {
                 try
                 {
@@ -123,11 +126,15 @@ public class Utils
         {
             CYANSH_DEFAULT_TRANSLATIONS.put("error.playerOnlyCmd", "This command can only be executed by a player");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.notOp", "§cYou don't have the required permission to do that");
-            CYANSH_DEFAULT_TRANSLATIONS.put("error.notOpOrTrusted", "§cThis player doesn't trust you or you don't have the required permission");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "error.notOpOrTrusted",
+                    "§cThis player doesn't trust you or you don't have the required permission"
+            );
             CYANSH_DEFAULT_TRANSLATIONS.put("error.disabled.homes", "§cThe home commands are disabled");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.homeAlreadyExists", "§cThis home already exists");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.homeNotFound", "§cThis home doesn't exist (check the spelling)");
-            CYANSH_DEFAULT_TRANSLATIONS.put("error.maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "error.maxHomesReached", "§cYou reached the maximum number of homes §6(%s§6)");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.playerNotOnline", "§cThis player is not online");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.playerNotTrusted", "§cYou don't trust this player");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.playerNotTrusting", "§cThis player doesn't trust you");
@@ -137,7 +144,8 @@ public class Utils
             CYANSH_DEFAULT_TRANSLATIONS.put("error.noHomesOf", "§cThis player doesn't have any home");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.useSelfHomes", "§cPlease use the normal commands to use your homes");
             CYANSH_DEFAULT_TRANSLATIONS.put("error.optionNotFound", "§cThis option does not exist");
-            CYANSH_DEFAULT_TRANSLATIONS.put("error.bypassDisabled", "§cThe ByPass option is disabled or you are not OP level 4");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "error.bypassDisabled", "§cThe ByPass option is disabled or you are not OP level 4");
 
             CYANSH_DEFAULT_TRANSLATIONS.put("setHome", "§3The home %s §3have been created");
             CYANSH_DEFAULT_TRANSLATIONS.put("setHomeOf", "§3The home %s §3have been created for the player %s");
@@ -146,7 +154,8 @@ public class Utils
             CYANSH_DEFAULT_TRANSLATIONS.put("removeAllHomes", "§3All your homes have been removed");
             CYANSH_DEFAULT_TRANSLATIONS.put("removeAllHomesOf", "§3All %s§3's homes have been removed");
             CYANSH_DEFAULT_TRANSLATIONS.put("renameHome", "§3The home %s §3have been renamed to %s");
-            CYANSH_DEFAULT_TRANSLATIONS.put("renameHomeOf", "§3The home %s §3have been renamed to %s §3for the player %s");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "renameHomeOf", "§3The home %s §3have been renamed to %s §3for the player %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("goToHome", "§3You have been teleported to the home %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("getTrustingPlayers", "§3Players that trust you : %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("getTrustedPlayers", "§3Players that you trust : %s");
@@ -161,8 +170,10 @@ public class Utils
 
             CYANSH_DEFAULT_TRANSLATIONS.put("set.allowHomes", "§3Toggled §dhome §3commands %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("set.allowByPass", "§3Toggled ByPass %s");
-            CYANSH_DEFAULT_TRANSLATIONS.put("set.minOpLvlHomes", "§3The OP level required to use the §dhome §3commands is now %s");
-            CYANSH_DEFAULT_TRANSLATIONS.put("set.minOpLvlBypass", "§3The OP level required to use the Bypass is now %s");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "set.minOpLvlHomes", "§3The OP level required to use the §dhome §3commands is now %s");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "set.minOpLvlBypass", "§3The OP level required to use the Bypass is now %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("set.maxHomes", "§3The maximum number of homes per player is now %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("set.useCustomTranslations", "§3Toggled translations %s");
 
@@ -170,17 +181,36 @@ public class Utils
             CYANSH_DEFAULT_TRANSLATIONS.put("listHomes", "§6CyanSetHome - YOUR HOMES\n");
             CYANSH_DEFAULT_TRANSLATIONS.put("listHomesOf", "§6CyanSetHome - HOMES OF %s\n");
 
-            CYANSH_DEFAULT_TRANSLATIONS.put("desc.allowHomes", "§3The §dallowHomes §3option defines whether the home commands are enabled or not");
-            CYANSH_DEFAULT_TRANSLATIONS.put("desc.allowByPass", "§3The §dallowByPass §3option defines whether admins with the correct OP level can bypass permissions like trust between players");
-            CYANSH_DEFAULT_TRANSLATIONS.put("desc.minOpLvlHomes", "§3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands");
-            CYANSH_DEFAULT_TRANSLATIONS.put("desc.minOpLvlBypass", "§3The §dminOpLvlBypass §3option defines the OP level required to use the bypass for the §dhomeOf §3commands");
-            CYANSH_DEFAULT_TRANSLATIONS.put("desc.maxHomes", "§3The §dmaxHomes §3option defines the maximum number of homes a player can have");
-            CYANSH_DEFAULT_TRANSLATIONS.put("desc.useCustomTranslations", "§3The §duseCustomTranslations §3option defines whether the translation will be used or not");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "desc.allowHomes",
+                    "§3The §dallowHomes §3option defines whether the home commands are enabled or not"
+            );
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "desc.allowByPass",
+                    "§3The §dallowByPass §3option defines whether admins with the correct OP level can bypass " +
+                            "permissions like trust between players"
+            );
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "desc.minOpLvlHomes",
+                    "§3The §dminOpLevelExeHomes §3option defines the OP level required to run the home commands"
+            );
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "desc.minOpLvlBypass",
+                    "§3The §dminOpLvlBypass §3option defines the OP level required to use the bypass for the §dhomeOf" +
+                            " §3commands"
+            );
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "desc.maxHomes", "§3The §dmaxHomes §3option defines the maximum number of homes a player can have");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "desc.useCustomTranslations",
+                    "§3The §duseCustomTranslations §3option defines whether the translation will be used or not"
+            );
 
             CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.header", "§6CyanSetHome - OPTIONS\n");
             CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.allowHomes", "§6- §dhome §3commands : %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.allowByPass", "§6- §3Allow bypass for OPs : %s");
-            CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.minOpLvlHomes", "§6- §3Minimum OP level for §dhome §3commands : %s");
+            CYANSH_DEFAULT_TRANSLATIONS.put(
+                    "getCfg.minOpLvlHomes", "§6- §3Minimum OP level for §dhome §3commands : %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.minOpLvlBypass", "§6- §3Minimum OP level to use Bypass : %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.maxHomes", "§6- §3Max homes per player : %s");
             CYANSH_DEFAULT_TRANSLATIONS.put("getCfg.useCustomTranslations", "§6- §3Use custom translations : %s");

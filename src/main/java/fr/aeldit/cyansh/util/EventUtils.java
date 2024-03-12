@@ -63,18 +63,19 @@ public class EventUtils
             {
                 if (file.isFile())
                 {
-                    String[] splitedFileName = file.getName().split("\\.");
+                    String[] splitFileName = file.getName().split("\\.");
 
                     try
                     {
-                        if (splitedFileName[splitedFileName.length - 1].equals("properties") && !Files.readAllLines(file.toPath()).isEmpty())
+                        if (splitFileName[splitFileName.length - 1].equals("properties") && !Files.readAllLines(
+                                file.toPath()).isEmpty())
                         {
                             Properties properties = new Properties();
                             FileInputStream fis = new FileInputStream(file);
                             properties.load(fis);
                             fis.close();
 
-                            if (splitedFileName[0].equals("trusted_players"))
+                            if (splitFileName[0].equals("trusted_players"))
                             {
                                 ConcurrentHashMap<String, List<String>> trusts = new ConcurrentHashMap<>();
 
@@ -83,15 +84,23 @@ public class EventUtils
                                     Files.createFile(TRUST_PATH);
 
                                     properties.stringPropertyNames().forEach(name ->
-                                            {
-                                                String trustedPlayers = (String) properties.get(name);
-                                                List<String> trusted = Collections.synchronizedList(new ArrayList<>(List.of(trustedPlayers.split(" "))));
-                                                trusts.put(name, trusted);
-                                            }
+                                                                             {
+                                                                                 String trustedPlayers =
+                                                                                         (String) properties.get(
+                                                                                         name);
+                                                                                 List<String> trusted =
+                                                                                         Collections.synchronizedList(
+                                                                                         new ArrayList<>(
+                                                                                                 List.of(trustedPlayers.split(
+                                                                                                         " "))));
+                                                                                 trusts.put(name, trusted);
+                                                                             }
                                     );
 
                                     TrustsObj.setTrusts(trusts);
-                                    CYANSH_LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
+                                    CYANSH_LOGGER.info(
+                                            "[CyanSetHome] Transferred the home file " + file.getName() + " to a json" +
+                                                    " file.");
                                 }
                                 else
                                 {
@@ -101,17 +110,24 @@ public class EventUtils
                                     }
 
                                     properties.stringPropertyNames().forEach(name ->
-                                            {
-                                                if (!trusts.containsKey(name))
-                                                {
-                                                    String trustedPlayers = (String) properties.get(name);
-                                                    List<String> trusted = Collections.synchronizedList(new ArrayList<>(List.of(trustedPlayers.split(" "))));
-                                                    trusts.put(name, trusted);
-                                                }
-                                            }
+                                                                             {
+                                                                                 if (!trusts.containsKey(name))
+                                                                                 {
+                                                                                     String trustedPlayers =
+                                                                                             (String) properties.get(
+                                                                                             name);
+                                                                                     List<String> trusted =
+                                                                                             Collections.synchronizedList(
+                                                                                             new ArrayList<>(
+                                                                                                     List.of(trustedPlayers.split(
+                                                                                                             " "))));
+                                                                                     trusts.put(name, trusted);
+                                                                                 }
+                                                                             }
                                     );
 
-                                    CYANSH_LOGGER.info("[CyanSetHome] Transferred the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
+                                    CYANSH_LOGGER.info(
+                                            "[CyanSetHome] Transferred the missing trusted/trusting players of " + file.getName() + " to the corresponding json file.");
                                 }
 
                                 TrustsObj.write();
@@ -127,18 +143,21 @@ public class EventUtils
                                         List<Homes.Home> homes = Collections.synchronizedList(new ArrayList<>());
 
                                         properties.stringPropertyNames().forEach(s -> homes.add(new Homes.Home(
-                                                        s,
-                                                        properties.getProperty(s).split(" ")[0],
-                                                        Double.parseDouble(properties.getProperty(s).split(" ")[1]),
-                                                        Double.parseDouble(properties.getProperty(s).split(" ")[2]),
-                                                        Double.parseDouble(properties.getProperty(s).split(" ")[3]),
-                                                        Float.parseFloat(properties.getProperty(s).split(" ")[4]),
-                                                        Float.parseFloat(properties.getProperty(s).split(" ")[5]),
-                                                        properties.getProperty(s).split(" ")[6]
-                                                ))
+                                                                                         s,
+                                                                                         properties.getProperty(s).split(" ")[0],
+                                                                                         Double.parseDouble(properties.getProperty(s).split(" ")[1]),
+                                                                                         Double.parseDouble(properties.getProperty(s).split(" ")[2]),
+                                                                                         Double.parseDouble(properties.getProperty(s).split(" ")[3]),
+                                                                                         Float.parseFloat(properties.getProperty(s).split(" ")[4]),
+                                                                                         Float.parseFloat(properties.getProperty(s).split(" ")[5]),
+                                                                                         properties.getProperty(s).split(" ")[6]
+                                                                                 ))
                                         );
 
-                                        HomesObj.addPlayer(file.getName().split("\\.")[0], Collections.synchronizedList(new ArrayList<>(homes)));
+                                        HomesObj.addPlayer(
+                                                file.getName().split("\\.")[0],
+                                                Collections.synchronizedList(new ArrayList<>(homes))
+                                        );
                                     }
                                     else
                                     {
@@ -159,7 +178,9 @@ public class EventUtils
                                                         currentHome.split(" ")[6]
                                                 )))
                                                 {
-                                                    CYANSH_LOGGER.info("[CyanSetHome] Could not add the home " + name + " because it already exists.");
+                                                    CYANSH_LOGGER.info(
+                                                            "[CyanSetHome] Could not add the home " + name + " " +
+                                                                    "because it already exists.");
                                                 }
 
                                                 changed = true;
@@ -170,7 +191,9 @@ public class EventUtils
 
                                 if (changed)
                                 {
-                                    CYANSH_LOGGER.info("[CyanSetHome] Transferred the home file " + file.getName() + " to a json file.");
+                                    CYANSH_LOGGER.info(
+                                            "[CyanSetHome] Transferred the home file " + file.getName() + " to a json" +
+                                                    " file.");
                                 }
                             }
                         }
