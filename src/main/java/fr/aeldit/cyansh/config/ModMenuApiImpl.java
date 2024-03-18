@@ -19,11 +19,10 @@ package fr.aeldit.cyansh.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import fr.aeldit.cyanlib.lib.config.CyanLibOptionsStorage;
 import fr.aeldit.cyanlib.lib.gui.CyanLibConfigScreen;
 
 import static fr.aeldit.cyanlib.lib.CyanLib.CONFIG_CLASS_INSTANCES;
-import static fr.aeldit.cyansh.util.Utils.CYANSH_MODID;
+import static fr.aeldit.cyansh.CyanSHCore.CYANSH_MODID;
 
 public class ModMenuApiImpl implements ModMenuApi
 {
@@ -31,9 +30,9 @@ public class ModMenuApiImpl implements ModMenuApi
     public ConfigScreenFactory<?> getModConfigScreenFactory()
     {
         return parent -> new CyanLibConfigScreen(
-                (CyanLibOptionsStorage) CONFIG_CLASS_INSTANCES.get(CYANSH_MODID).get(0),
+                CONFIG_CLASS_INSTANCES.get(CYANSH_MODID).getOptionsStorage(),
                 parent,
-                (Class<?>) CONFIG_CLASS_INSTANCES.get(CYANSH_MODID).get(1)
+                CONFIG_CLASS_INSTANCES.get(CYANSH_MODID).getOptionsStorage().getConfigClass()
         );
     }
 }

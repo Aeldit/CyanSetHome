@@ -31,8 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
-import static fr.aeldit.cyansh.util.Utils.*;
+import static fr.aeldit.cyansh.CyanSHCore.*;
 
 public class PermissionCommands
 {
@@ -40,14 +39,18 @@ public class PermissionCommands
     {
         dispatcher.register(CommandManager.literal("home-trust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getOnlinePlayersName(builder, context.getSource()))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
+                                        builder, context.getSource()))
                         .executes(PermissionCommands::trustPlayer)
                 )
         );
 
         dispatcher.register(CommandManager.literal("home-untrust")
                 .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustedPlayersName(builder, context.getSource()))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
+                                        builder, context.getSource().getPlayer()))
                         .executes(PermissionCommands::untrustPlayer)
                 )
         );
@@ -68,23 +71,20 @@ public class PermissionCommands
     public static int trustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(source))
         {
+            ServerPlayerEntity player = source.getPlayer();
             String playerName = StringArgumentType.getString(context, "player");
 
             if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
             {
-                CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                        CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "playerNotOnline"),
-                        "cyansh.msg.playerNotOnline"
-                );
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.playerNotOnline");
             }
             else
             {
                 String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
-                String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName).getUuid() + " " + playerName;
+                String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName)
+                        .getUuid() + " " + playerName;
 
                 if (!trustingPlayer.equals(trustedPlayer))
                 {
@@ -92,26 +92,20 @@ public class PermissionCommands
                     {
                         TrustsObj.trustPlayer(trustingPlayer, trustedPlayer);
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("playerTrusted"),
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
                                 "cyansh.msg.playerTrusted",
                                 Formatting.AQUA + playerName
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "playerAlreadyTrusted"),
-                                "cyansh.msg.playerAlreadyTrusted"
-                        );
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.playerAlreadyTrusted");
                     }
                 }
                 else
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "selfTrust"),
-                            "cyansh.msg.selfTrust"
-                    );
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.selfTrust");
                 }
             }
         }
@@ -125,10 +119,9 @@ public class PermissionCommands
      */
     public static int untrustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
+            ServerPlayerEntity player = context.getSource().getPlayer();
             String untrustedPlayerName = StringArgumentType.getString(context, "player");
 
             if (!player.getName().getString().equals(untrustedPlayerName))
@@ -137,26 +130,20 @@ public class PermissionCommands
                 {
                     TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
 
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation("playerUnTrusted"),
+                    CYANSH_LANG_UTILS.sendPlayerMessage(
+                            player,
                             "cyansh.msg.playerUnTrusted",
                             Formatting.AQUA + untrustedPlayerName
                     );
                 }
                 else
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "playerNotTrusted"),
-                            "cyansh.msg.playerNotTrusted"
-                    );
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.playerNotTrusted");
                 }
             }
             else
             {
-                CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                        CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "selfTrust"),
-                        "cyansh.msg.selfTrust"
-                );
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.selfTrust");
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -169,34 +156,18 @@ public class PermissionCommands
      */
     public static int getTrustingPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString());
+            ServerPlayerEntity player = context.getSource().getPlayer();
+            ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(
+                    player.getUuidAsString() + " " + player.getName().getString());
 
             if (!trustingPlayers.isEmpty())
             {
-                String players = "";
+                String players = getPlayers(trustingPlayers);
 
-                for (int i = 0; i < trustingPlayers.size(); i++)
-                {
-                    if (trustingPlayers.size() == 1)
-                    {
-                        players = players.concat("%s".formatted(trustingPlayers.get(i)));
-                    }
-                    else if (i == trustingPlayers.size() - 1)
-                    {
-                        players = players.concat(", %s".formatted(trustingPlayers.get(i)));
-                    }
-                    else
-                    {
-                        players = players.concat(", %s,".formatted(trustingPlayers.get(i)));
-                    }
-                }
-
-                CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                        CYANSH_LANGUAGE_UTILS.getTranslation("getTrustingPlayers"),
+                CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                        player,
                         "cyansh.msg.getTrustingPlayers",
                         false,
                         Formatting.AQUA + players
@@ -204,10 +175,7 @@ public class PermissionCommands
             }
             else
             {
-                CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                        CYANSH_LANGUAGE_UTILS.getTranslation("noTrustingPlayer"),
-                        "cyansh.msg.noTrustingPlayer"
-                );
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noTrustingPlayer");
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -220,34 +188,18 @@ public class PermissionCommands
      */
     public static int getTrustedPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            List<String> trustedPlayers = TrustsObj.getTrustedPlayers(player.getUuidAsString() + " " + player.getName().getString());
+            ServerPlayerEntity player = context.getSource().getPlayer();
+            List<String> trustedPlayers = TrustsObj.getTrustedPlayers(
+                    player.getUuidAsString() + " " + player.getName().getString());
 
             if (!trustedPlayers.isEmpty())
             {
-                String players = "";
+                String players = getPlayers(trustedPlayers);
 
-                for (int i = 0; i < trustedPlayers.size(); i++)
-                {
-                    if (trustedPlayers.size() == 1)
-                    {
-                        players = players.concat("%s".formatted(trustedPlayers.get(i).split(" ")[1]));
-                    }
-                    else if (i == trustedPlayers.size() - 1)
-                    {
-                        players = players.concat(", %s".formatted(trustedPlayers.get(i).split(" ")[1]));
-                    }
-                    else
-                    {
-                        players = players.concat(", %s,".formatted(trustedPlayers.get(i).split(" ")[1]));
-                    }
-                }
-
-                CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                        CYANSH_LANGUAGE_UTILS.getTranslation("getTrustedPlayers"),
+                CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                        player,
                         "cyansh.msg.getTrustedPlayers",
                         false,
                         Formatting.AQUA + players
@@ -255,12 +207,32 @@ public class PermissionCommands
             }
             else
             {
-                CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                        CYANSH_LANGUAGE_UTILS.getTranslation("noTrustedPlayer"),
-                        "cyansh.msg.noTrustedPlayer"
-                );
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noTrustedPlayer");
             }
         }
         return Command.SINGLE_SUCCESS;
+    }
+
+    @NotNull
+    private static String getPlayers(@NotNull List<String> trustedPlayers)
+    {
+        String players = "";
+
+        for (int i = 0; i < trustedPlayers.size(); i++)
+        {
+            if (trustedPlayers.size() == 1)
+            {
+                players = players.concat("%s".formatted(trustedPlayers.get(i).split(" ")[1]));
+            }
+            else if (i == trustedPlayers.size() - 1)
+            {
+                players = players.concat(", %s".formatted(trustedPlayers.get(i).split(" ")[1]));
+            }
+            else
+            {
+                players = players.concat(", %s,".formatted(trustedPlayers.get(i).split(" ")[1]));
+            }
+        }
+        return players;
     }
 }

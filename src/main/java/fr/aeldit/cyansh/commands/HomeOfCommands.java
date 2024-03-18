@@ -23,6 +23,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansh.homes.Homes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,9 +34,8 @@ import org.jetbrains.annotations.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static fr.aeldit.cyanlib.lib.utils.TranslationsPrefixes.ERROR;
+import static fr.aeldit.cyansh.CyanSHCore.*;
 import static fr.aeldit.cyansh.config.CyanSHConfig.*;
-import static fr.aeldit.cyansh.util.Utils.*;
 
 public class HomeOfCommands
 {
@@ -43,16 +43,26 @@ public class HomeOfCommands
     {
         dispatcher.register(CommandManager.literal("set-home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
                                 .executes(HomeOfCommands::setHomeOf)
                         )
                 )
         );
         dispatcher.register(CommandManager.literal("sho")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
                                 .executes(HomeOfCommands::setHomeOf)
                         )
                 )
@@ -60,18 +70,38 @@ public class HomeOfCommands
 
         dispatcher.register(CommandManager.literal("remove-home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
+                                .suggests(
+                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                builder,
+                                                context.getSource().getPlayer(),
+                                                context.getInput().split(" ")[1]
+                                        ))
                                 .executes(HomeOfCommands::removeHomeOf)
                         )
                 )
         );
         dispatcher.register(CommandManager.literal("rho")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
+                                .suggests(
+                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                builder,
+                                                context.getSource().getPlayer(),
+                                                context.getInput().split(" ")[1]
+                                        ))
                                 .executes(HomeOfCommands::removeHomeOf)
                         )
                 )
@@ -79,18 +109,35 @@ public class HomeOfCommands
 
         dispatcher.register(CommandManager.literal("remove-all-homes-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
                         .executes(HomeOfCommands::removeAllHomesOf)
                 )
         );
 
         dispatcher.register(CommandManager.literal("rename-home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
-                                .then(CommandManager.argument("new_home_name", StringArgumentType.string())
-                                        .executes(HomeOfCommands::renameHomeOf)
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
+                                .suggests(
+                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                builder,
+                                                context.getSource().getPlayer(),
+                                                context.getInput().split(" ")[1]
+                                        ))
+                                .then(CommandManager.argument(
+                                                        "new_home_name",
+                                                        StringArgumentType.string()
+                                                )
+                                                .executes(HomeOfCommands::renameHomeOf)
                                 )
                         )
                 )
@@ -98,18 +145,38 @@ public class HomeOfCommands
 
         dispatcher.register(CommandManager.literal("home-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
+                                .suggests(
+                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                builder,
+                                                context.getSource().getPlayer(),
+                                                context.getInput().split(" ")[1]
+                                        ))
                                 .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
         );
         dispatcher.register(CommandManager.literal("ho")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
-                        .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                .suggests((context, builder) -> ArgumentSuggestion.getHomesOf(builder, context.getSource().getPlayer(), context.getInput().split(" ")[1]))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
+                        .then(CommandManager.argument(
+                                        "home_name", StringArgumentType.string())
+                                .suggests(
+                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                builder,
+                                                context.getSource().getPlayer(),
+                                                context.getInput().split(" ")[1]
+                                        ))
                                 .executes(HomeOfCommands::goToHomeOf)
                         )
                 )
@@ -117,13 +184,21 @@ public class HomeOfCommands
 
         dispatcher.register(CommandManager.literal("get-homes-of")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
                         .executes(HomeOfCommands::getHomesOfList)
                 )
         );
         dispatcher.register(CommandManager.literal("gho")
                 .then(CommandManager.argument("player_name", StringArgumentType.string())
-                        .suggests((context, builder) -> ArgumentSuggestion.getTrustingPlayersName(builder, context.getSource()))
+                        .suggests(
+                                (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                        builder,
+                                        context.getSource().getPlayer()
+                                ))
                         .executes(HomeOfCommands::getHomesOfList)
                 )
         );
@@ -138,13 +213,15 @@ public class HomeOfCommands
      */
     public static int setHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            ServerPlayerEntity player = context.getSource().getPlayer();
+
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
                     String homeName = StringArgumentType.getString(context, "home_name");
@@ -152,17 +229,20 @@ public class HomeOfCommands
 
                     if (HomesObj.maxHomesNotReached(playerKey))
                     {
-                        if (HomesObj.addHome(playerKey,
+                        if (HomesObj.addHome(
+                                playerKey,
                                 new Homes.Home(homeName,
                                         player.getWorld().getDimensionKey().getValue()
                                                 .toString().replace("minecraft:", "").replace("the_", ""),
-                                        player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(),
-                                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                                        player.getX(), player.getY(), player.getZ(), player.getYaw(),
+                                        player.getPitch(),
+                                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(
+                                                Calendar.getInstance().getTime())
                                 )
                         ))
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                    CYANSH_LANGUAGE_UTILS.getTranslation("setHomeOf"),
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
+                                    player,
                                     "cyansh.msg.setHomeOf",
                                     Formatting.YELLOW + homeName,
                                     Formatting.AQUA + trustingPlayer
@@ -170,19 +250,9 @@ public class HomeOfCommands
                         }
                         else
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                    CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeAlreadyExists"),
-                                    "cyansh.msg.homeAlreadyExists"
-                            );
+                            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.homeAlreadyExists");
                         }
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "bypassDisabled"),
-                            "cyansh.msg.bypassDisabled"
-                    );
                 }
             }
         }
@@ -198,22 +268,24 @@ public class HomeOfCommands
      */
     public static int removeHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            ServerPlayerEntity player = context.getSource().getPlayer();
+
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
                     if (HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("removeHomeOf"),
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
                                 "cyansh.msg.removeHomeOf",
                                 Formatting.YELLOW + homeName,
                                 Formatting.AQUA + trustingPlayer
@@ -221,19 +293,12 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
-                                "cyansh.msg.homeNotFound",
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
+                                "cyansh.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "bypassDisabled"),
-                            "cyansh.msg.bypassDisabled"
-                    );
                 }
             }
         }
@@ -247,40 +312,33 @@ public class HomeOfCommands
      * <p>
      * Succeeds only if the player has OP level {@code MIN_OP_LVL_BYPASS} and the byPass option is set to {@code true}
      */
-    public static int removeAllHomesOf(@NotNull CommandContext<ServerCommandSource> context) // TODO -> ask for confirmation
+    // TODO -> ask for confirmation
+    public static int removeAllHomesOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            ServerPlayerEntity player = context.getSource().getPlayer();
+
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
                     if (HomesObj.removeAll(HomesObj.getKeyFromName(trustingPlayer)))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("removeAllHomesOf"),
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
                                 "cyansh.msg.removeAllHomesOf",
                                 Formatting.AQUA + trustingPlayer
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomesOf"),
-                                "cyansh.msg.noHomesOf"
-                        );
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noHomesOf");
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "bypassDisabled"),
-                            "cyansh.msg.bypassDisabled"
-                    );
                 }
             }
         }
@@ -296,15 +354,17 @@ public class HomeOfCommands
      */
     public static int renameHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            ServerPlayerEntity player = context.getSource().getPlayer();
+
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String newHomeName = StringArgumentType.getString(context, "new_home_name");
@@ -312,8 +372,8 @@ public class HomeOfCommands
 
                     if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("renameHomeOf"),
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
                                 "cyansh.msg.renameHomeOf",
                                 Formatting.YELLOW + homeName,
                                 Formatting.YELLOW + newHomeName,
@@ -322,19 +382,12 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFoundOrExists"),
-                                "cyansh.msg.homeNotFoundOrExists",
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
+                                "cyansh.error.homeNotFoundOrExists",
                                 homeName
                         );
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "bypassDisabled"),
-                            "cyansh.msg.bypassDisabled"
-                    );
                 }
             }
         }
@@ -346,57 +399,65 @@ public class HomeOfCommands
      * <p>
      * Teleports the player to the given home
      * <p>
-     * Succeeds only if the player is trusted or has OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set to {@code true}
+     * Succeeds only if the player is trusted or has OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set
+     * to {@code true}
      */
     public static int goToHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            ServerPlayerEntity player = context.getSource().getPlayer();
+
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString()))
+                if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                        || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+                )
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
                     if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
                     {
                         Homes.Home home = HomesObj.getPlayerHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
+                        MinecraftServer server = player.getServer();
 
-                        switch (home.dimension())
+                        if (home != null && server != null)
                         {
-                            case "overworld" ->
-                                    player.teleport(player.getServer().getWorld(World.OVERWORLD), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "nether" ->
-                                    player.teleport(player.getServer().getWorld(World.NETHER), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                            case "end" ->
-                                    player.teleport(player.getServer().getWorld(World.END), home.x(), home.y(), home.z(), home.yaw(), home.pitch());
-                        }
+                            switch (home.dimension())
+                            {
+                                case "overworld" ->
+                                        player.teleport(server.getWorld(World.OVERWORLD), home.x(), home.y(),
+                                                home.z(), home.yaw(), home.pitch()
+                                        );
+                                case "nether" -> player.teleport(server.getWorld(World.NETHER), home.x(), home.y(),
+                                        home.z(), home.yaw(), home.pitch()
+                                );
+                                case "end" -> player.teleport(server.getWorld(World.END), home.x(), home.y(),
+                                        home.z(), home.yaw(), home.pitch()
+                                );
+                            }
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("goToHome"),
-                                "cyansh.msg.goToHome",
-                                Formatting.YELLOW + homeName
-                        );
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
+                                    player,
+                                    "cyansh.msg.goToHome",
+                                    Formatting.YELLOW + homeName
+                            );
+                        }
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "homeNotFound"),
-                                "cyansh.msg.homeNotFound",
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
+                                player,
+                                "cyansh.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
                 }
                 else
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "notOpOrTrusted"),
-                            "cyansh.msg.notOpOrTrusted"
-                    );
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.msg.notOpOrTrusted");
                 }
             }
         }
@@ -408,24 +469,22 @@ public class HomeOfCommands
      * <p>
      * Sends a message in the player's chat with all the given player's homes
      * <p>
-     * Succeeds only if the player is trusted or OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set to {@code true}
+     * Succeeds only if the player is trusted or OP level {@code MIN_OP_LVL_BYPASS} and the bypass option is set to
+     * {@code true}
      */
     public static int getHomesOfList(@NotNull CommandContext<ServerCommandSource> context)
     {
-        ServerPlayerEntity player = context.getSource().getPlayer();
-
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
-            if (CYANSH_LIB_UTILS.isOptionAllowed(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            ServerPlayerEntity player = context.getSource().getPlayer();
+
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
                 if (player.getName().getString().equals(trustingPlayer))
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "useSelfHomes"),
-                            "cyansh.msg.useSelfHomes"
-                    );
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.msg.useSelfHomes");
                 }
                 else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
                         || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
@@ -433,48 +492,43 @@ public class HomeOfCommands
                 {
                     if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
-                                "cyansh.msg.dashSeparation",
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                player,
+                                "cyanlib.msg.dashSeparation",
                                 false
                         );
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("listHomesOf"),
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                player,
                                 "cyansh.msg.listHomesOf",
                                 false,
                                 Formatting.AQUA + trustingPlayer
                         );
 
-                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer)).forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                        CYANSH_LANGUAGE_UTILS.getTranslation("getHome"),
-                                        "cyansh.msg.getHome",
-                                        false,
-                                        Formatting.YELLOW + home.name(),
-                                        Formatting.DARK_AQUA + home.dimension(),
-                                        Formatting.DARK_AQUA + home.date()
-                                )
-                        );
+                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer))
+                                .forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                                player,
+                                                "cyansh.msg.getHome",
+                                                false,
+                                                Formatting.YELLOW + home.name(),
+                                                Formatting.DARK_AQUA + home.dimension(),
+                                                Formatting.DARK_AQUA + home.date()
+                                        )
+                                );
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation("dashSeparation"),
-                                "cyansh.msg.dashSeparation",
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                player,
+                                "cyanlib.msg.dashSeparation",
                                 false
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                                CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "noHomesOf"),
-                                "cyansh.msg.noHomesOf"
-                        );
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noHomesOf");
                     }
                 }
                 else
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player,
-                            CYANSH_LANGUAGE_UTILS.getTranslation(ERROR + "notOpOrTrusted"),
-                            "cyansh.msg.notOpOrTrusted"
-                    );
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.notOpOrTrusted");
                 }
             }
         }

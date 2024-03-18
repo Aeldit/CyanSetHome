@@ -23,14 +23,16 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static fr.aeldit.cyansh.CyanSHCore.HomesObj;
+import static fr.aeldit.cyansh.CyanSHCore.TrustsObj;
 import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_BYPASS;
-import static fr.aeldit.cyansh.util.Utils.HomesObj;
-import static fr.aeldit.cyansh.util.Utils.TrustsObj;
 
 public final class ArgumentSuggestion
 {
@@ -39,9 +41,13 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the player's homes
      */
-    public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player)
+    public static CompletableFuture<Suggestions> getHomes(
+            @NotNull SuggestionsBuilder builder,
+            @NotNull ServerPlayerEntity player
+    )
     {
-        return CommandSource.suggestMatching(HomesObj.getHomesNames(player.getUuidAsString() + " " + player.getName().getString()), builder);
+        return CommandSource.suggestMatching(
+                HomesObj.getHomesNames(player.getUuidAsString() + " " + player.getName().getString()), builder);
     }
 
     /**
@@ -49,10 +55,20 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusting player's homes
      */
-    public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder, @NotNull ServerPlayerEntity player, @NotNull String trustingPlayer)
+    public static CompletableFuture<Suggestions> getHomesOf(
+            @NotNull SuggestionsBuilder builder,
+            @Nullable ServerPlayerEntity player,
+            @NotNull String trustingPlayer
+    )
     {
-        return (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
-                ? CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder) : new CompletableFuture<>();
+        if (player != null)
+        {
+            return (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(
+                    trustingPlayer, player.getName().getString())
+                   ? CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder)
+                   : new CompletableFuture<>();
+        }
+        return new CompletableFuture<>();
     }
 
     /**
@@ -60,14 +76,17 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the online players
      */
-    public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    public static CompletableFuture<Suggestions> getOnlinePlayersName(
+            @NotNull SuggestionsBuilder builder,
+            @NotNull ServerCommandSource source
+    )
     {
         List<String> players = new ArrayList<>();
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
         {
             players.add(player.getName().getString());
         }
-        players.remove(source.getPlayer().getName().getString());
+        players.remove(Objects.requireNonNull(source.getPlayer()).getName().getString());
 
         return CommandSource.suggestMatching(players, builder);
     }
@@ -77,15 +96,21 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusted players
      */
-    public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    public static CompletableFuture<Suggestions> getTrustedPlayersName(
+            @NotNull SuggestionsBuilder builder,
+            @Nullable ServerPlayerEntity player
+    )
     {
         ArrayList<String> names = new ArrayList<>();
-        for (String s : TrustsObj.getTrustedPlayers(source.getPlayer().getUuidAsString() + " " + source.getPlayer().getName().getString()))
+        if (player != null)
         {
-            String string = s.split(" ")[1];
-            names.add(string);
+            for (String s : TrustsObj.getTrustedPlayers(
+                    player.getUuidAsString() + " " + player.getName().getString()))
+            {
+                String string = s.split(" ")[1];
+                names.add(string);
+            }
         }
-
         return CommandSource.suggestMatching(names, builder);
     }
 
@@ -94,12 +119,20 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusting players
      */
-    public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder, @NotNull ServerCommandSource source)
+    public static CompletableFuture<Suggestions> getTrustingPlayersName(
+            @NotNull SuggestionsBuilder builder,
+            @Nullable ServerPlayerEntity player
+    )
     {
-        ServerPlayerEntity player = source.getPlayer();
-
-        return player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue()
-                ? CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder)
-                : CommandSource.suggestMatching(TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()), builder);
+        if (player != null)
+        {
+            return player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue()
+                   ? CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder)
+                   : CommandSource.suggestMatching(
+                           TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()),
+                           builder
+                   );
+        }
+        return new CompletableFuture<>();
     }
 }
