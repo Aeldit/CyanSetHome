@@ -1,4 +1,4 @@
-![banner](https://github.com/Aeldit/CyanSetHome/blob/1.20.2/images/banner.png?raw=true)
+![banner](https://github.com/Aeldit/Aeldit/blob/main/cyansh/banner.png?raw=true)
 <!-- modrinth_exclude.start -->
 > ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
 <!-- modrinth_exclude.end -->
@@ -59,14 +59,6 @@ or
 |             `/get-homes-of <player_name>`             |    Displays all the given player's homes in the chat    |       `/gho <player_name>`       |
 
 </details>
-
-> ### ❗ Important :
->
-> If you are not using this mod on client but only on server side, download the resource pack for messages translations
-> (CyanSetHome 1.1X.x located in this mod's github repository)
-
-> 📖 If you launch the mod on server side, it will use the latest version of minecraft, but if you use it on client side,
-> it will allow you to play any version of the same number (ex: 1.17, 1.17.1 ...)
 
 ***
 

@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static fr.aeldit.cyansh.CyanSHCore.HomesObj;
+import static fr.aeldit.cyansh.CyanSHCore.TrustsObj;
 import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_BYPASS;
-import static fr.aeldit.cyansh.util.Utils.HomesObj;
-import static fr.aeldit.cyansh.util.Utils.TrustsObj;
 
 public final class ArgumentSuggestion
 {
@@ -41,8 +41,10 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the player's homes
      */
-    public static CompletableFuture<Suggestions> getHomes(@NotNull SuggestionsBuilder builder,
-                                                          @NotNull ServerPlayerEntity player)
+    public static CompletableFuture<Suggestions> getHomes(
+            @NotNull SuggestionsBuilder builder,
+            @NotNull ServerPlayerEntity player
+    )
     {
         return CommandSource.suggestMatching(
                 HomesObj.getHomesNames(player.getUuidAsString() + " " + player.getName().getString()), builder);
@@ -53,9 +55,11 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusting player's homes
      */
-    public static CompletableFuture<Suggestions> getHomesOf(@NotNull SuggestionsBuilder builder,
-                                                            @Nullable ServerPlayerEntity player,
-                                                            @NotNull String trustingPlayer)
+    public static CompletableFuture<Suggestions> getHomesOf(
+            @NotNull SuggestionsBuilder builder,
+            @Nullable ServerPlayerEntity player,
+            @NotNull String trustingPlayer
+    )
     {
         if (player != null)
         {
@@ -72,8 +76,10 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the online players
      */
-    public static CompletableFuture<Suggestions> getOnlinePlayersName(@NotNull SuggestionsBuilder builder,
-                                                                      @NotNull ServerCommandSource source)
+    public static CompletableFuture<Suggestions> getOnlinePlayersName(
+            @NotNull SuggestionsBuilder builder,
+            @NotNull ServerCommandSource source
+    )
     {
         List<String> players = new ArrayList<>();
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
@@ -90,8 +96,10 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusted players
      */
-    public static CompletableFuture<Suggestions> getTrustedPlayersName(@NotNull SuggestionsBuilder builder,
-                                                                       @Nullable ServerPlayerEntity player)
+    public static CompletableFuture<Suggestions> getTrustedPlayersName(
+            @NotNull SuggestionsBuilder builder,
+            @Nullable ServerPlayerEntity player
+    )
     {
         ArrayList<String> names = new ArrayList<>();
         if (player != null)
@@ -111,8 +119,10 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusting players
      */
-    public static CompletableFuture<Suggestions> getTrustingPlayersName(@NotNull SuggestionsBuilder builder,
-                                                                        @Nullable ServerPlayerEntity player)
+    public static CompletableFuture<Suggestions> getTrustingPlayersName(
+            @NotNull SuggestionsBuilder builder,
+            @Nullable ServerPlayerEntity player
+    )
     {
         if (player != null)
         {

@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.aeldit.cyansh.CyanSHCore.*;
 import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
-import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Trusts
 {
@@ -158,7 +158,7 @@ public class Trusts
             {
                 write();
                 CYANSH_LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed " +
-                                           "its pseudo (previously {})", playerName, prevName);
+                        "its pseudo (previously {})", playerName, prevName);
             }
         }
     }
@@ -311,7 +311,7 @@ public class Trusts
                     if (!couldWrite)
                     {
                         CYANSH_LOGGER.info("[CyanSetHome] Could not write the trusting_players.json file because it " +
-                                                   "is already being written");
+                                "is already being written");
                     }
                 }
             }

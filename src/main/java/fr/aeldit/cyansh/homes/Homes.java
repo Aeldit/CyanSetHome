@@ -34,8 +34,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.aeldit.cyansh.CyanSHCore.*;
 import static fr.aeldit.cyansh.config.CyanSHConfig.MAX_HOMES;
-import static fr.aeldit.cyansh.util.Utils.*;
 
 public class Homes
 {
@@ -128,8 +128,8 @@ public class Homes
             Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
             // If we try to rename the home with the name of a home that already exists
             if (!addHome(playerKey, new Home(newHomeName,
-                                             tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw,
-                                             tmpHome.pitch, tmpHome.date
+                    tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw,
+                    tmpHome.pitch, tmpHome.date
             )))
             {
                 return false;

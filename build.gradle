@@ -58,25 +58,28 @@ jar {
 
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
-    // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
-    projectId = "cyansethome" // This can be the project ID or the slug. Either will work!
+
+    projectId = "cyansethome"
+
     versionName = "[$project.minecraft_version] CyanSetHome $project.mod_version"
     versionNumber = "$project.mod_version + $project.minecraft_version"
-    // You don't need to set this manually. Will fail if Modrinth has this version already
-    versionType = "release" // This is the default -- can also be `beta` or `alpha`
-    uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.20.4"] // Must be an array, even with only one version
-    loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
-    dependencies { // A special DSL for creating dependencies
-        // scope.type
-        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
-        // The type can either be `project` or `version`
-        required.version "fabric-api", "$project.fabric_version" // Creates a new required dependency on Fabric API
+    versionType = "release"
+
+    uploadFile = remapJar
+
+    gameVersions = ["1.20.4"]
+    loaders = ["fabric"]
+
+    dependencies {
+        required.version "fabric-api", "$project.fabric_version"
         embedded.project "cyanlib"
         required.version "modmenu", "$project.modmenu_version"
     }
+
     changelog = file("changelogs/latest.md").exists() ? file("changelogs/latest.md").getText() : "No changelog provided"
+
     syncBodyFrom = rootProject.file("README.md").text
-    debugMode = false // Stops version from being published
+
+    debugMode = false
 }
 tasks.modrinth.dependsOn(tasks.modrinthSyncBody)

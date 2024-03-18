@@ -17,41 +17,39 @@
 
 package fr.aeldit.cyansh;
 
+import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
 import fr.aeldit.cyansh.commands.HomeCommands;
 import fr.aeldit.cyansh.commands.HomeOfCommands;
 import fr.aeldit.cyansh.commands.PermissionCommands;
-import fr.aeldit.cyansh.config.CyanSHConfig;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
+import static fr.aeldit.cyansh.CyanSHCore.*;
 import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
-import static fr.aeldit.cyansh.util.EventUtils.transferPropertiesToGson;
-import static fr.aeldit.cyansh.util.Utils.*;
 
 public class CyanSHServerCore implements DedicatedServerModInitializer
 {
     @Override
     public void onInitializeServer()
     {
-        CYANSH_LIB_UTILS.init(CYANSH_MODID, CYANSH_OPTIONS_STORAGE, CyanSHConfig.class);
+        CYANSH_LIB_UTILS.init(CYANSH_MODID, CYANSH_OPTIONS_STORAGE);
 
         HomesObj.readServer();
         TrustsObj.readServer();
 
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> transferPropertiesToGson());
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            CYANSH_CONFIG_COMMANDS.register(dispatcher);
+            new CyanLibConfigCommands(CYANSH_MODID, CYANSH_LIB_UTILS).register(dispatcher);
             HomeCommands.register(dispatcher);
             HomeOfCommands.register(dispatcher);
             PermissionCommands.register(dispatcher);
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> removeEmptyModDir());
-        
+
         CYANSH_LOGGER.info("[CyanSetHome] Successfully initialized");
     }
 }
