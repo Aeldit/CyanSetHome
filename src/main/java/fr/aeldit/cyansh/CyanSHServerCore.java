@@ -34,7 +34,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
     @Override
     public void onInitializeServer()
     {
-        CYANSH_LIB_UTILS.init(CYANSH_MODID, CYANSH_OPTIONS_STORAGE);
+        CYANSH_LIB_UTILS.init(CYANSH_MODID, CYANSH_OPTS_STORAGE);
 
         HomesObj.readServer();
         TrustsObj.readServer();

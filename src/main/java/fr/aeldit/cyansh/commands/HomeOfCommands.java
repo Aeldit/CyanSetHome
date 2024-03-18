@@ -219,7 +219,9 @@ public class HomeOfCommands
 
             if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
                     String homeName = StringArgumentType.getString(context, "home_name");
@@ -239,7 +241,7 @@ public class HomeOfCommands
                                 )
                         ))
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
                                     "cyansh.msg.setHomeOf",
                                     Formatting.YELLOW + homeName,
@@ -248,13 +250,9 @@ public class HomeOfCommands
                         }
                         else
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.homeAlreadyExists");
+                            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.homeAlreadyExists");
                         }
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.bypassDisabled");
                 }
             }
         }
@@ -278,13 +276,15 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
 
                     if (HomesObj.removeHome(HomesObj.getKeyFromName(trustingPlayer), homeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
                                 "cyansh.msg.removeHomeOf",
                                 Formatting.YELLOW + homeName,
@@ -293,16 +293,12 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.homeNotFound",
+                                "cyansh.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.bypassDisabled");
                 }
             }
         }
@@ -316,8 +312,8 @@ public class HomeOfCommands
      * <p>
      * Succeeds only if the player has OP level {@code MIN_OP_LVL_BYPASS} and the byPass option is set to {@code true}
      */
-    public static int removeAllHomesOf(@NotNull CommandContext<ServerCommandSource> context) // TODO -> ask for
-    // confirmation
+    // TODO -> ask for confirmation
+    public static int removeAllHomesOf(@NotNull CommandContext<ServerCommandSource> context)
     {
         if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
         {
@@ -325,13 +321,15 @@ public class HomeOfCommands
 
             if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
             {
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
                     if (HomesObj.removeAll(HomesObj.getKeyFromName(trustingPlayer)))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
                                 "cyansh.msg.removeAllHomesOf",
                                 Formatting.AQUA + trustingPlayer
@@ -339,12 +337,8 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.noHomesOf");
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noHomesOf");
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.bypassDisabled");
                 }
             }
         }
@@ -368,7 +362,9 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                        && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                )
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String newHomeName = StringArgumentType.getString(context, "new_home_name");
@@ -376,7 +372,7 @@ public class HomeOfCommands
 
                     if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
                                 "cyansh.msg.renameHomeOf",
                                 Formatting.YELLOW + homeName,
@@ -386,16 +382,12 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.homeNotFoundOrExists",
+                                "cyansh.error.homeNotFoundOrExists",
                                 homeName
                         );
                     }
-                }
-                else
-                {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.bypassDisabled");
                 }
             }
         }
@@ -447,7 +439,7 @@ public class HomeOfCommands
                                 );
                             }
 
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
                                     "cyansh.msg.goToHome",
                                     Formatting.YELLOW + homeName
@@ -456,16 +448,16 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.homeNotFound",
+                                "cyansh.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
                 }
                 else
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.notOpOrTrusted");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.msg.notOpOrTrusted");
                 }
             }
         }
@@ -492,7 +484,7 @@ public class HomeOfCommands
 
                 if (player.getName().getString().equals(trustingPlayer))
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.useSelfHomes");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.msg.useSelfHomes");
                 }
                 else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
                         || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
@@ -500,12 +492,12 @@ public class HomeOfCommands
                 {
                     if (!HomesObj.isEmptyFromName(trustingPlayer))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyansh.msg.dashSeparation",
+                                "cyanlib.msg.dashSeparation",
                                 false
                         );
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
                                 "cyansh.msg.listHomesOf",
                                 false,
@@ -513,7 +505,7 @@ public class HomeOfCommands
                         );
 
                         HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer))
-                                .forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                                .forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                                 player,
                                                 "cyansh.msg.getHome",
                                                 false,
@@ -523,20 +515,20 @@ public class HomeOfCommands
                                         )
                                 );
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyansh.msg.dashSeparation",
+                                "cyanlib.msg.dashSeparation",
                                 false
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.noHomesOf");
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noHomesOf");
                     }
                 }
                 else
                 {
-                    CYANSH_LANGUAGE_UTILS.sendPlayerMessage(player, "cyansh.msg.notOpOrTrusted");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.notOpOrTrusted");
                 }
             }
         }

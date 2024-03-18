@@ -159,7 +159,7 @@ public class HomeCommands
                                 )
                         ))
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
                                     "cyansh.msg.setHome",
                                     Formatting.YELLOW + homeName
@@ -167,18 +167,17 @@ public class HomeCommands
                         }
                         else
                         {
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
-                                    "cyansh.msg.homeAlreadyExists"
+                                    "cyansh.error.homeAlreadyExists"
                             );
                         }
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.maxHomesReached",
-                                "cyansh.msg.maxHomesReached",
+                                "cyansh.error.maxHomesReached",
                                 Formatting.GOLD + String.valueOf(MAX_HOMES.getValue())
                         );
                     }
@@ -208,7 +207,7 @@ public class HomeCommands
 
                     if (HomesObj.removeHome(playerKey, homeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
                                 "cyansh.msg.removeHome",
                                 Formatting.YELLOW + homeName
@@ -216,9 +215,9 @@ public class HomeCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.homeNotFound",
+                                "cyansh.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
@@ -247,16 +246,16 @@ public class HomeCommands
                 {
                     if (HomesObj.removeAll(player.getUuidAsString() + " " + player.getName().getString()))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
                                 "cyansh.msg.removeAllHomes"
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.noHomes"
+                                "cyansh.error.noHomes"
                         );
                     }
                 }
@@ -287,7 +286,7 @@ public class HomeCommands
 
                     if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
                                 "cyansh.msg.renameHome",
                                 Formatting.YELLOW + homeName,
@@ -296,9 +295,9 @@ public class HomeCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.homeNotFoundOrExists",
+                                "cyansh.error.homeNotFoundOrExists",
                                 homeName
                         );
                     }
@@ -346,7 +345,7 @@ public class HomeCommands
                                 );
                             }
 
-                            CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                            CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
                                     "cyansh.msg.goToHome",
                                     Formatting.YELLOW + homeName
@@ -355,9 +354,9 @@ public class HomeCommands
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.homeNotFound",
+                                "cyansh.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
@@ -386,19 +385,19 @@ public class HomeCommands
 
                     if (!HomesObj.isEmpty(playerKey))
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyansh.msg.dashSeparation",
+                                "cyanlib.msg.dashSeparation",
                                 false
                         );
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
                                 "cyansh.msg.listHomes",
                                 false
                         );
 
                         HomesObj.getPlayerHomes(playerKey)
-                                .forEach(home -> CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                                .forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                                 player,
                                                 "cyansh.msg.getHome",
                                                 false,
@@ -408,17 +407,17 @@ public class HomeCommands
                                         )
                                 );
 
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessageActionBar(
+                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyansh.msg.dashSeparation",
+                                "cyanlib.msg.dashSeparation",
                                 false
                         );
                     }
                     else
                     {
-                        CYANSH_LANGUAGE_UTILS.sendPlayerMessage(
+                        CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.noHomes"
+                                "cyansh.error.noHomes"
                         );
                     }
                 }

@@ -43,12 +43,12 @@ public class CyanSHCore
     public static Homes HomesObj = new Homes();
     public static Trusts TrustsObj = new Trusts();
 
-    public static CyanLibOptionsStorage CYANSH_OPTIONS_STORAGE = new CyanLibOptionsStorage(
+    public static CyanLibOptionsStorage CYANSH_OPTS_STORAGE = new CyanLibOptionsStorage(
             CYANSH_MODID,
             new CyanSHConfig()
     );
-    public static CyanLibLanguageUtils CYANSH_LANGUAGE_UTILS = new CyanLibLanguageUtils(CYANSH_MODID);
-    public static CyanLib CYANSH_LIB_UTILS = new CyanLib(CYANSH_MODID, CYANSH_OPTIONS_STORAGE, CYANSH_LANGUAGE_UTILS);
+    public static CyanLibLanguageUtils CYANSH_LANG_UTILS = new CyanLibLanguageUtils(CYANSH_MODID);
+    public static CyanLib CYANSH_LIB_UTILS = new CyanLib(CYANSH_MODID, CYANSH_OPTS_STORAGE, CYANSH_LANG_UTILS);
 
     public static void checkOrCreateHomesDir()
     {
