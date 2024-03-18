@@ -5,6 +5,7 @@ plugins {
 }
 
 archivesBaseName = project.archives_base_name
+version = project.mod_version + "+" + project.minecraft_version
 
 repositories {
     maven { url = "https://api.modrinth.com/maven" }
@@ -62,7 +63,7 @@ modrinth {
     projectId = "cyansethome"
 
     versionName = "[$project.minecraft_version] CyanSetHome $project.mod_version"
-    versionNumber = "$project.mod_version + $project.minecraft_version"
+    versionNumber = "$version"
     versionType = "release"
 
     uploadFile = remapJar
