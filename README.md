@@ -1,4 +1,4 @@
-![banner](https://github.com/Aeldit/Aeldit/blob/main/cyansh/banner.png?raw=true)
+![banner](https://github.com/Aeldit/Aeldit/blob/main/banners/cyansh.png?raw=true)
 <!-- modrinth_exclude.start -->
 > ❌ I do NOT allow this mod to be ported on the Forge loader, nor to be uploaded on Curseforge
 <!-- modrinth_exclude.end -->
