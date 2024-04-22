@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2023-2024  -  Made by Aeldit
- *
- *              GNU LESSER GENERAL PUBLIC LICENSE
- *                  Version 3, 29 June 2007
- *
- *  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
- *  Everyone is permitted to copy and distribute verbatim copies
- *  of this license document, but changing it is not allowed.
- *
- *
- * This version of the GNU Lesser General Public License incorporates
- * the terms and conditions of version 3 of the GNU General Public
- * License, supplemented by the additional permissions listed in the LICENSE.txt file
- * in the repo of this mod (https://github.com/Aeldit/CyanSetHome)
- */
-
 package fr.aeldit.cyansh.commands.arguments;
 
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -22,17 +5,17 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static fr.aeldit.cyansh.CyanSHCore.HomesObj;
 import static fr.aeldit.cyansh.CyanSHCore.TrustsObj;
-import static fr.aeldit.cyansh.config.CyanSHConfig.ALLOW_BYPASS;
+import static fr.aeldit.cyansh.config.CyanLibConfigImpl.ALLOW_BYPASS;
 
 public final class ArgumentSuggestion
 {
@@ -55,6 +38,7 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusting player's homes
      */
+    @Contract("_, null, _ -> new")
     public static CompletableFuture<Suggestions> getHomesOf(
             @NotNull SuggestionsBuilder builder,
             @Nullable ServerPlayerEntity player,
@@ -81,13 +65,16 @@ public final class ArgumentSuggestion
             @NotNull ServerCommandSource source
     )
     {
-        List<String> players = new ArrayList<>();
+        ArrayList<String> players = new ArrayList<>(source.getServer().getPlayerManager().getPlayerList().size() - 1);
+        String playerName = Objects.requireNonNull(source.getPlayer()).getName().getString();
+
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
         {
-            players.add(player.getName().getString());
+            if (!playerName.equals(player.getName().getString()))
+            {
+                players.add(player.getName().getString());
+            }
         }
-        players.remove(Objects.requireNonNull(source.getPlayer()).getName().getString());
-
         return CommandSource.suggestMatching(players, builder);
     }
 
@@ -101,17 +88,18 @@ public final class ArgumentSuggestion
             @Nullable ServerPlayerEntity player
     )
     {
-        ArrayList<String> names = new ArrayList<>();
         if (player != null)
         {
-            for (String s : TrustsObj.getTrustedPlayers(
-                    player.getUuidAsString() + " " + player.getName().getString()))
+            String playerNameUUID = player.getUuidAsString() + " " + player.getName().getString();
+            ArrayList<String> names = new ArrayList<>(TrustsObj.getTrustedPlayers(playerNameUUID).size());
+
+            for (String s : TrustsObj.getTrustedPlayers(playerNameUUID))
             {
-                String string = s.split(" ")[1];
-                names.add(string);
+                names.add(s.split(" ")[1]);
             }
+            return CommandSource.suggestMatching(names, builder);
         }
-        return CommandSource.suggestMatching(names, builder);
+        return CommandSource.suggestMatching(new ArrayList<>(0), builder);
     }
 
     /**
@@ -119,6 +107,7 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusting players
      */
+    @Contract("_, null -> new")
     public static CompletableFuture<Suggestions> getTrustingPlayersName(
             @NotNull SuggestionsBuilder builder,
             @Nullable ServerPlayerEntity player

@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2023-2024  -  Made by Aeldit
- *
- *              GNU LESSER GENERAL PUBLIC LICENSE
- *                  Version 3, 29 June 2007
- *
- *  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
- *  Everyone is permitted to copy and distribute verbatim copies
- *  of this license document, but changing it is not allowed.
- *
- *
- * This version of the GNU Lesser General Public License incorporates
- * the terms and conditions of version 3 of the GNU General Public
- * License, supplemented by the additional permissions listed in the LICENSE.txt file
- * in the repo of this mod (https://github.com/Aeldit/CyanSetHome)
- */
-
 package fr.aeldit.cyansh.homes;
 
 import com.google.gson.Gson;
@@ -35,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.aeldit.cyansh.CyanSHCore.*;
-import static fr.aeldit.cyansh.config.CyanSHConfig.MAX_HOMES;
+import static fr.aeldit.cyansh.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
 {
@@ -172,7 +155,7 @@ public class Homes
      */
     public List<String> getPlayersWithHomes(String excludedPlayer)
     {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>(homes.keySet().size());
         for (String key : homes.keySet())
         {
             if (!key.split(" ")[1].equals(excludedPlayer))
@@ -188,13 +171,13 @@ public class Homes
      */
     public List<String> getHomesNames(String playerKey)
     {
-        List<String> names = new ArrayList<>();
-
         if (homes.containsKey(playerKey))
         {
+            List<String> names = new ArrayList<>(homes.get(playerKey).size());
             homes.get(playerKey).forEach(home -> names.add(home.name));
+            return names;
         }
-        return names;
+        return new ArrayList<>(0);
     }
 
     /**
@@ -205,17 +188,16 @@ public class Homes
      */
     public List<String> getHomesNamesOf(String playerName)
     {
-        List<String> names = new ArrayList<>();
-
         for (String key : homes.keySet())
         {
             if (key.split(" ")[1].equals(playerName))
             {
+                List<String> names = new ArrayList<>(homes.get(playerName).size());
                 homes.get(key).forEach(home -> names.add(home.name));
-                break;
+                return names;
             }
         }
-        return names;
+        return new ArrayList<>(0);
     }
 
     /**
@@ -385,6 +367,7 @@ public class Homes
                     {
                         Gson gsonReader = new Gson();
                         Reader reader = Files.newBufferedReader(file.toPath());
+                        // TODO -> Don't use \\.
                         addPlayer(
                                 file.getName().split("\\.")[0],
                                 Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType)))
@@ -421,6 +404,7 @@ public class Homes
                         {
                             Gson gsonReader = new Gson();
                             Reader reader = Files.newBufferedReader(file.toPath());
+                            // TODO -> Don't use \\.
                             addPlayer(
                                     file.getName().split("\\.")[0], Collections.synchronizedList(
                                             new ArrayList<>(gsonReader.fromJson(reader, homesType))));

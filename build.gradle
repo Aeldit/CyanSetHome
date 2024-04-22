@@ -4,7 +4,6 @@ plugins {
     id "com.modrinth.minotaur" version "2.+"
 }
 
-archivesBaseName = project.archives_base_name
 version = project.mod_version + "+" + project.minecraft_version
 
 repositories {
@@ -47,14 +46,8 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release.set(17)
 }
 
-java {
-    // withSourcesJar()
-}
-
 jar {
-    from("LICENSE") {
-        rename { "${it}_${archivesBaseName}" }
-    }
+    from("LICENSE")
 }
 
 modrinth {

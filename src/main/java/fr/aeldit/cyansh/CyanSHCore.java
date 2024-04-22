@@ -1,26 +1,9 @@
-/*
- * Copyright (c) 2023  -  Made by Aeldit
- *
- *              GNU LESSER GENERAL PUBLIC LICENSE
- *                  Version 3, 29 June 2007
- *
- *  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
- *  Everyone is permitted to copy and distribute verbatim copies
- *  of this license document, but changing it is not allowed.
- *
- *
- * This version of the GNU Lesser General Public License incorporates
- * the terms and conditions of version 3 of the GNU General Public
- * License, supplemented by the additional permissions listed in the LICENSE.txt file
- * in the repo of this mod (https://github.com/Aeldit/CyanSetHome)
- */
-
 package fr.aeldit.cyansh;
 
 import fr.aeldit.cyanlib.lib.CyanLib;
 import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
 import fr.aeldit.cyanlib.lib.config.CyanLibOptionsStorage;
-import fr.aeldit.cyansh.config.CyanSHConfig;
+import fr.aeldit.cyansh.config.CyanLibConfigImpl;
 import fr.aeldit.cyansh.homes.Homes;
 import fr.aeldit.cyansh.homes.Trusts;
 import net.fabricmc.loader.api.FabricLoader;
@@ -36,19 +19,16 @@ import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
 
 public class CyanSHCore
 {
-    public static final String CYANSH_MODID = "cyansh";
-    public static final Logger CYANSH_LOGGER = LoggerFactory.getLogger(CYANSH_MODID);
-    public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(CYANSH_MODID);
+    public static final String MODID = "cyansh";
+    public static final Logger CYANSH_LOGGER = LoggerFactory.getLogger(MODID);
+    public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
 
-    public static Homes HomesObj = new Homes();
-    public static Trusts TrustsObj = new Trusts();
+    public static final Homes HomesObj = new Homes();
+    public static final Trusts TrustsObj = new Trusts();
 
-    public static CyanLibOptionsStorage CYANSH_OPTS_STORAGE = new CyanLibOptionsStorage(
-            CYANSH_MODID,
-            new CyanSHConfig()
-    );
-    public static CyanLibLanguageUtils CYANSH_LANG_UTILS = new CyanLibLanguageUtils(CYANSH_MODID);
-    public static CyanLib CYANSH_LIB_UTILS = new CyanLib(CYANSH_MODID, CYANSH_OPTS_STORAGE, CYANSH_LANG_UTILS);
+    public static CyanLibOptionsStorage CYANSH_OPTS_STORAGE = new CyanLibOptionsStorage(MODID, new CyanLibConfigImpl());
+    public static CyanLibLanguageUtils CYANSH_LANG_UTILS = new CyanLibLanguageUtils(MODID);
+    public static CyanLib CYANSH_LIB_UTILS = new CyanLib(MODID, CYANSH_OPTS_STORAGE, CYANSH_LANG_UTILS);
 
     public static void checkOrCreateHomesDir()
     {

@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2023-2024  -  Made by Aeldit
- *
- *              GNU LESSER GENERAL PUBLIC LICENSE
- *                  Version 3, 29 June 2007
- *
- *  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
- *  Everyone is permitted to copy and distribute verbatim copies
- *  of this license document, but changing it is not allowed.
- *
- *
- * This version of the GNU Lesser General Public License incorporates
- * the terms and conditions of version 3 of the GNU General Public
- * License, supplemented by the additional permissions listed in the LICENSE.txt file
- * in the repo of this mod (https://github.com/Aeldit/CyanSetHome)
- */
-
 package fr.aeldit.cyansh.commands;
 
 import com.mojang.brigadier.Command;
@@ -23,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansh.homes.Homes;
+import fr.aeldit.cyansh.util.TPUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -36,7 +20,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import static fr.aeldit.cyansh.CyanSHCore.*;
-import static fr.aeldit.cyansh.config.CyanSHConfig.*;
+import static fr.aeldit.cyansh.config.CyanLibConfigImpl.*;
 
 public class HomeCommands
 {
@@ -330,8 +314,27 @@ public class HomeCommands
                         Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
                         MinecraftServer server = player.getServer();
 
-                        if (home != null && server != null)
+                        if (home != null)
                         {
+                            int requiredXpLevel = 0;
+
+                            if (USE_XP_TO_TP_HOME.getValue())
+                            {
+                                requiredXpLevel = TPUtils.getRequiredXpLevelsToTp(player, player.getBlockPos(),
+                                        BLOCKS_PER_XP_LEVEL_HOME
+                                );
+
+                                if (player.experienceLevel < requiredXpLevel)
+                                {
+                                    CYANSH_LANG_UTILS.sendPlayerMessage(
+                                            player,
+                                            "cyan.msg.notEnoughXp",
+                                            Formatting.GOLD + String.valueOf(requiredXpLevel)
+                                    );
+                                    return 0;
+                                }
+                            }
+
                             switch (home.dimension())
                             {
                                 case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.x(),
@@ -344,6 +347,8 @@ public class HomeCommands
                                         home.z(), home.yaw(), home.pitch()
                                 );
                             }
+
+                            player.addExperienceLevels(-1 * requiredXpLevel);
 
                             CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
