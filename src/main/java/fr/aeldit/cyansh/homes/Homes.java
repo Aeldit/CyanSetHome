@@ -3,6 +3,7 @@ package fr.aeldit.cyansh.homes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,10 +23,77 @@ import static fr.aeldit.cyansh.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
 {
-    public record Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
+    public static class Home
     {
+        private String name;
+        private final String dimension;
+        private final double x;
+        private final double y;
+        private final double z;
+        private final float yaw;
+        private final float pitch;
+        private final String date;
+
+        @Contract(pure = true)
+        public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
+        {
+            this.name = name;
+            this.dimension = dimension;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.date = date;
+        }
+
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getDimension()
+        {
+            return dimension;
+        }
+
+        public double getX()
+        {
+            return x;
+        }
+
+        public double getY()
+        {
+            return y;
+        }
+
+        public double getZ()
+        {
+            return z;
+        }
+
+        public float getYaw()
+        {
+            return yaw;
+        }
+
+        public float getPitch()
+        {
+            return pitch;
+        }
+
+        public String getDate()
+        {
+            return date;
+        }
     }
 
+    // HashMap<playerName, List<Home>>
     private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
     private final TypeToken<List<Home>> homesType = new TypeToken<>()
     {
@@ -47,7 +115,7 @@ public class Homes
      */
     public boolean addHome(String playerKey, @NotNull Home home)
     {
-        if (!homeExists(playerKey, home.name()))
+        if (!homeExists(playerKey, home.getName()))
         {
             if (!homes.containsKey(playerKey))
             {
@@ -69,9 +137,10 @@ public class Homes
      */
     public boolean removeHome(@NotNull String playerKey, String homeName)
     {
-        if (homeExists(playerKey, homeName))
+        Home home = getHome(playerKey, homeName);
+        if (home != null)
         {
-            homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+            homes.get(playerKey).remove(home);
             writeHomes(playerKey);
 
             return true;
@@ -106,38 +175,15 @@ public class Homes
      */
     public boolean rename(String playerKey, String homeName, String newHomeName)
     {
-        if (homeExists(playerKey, homeName))
+        Home home = getHome(playerKey, homeName);
+        if (home != null)
         {
-            Home tmpHome = homes.get(playerKey).get(getHomeIndex(playerKey, homeName));
-            // If we try to rename the home with the name of a home that already exists
-            if (!addHome(playerKey, new Home(newHomeName,
-                    tmpHome.dimension, tmpHome.x, tmpHome.y, tmpHome.z, tmpHome.yaw,
-                    tmpHome.pitch, tmpHome.date
-            )))
-            {
-                return false;
-            }
-            homes.get(playerKey).remove(getHomeIndex(playerKey, homeName));
+            home.setName(newHomeName);
             writeHomes(playerKey);
 
             return true;
         }
         return false;
-    }
-
-    /**
-     * Can be called if and only if the result of {@link Homes#homeExists} is true
-     *
-     * @return The home with the name {@code homeName}
-     */
-    public @Nullable Home getPlayerHome(String playerName, String homeName)
-    {
-        int idx = getHomeIndex(playerName, homeName);
-        if (idx != -1)
-        {
-            return homes.get(playerName).get(idx);
-        }
-        return null;
     }
 
     /**
@@ -201,24 +247,6 @@ public class Homes
     }
 
     /**
-     * Returns the index of the home named {@code homeName} belonging
-     * to the player whose key is {@code playerKey}
-     *
-     * @return The index of the given home if it exists | {@code -1} otherwise
-     */
-    private int getHomeIndex(String playerKey, String homeName)
-    {
-        for (Home home : homes.get(playerKey))
-        {
-            if (home.name.equals(homeName))
-            {
-                return homes.get(playerKey).indexOf(home);
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Returns the key associated with the name {@code playerName}
      */
     public String getKeyFromName(String playerName)
@@ -272,17 +300,7 @@ public class Homes
      */
     public boolean homeExists(String playerKey, String homeName)
     {
-        if (homes.containsKey(playerKey))
-        {
-            for (Home home : homes.get(playerKey))
-            {
-                if (home.name.equals(homeName))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return getHome(playerKey, homeName) != null;
     }
 
     /**
@@ -301,12 +319,37 @@ public class Homes
                         return true;
                     }
                 }
+                break;
             }
         }
         return false;
     }
 
-    public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)
+    /**
+     * Returns the index of the home named {@code homeName} belonging
+     * to the player whose key is {@code playerKey}
+     *
+     * @return The index of the given home if it exists | {@code -1} otherwise
+     */
+    public @Nullable Home getHome(String playerKey, String homeName)
+    {
+        for (Home home : homes.get(playerKey))
+        {
+            if (home.name.equals(homeName))
+            {
+                return home;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Renames the username for each UUID if the username currently associated with the UUID is not the same in the file
+     *
+     * @param playerUUID The player's UUID
+     * @param playerName The player's username
+     */
+    public void renameChangedUsernames(String playerUUID, String playerName)
     {
         if (Files.exists(HOMES_PATH))
         {
@@ -314,6 +357,7 @@ public class Homes
 
             if (listOfFiles != null)
             {
+                String playerKey = playerUUID + " " + playerName;
                 for (File file : listOfFiles)
                 {
                     if (file.isFile())

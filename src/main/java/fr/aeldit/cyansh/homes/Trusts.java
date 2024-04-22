@@ -95,7 +95,7 @@ public class Trusts
         }
     }
 
-    public void renameChangedUsernames(String playerKey, String playerUUID, String playerName)
+    public void renameChangedUsernames(String playerUUID, String playerName)
     {
 
         if (Files.exists(TRUST_PATH))
@@ -105,6 +105,7 @@ public class Trusts
 
             if (isNotEmpty())
             {
+                String playerKey = playerUUID + " " + playerName;
                 for (String key : trusts.keySet())
                 {
                     // Changes the player username when it is a key

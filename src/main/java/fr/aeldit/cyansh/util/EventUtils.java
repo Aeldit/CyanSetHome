@@ -19,9 +19,8 @@ public class EventUtils
     {
         String playerUUID = handler.getPlayer().getUuidAsString();
         String playerName = handler.getPlayer().getName().getString();
-        String playerKey = playerUUID + " " + playerName;
 
-        HomesObj.renameChangedUsernames(playerKey, playerUUID, playerName);
-        TrustsObj.renameChangedUsernames(playerKey, playerUUID, playerName);
+        HomesObj.renameChangedUsernames(playerUUID, playerName);
+        TrustsObj.renameChangedUsernames(playerUUID, playerName);
     }
 }

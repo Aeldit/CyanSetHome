@@ -404,7 +404,7 @@ public class HomeOfCommands
 
                     if (HomesObj.homeExistsFromName(trustingPlayer, homeName))
                     {
-                        Homes.Home home = HomesObj.getPlayerHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
+                        Homes.Home home = HomesObj.getHome(HomesObj.getKeyFromName(trustingPlayer), homeName);
                         MinecraftServer server = player.getServer();
 
                         if (home != null && server != null)
@@ -428,16 +428,16 @@ public class HomeOfCommands
                                 }
                             }
 
-                            switch (home.dimension())
+                            switch (home.getDimension())
                             {
-                                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.x(),
-                                        home.y(), home.z(), home.yaw(), home.pitch()
+                                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.getX(),
+                                        home.getY(), home.getZ(), home.getYaw(), home.getPitch()
                                 );
-                                case "nether" -> player.teleport(server.getWorld(World.NETHER), home.x(), home.y(),
-                                        home.z(), home.yaw(), home.pitch()
+                                case "nether" -> player.teleport(server.getWorld(World.NETHER), home.getX(),
+                                        home.getY(), home.getZ(), home.getYaw(), home.getPitch()
                                 );
-                                case "end" -> player.teleport(server.getWorld(World.END), home.x(), home.y(),
-                                        home.z(), home.yaw(), home.pitch()
+                                case "end" -> player.teleport(server.getWorld(World.END), home.getX(),
+                                        home.getY(), home.getZ(), home.getYaw(), home.getPitch()
                                 );
                             }
 
@@ -513,9 +513,9 @@ public class HomeOfCommands
                                                 player,
                                                 "cyansh.msg.getHome",
                                                 false,
-                                                Formatting.YELLOW + home.name(),
-                                                Formatting.DARK_AQUA + home.dimension(),
-                                                Formatting.DARK_AQUA + home.date()
+                                                Formatting.YELLOW + home.getName(),
+                                                Formatting.DARK_AQUA + home.getDimension(),
+                                                Formatting.DARK_AQUA + home.getDate()
                                         )
                                 );
 

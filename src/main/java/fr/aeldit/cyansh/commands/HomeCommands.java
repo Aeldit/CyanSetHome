@@ -311,7 +311,7 @@ public class HomeCommands
 
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
-                        Homes.Home home = HomesObj.getPlayerHome(playerKey, homeName);
+                        Homes.Home home = HomesObj.getHome(playerKey, homeName);
                         MinecraftServer server = player.getServer();
 
                         if (home != null)
@@ -335,16 +335,16 @@ public class HomeCommands
                                 }
                             }
 
-                            switch (home.dimension())
+                            switch (home.getDimension())
                             {
-                                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.x(),
-                                        home.y(), home.z(), home.yaw(), home.pitch()
+                                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.getX(),
+                                        home.getY(), home.getZ(), home.getYaw(), home.getPitch()
                                 );
-                                case "nether" -> player.teleport(server.getWorld(World.NETHER), home.x(), home.y(),
-                                        home.z(), home.yaw(), home.pitch()
+                                case "nether" -> player.teleport(server.getWorld(World.NETHER), home.getX(),
+                                        home.getY(), home.getZ(), home.getYaw(), home.getPitch()
                                 );
-                                case "end" -> player.teleport(server.getWorld(World.END), home.x(), home.y(),
-                                        home.z(), home.yaw(), home.pitch()
+                                case "end" -> player.teleport(server.getWorld(World.END), home.getX(),
+                                        home.getY(), home.getZ(), home.getYaw(), home.getPitch()
                                 );
                             }
 
@@ -406,9 +406,9 @@ public class HomeCommands
                                                 player,
                                                 "cyansh.msg.getHome",
                                                 false,
-                                                Formatting.YELLOW + home.name(),
-                                                Formatting.DARK_AQUA + home.dimension(),
-                                                Formatting.DARK_AQUA + home.date()
+                                                Formatting.YELLOW + home.getName(),
+                                                Formatting.DARK_AQUA + home.getDimension(),
+                                                Formatting.DARK_AQUA + home.getDate()
                                         )
                                 );
 
