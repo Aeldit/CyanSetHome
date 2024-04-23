@@ -27,16 +27,6 @@ public class Trusts
     private boolean isEditingFile = false;
     public static Path TRUST_PATH = Path.of(MOD_PATH + "/trusted_players.json");
 
-    public ConcurrentHashMap<String, List<String>> getTrusts()
-    {
-        return trusts;
-    }
-
-    public void setTrusts(ConcurrentHashMap<String, List<String>> trusts)
-    {
-        this.trusts.putAll(trusts);
-    }
-
     /**
      * Adds {@code trustedPlayerKey} in the list of trusted players of {@code trustingPlayerKey}
      * and calls the {@link #write()} function
