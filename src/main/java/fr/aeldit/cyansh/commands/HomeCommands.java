@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansh.homes.Homes;
-import fr.aeldit.cyansh.util.TPUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -19,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Objects;
 
+import static fr.aeldit.cyanlib.lib.utils.TPUtils.getRequiredXpLevelsToTp;
 import static fr.aeldit.cyansh.CyanSHCore.*;
 import static fr.aeldit.cyansh.config.CyanLibConfigImpl.*;
 
@@ -320,7 +320,7 @@ public class HomeCommands
 
                             if (USE_XP_TO_TP_HOME.getValue())
                             {
-                                requiredXpLevel = TPUtils.getRequiredXpLevelsToTp(player, player.getBlockPos(),
+                                requiredXpLevel = getRequiredXpLevelsToTp(player, player.getBlockPos(),
                                         BLOCKS_PER_XP_LEVEL_HOME
                                 );
 
