@@ -10,12 +10,12 @@ or
 <details>
 <summary>🎴 Show available versions</summary>
 
-|  MC Version   | Up to date | Latest Version |
-|:-------------:|:----------:|:--------------:|
-| 1.19 - 1.19.2 |     ❌      |     0.1.4      |
-|    1.19.3     |     ❌      |     0.1.0      |
-|    1.19.4     |     ✅      |     latest     |
-| 1.20 - 1.20.4 |     ✅      |     latest     |
+|   MC Version    | Up to date | Latest Version |
+|:---------------:|:----------:|:--------------:|
+|  1.19 - 1.19.2  |     ❌      |     0.1.4      |
+|     1.19.3      |     ❌      |     0.1.0      |
+|     1.19.4      |     ✅      |     latest     |
+| 1.20.2 - 1.20.5 |     ✅      |     latest     |
 
 </details>
 

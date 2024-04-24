@@ -1,14 +1,14 @@
 package fr.aeldit.cyansh.config;
 
 import fr.aeldit.cyanlib.lib.config.BooleanOption;
-import fr.aeldit.cyanlib.lib.config.CyanLibConfig;
+import fr.aeldit.cyanlib.lib.config.ICyanLibConfig;
 import fr.aeldit.cyanlib.lib.config.IntegerOption;
 import fr.aeldit.cyanlib.lib.utils.RULES;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CyanLibConfigImpl implements CyanLibConfig
+public class CyanLibConfigImpl implements ICyanLibConfig
 {
     public static final BooleanOption ALLOW_HOMES = new BooleanOption("allowHomes", true);
     public static final BooleanOption ALLOW_BYPASS = new BooleanOption("allowByPass", false);
