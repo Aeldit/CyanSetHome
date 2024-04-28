@@ -134,10 +134,8 @@ public class HomeCommands
                     {
                         if (HomesObj.addHome(
                                 playerKey,
-                                new Homes.Home(homeName, player.getWorld().getDimensionKey()
-                                        .getValue()
-                                        .toString()
-                                        .toString().replace("minecraft:", "").replace("the_", ""),
+                                new Homes.Home(homeName, player.getWorld().getDimensionEntry().getIdAsString()
+                                        .replace("minecraft:", "").replace("the_", ""),
                                         player.getX(), player.getY(), player.getZ(),
                                         player.getYaw(), player.getPitch(),
                                         new SimpleDateFormat("dd/MM/yyyy HH:mm").format(
