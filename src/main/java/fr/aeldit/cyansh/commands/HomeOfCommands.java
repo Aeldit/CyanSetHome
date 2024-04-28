@@ -203,7 +203,7 @@ public class HomeOfCommands
 
             if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
-                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
                         && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 )
                 {
@@ -260,7 +260,7 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
                         && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 )
                 {
@@ -303,9 +303,9 @@ public class HomeOfCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
-                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
                         && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 )
                 {
@@ -346,7 +346,7 @@ public class HomeOfCommands
             {
                 String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "cyansh.error.bypassDisabled")
+                if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
                         && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 )
                 {
@@ -411,7 +411,7 @@ public class HomeOfCommands
                         {
                             int requiredXpLevel = 0;
 
-                            if (USE_XP_TO_TP_HOME.getValue())
+                            if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
                             {
                                 requiredXpLevel = getRequiredXpLevelsToTp(player, player.getBlockPos(),
                                         BLOCKS_PER_XP_LEVEL_HOME
@@ -421,7 +421,7 @@ public class HomeOfCommands
                                 {
                                     CYANSH_LANG_UTILS.sendPlayerMessage(
                                             player,
-                                            "cyan.msg.notEnoughXp",
+                                            "cyansh.error.notEnoughXp",
                                             Formatting.GOLD + String.valueOf(requiredXpLevel)
                                     );
                                     return 0;
@@ -488,7 +488,7 @@ public class HomeOfCommands
 
                 if (player.getName().getString().equals(trustingPlayer))
                 {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.msg.useSelfHomes");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.useSelfHomes");
                 }
                 else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
                         || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())

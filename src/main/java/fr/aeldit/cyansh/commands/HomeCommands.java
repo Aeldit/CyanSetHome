@@ -123,7 +123,7 @@ public class HomeCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
@@ -182,7 +182,7 @@ public class HomeCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
@@ -224,7 +224,7 @@ public class HomeCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
@@ -259,7 +259,7 @@ public class HomeCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
@@ -302,7 +302,7 @@ public class HomeCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
@@ -318,7 +318,7 @@ public class HomeCommands
                         {
                             int requiredXpLevel = 0;
 
-                            if (USE_XP_TO_TP_HOME.getValue())
+                            if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
                             {
                                 requiredXpLevel = getRequiredXpLevelsToTp(player, player.getBlockPos(),
                                         BLOCKS_PER_XP_LEVEL_HOME
@@ -328,7 +328,7 @@ public class HomeCommands
                                 {
                                     CYANSH_LANG_UTILS.sendPlayerMessage(
                                             player,
-                                            "cyan.msg.notEnoughXp",
+                                            "cyansh.error.notEnoughXp",
                                             Formatting.GOLD + String.valueOf(requiredXpLevel)
                                     );
                                     return 0;
@@ -382,7 +382,7 @@ public class HomeCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
-            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "disabled.homes"))
+            if (CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {

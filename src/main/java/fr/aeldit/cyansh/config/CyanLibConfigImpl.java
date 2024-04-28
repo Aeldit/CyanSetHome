@@ -46,6 +46,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
         translations.put("cyansh.error.noHomesOf", "§cThis player doesn't have any home");
         translations.put("cyansh.error.useSelfHomes", "§cPlease use the normal commands to use your homes");
         translations.put("cyansh.error.bypassDisabled", "§cThe ByPass option is disabled or you are not OP level 4");
+        translations.put("cyansh.error.notEnoughXp", "§cYou don't have enough XP (%s §clevels are required)");
 
         // MESSAGES
         translations.put("cyansh.msg.setHome", "§3The home %s §3have been created");
