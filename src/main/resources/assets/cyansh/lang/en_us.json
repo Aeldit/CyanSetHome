@@ -10,5 +10,6 @@
   "cyanlib.config.option.maxHomes": "MaxHomes",
   "cyanlib.config.option.minOpLvlBypass": "MinOpLvlBypass",
   "cyanlib.config.option.minOpLvlHomes": "MinOpLvlHomes",
-  "cyanlib.config.option.useCustomTranslations": "UseCustomTranslations"
+  "cyanlib.config.option.useXpToTpHome": "UseXpToTpHome",
+  "cyanlib.config.option.blockPerXpLevelHome": "BlockPerXpLevelHome"
 }
