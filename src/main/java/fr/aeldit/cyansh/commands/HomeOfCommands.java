@@ -216,7 +216,9 @@ public class HomeOfCommands
                         if (HomesObj.addHome(
                                 playerKey,
                                 new Homes.Home(homeName,
-                                        player.getWorld().getDimensionEntry().getIdAsString()
+                                        player.getWorld().getDimensionKey()
+                                                .getValue()
+                                                .toString()
                                                 .toString().replace("minecraft:", "").replace("the_", ""),
                                         player.getX(), player.getY(), player.getZ(), player.getYaw(),
                                         player.getPitch(),
