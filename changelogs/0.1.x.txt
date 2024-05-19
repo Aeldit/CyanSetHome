@@ -68,3 +68,6 @@
 
     - The `/home-trust` command would not write the file when executed
     - Some translations were missing/incorrect
+
+0.1.7 :
+    Update to CyanLib 0.4.9 to fix the config not being written when changed from the chat
