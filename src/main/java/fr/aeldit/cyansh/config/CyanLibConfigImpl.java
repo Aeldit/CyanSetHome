@@ -54,7 +54,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
         translations.put("cyansh.msg.removeHome", "§3The home %s §3have been removed");
         translations.put("cyansh.msg.removeHomeOf", "§3The home %s §3have been removed from %s§3's homes");
         translations.put("cyansh.msg.removeAllHomes", "§3All your homes have been removed");
-        translations.put("cyansh.msg.removeAllHomesOf", "§3All %s's homes have been removed");
+        translations.put("cyansh.msg.removeAllHomesOf", "§3All %s§3's homes have been removed");
         translations.put("cyansh.msg.renameHome", "§3The home %s §3have been renamed to %s");
         translations.put("cyansh.msg.renameHomeOf", "§3The home %s §3have been renamed to %s §3for the player %s");
         translations.put("cyansh.msg.goToHome", "§3You have been teleported to the home %s");

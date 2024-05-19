@@ -1,1 +1,1 @@
-Update to CyanLib 0.4.9 to fix the config not being written when changed from the chat
+Fix issue [#3](https://github.com/Aeldit/CyanSetHome/issues/3)
