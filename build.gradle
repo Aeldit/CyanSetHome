@@ -63,7 +63,7 @@ modrinth {
 
     uploadFile = remapJar
 
-    gameVersions = ["1.20.5"]
+    gameVersions = ["1.20.6"]
     loaders = ["fabric"]
 
     dependencies {
