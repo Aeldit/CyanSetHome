@@ -28,10 +28,6 @@
   },
   "depends": {
     "fabricloader": ">=0.15.10",
-    "fabric-resource-loader-v0": "*",
-    "fabric-lifecycle-events-v1": "*",
-    "fabric-networking-api-v1": "*",
-    "fabric-command-api-v2": "*",
     "minecraft": "1.20.6",
     "java": ">=21"
   },

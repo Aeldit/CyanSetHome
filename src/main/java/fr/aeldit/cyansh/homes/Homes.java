@@ -333,11 +333,14 @@ public class Homes
      */
     public @Nullable Home getHome(String playerKey, String homeName)
     {
-        for (Home home : homes.getOrDefault(playerKey, new ArrayList<>(0)))
+        if (homes.containsKey(playerKey))
         {
-            if (home.name.equals(homeName))
+            for (Home home : homes.get(playerKey))
             {
-                return home;
+                if (home.name.equals(homeName))
+                {
+                    return home;
+                }
             }
         }
         return null;
