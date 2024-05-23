@@ -26,13 +26,10 @@ public class Homes
     public static class Home
     {
         private String name;
-        private final String dimension;
-        private final double x;
-        private final double y;
-        private final double z;
+        private final String dimension, date;
+        private final double x, y, z;
         private final float yaw;
         private final float pitch;
-        private final String date;
 
         @Contract(pure = true)
         public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
