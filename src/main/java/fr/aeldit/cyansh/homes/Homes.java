@@ -218,15 +218,18 @@ public class Homes
     /**
      * @return An ArrayList containing all the homes names of the player {@code playerName}
      */
-    public List<String> getHomesNames(String playerKey)
+    public @Nullable List<String> getHomesNames(String playerKey)
     {
         if (homes.containsKey(playerKey))
         {
             List<String> names = new ArrayList<>(homes.get(playerKey).size());
-            homes.get(playerKey).forEach(home -> names.add(home.name));
+            for (Home home : homes.get(playerKey))
+            {
+                names.add(home.name);
+            }
             return names;
         }
-        return new ArrayList<>(0);
+        return null;
     }
 
     /**
@@ -235,18 +238,21 @@ public class Homes
      *
      * @return An ArrayList containing all the homes names of the player {@code playerName}
      */
-    public List<String> getHomesNamesOf(String playerName)
+    public @Nullable List<String> getHomesNamesOf(String playerName)
     {
         for (String key : homes.keySet())
         {
             if (key.split(" ")[1].equals(playerName))
             {
                 List<String> names = new ArrayList<>(homes.get(playerName).size());
-                homes.get(key).forEach(home -> names.add(home.name));
+                for (Home home : homes.get(key))
+                {
+                    names.add(home.name);
+                }
                 return names;
             }
         }
-        return new ArrayList<>(0);
+        return null;
     }
 
     /**

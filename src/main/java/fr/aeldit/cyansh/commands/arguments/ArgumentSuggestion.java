@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static fr.aeldit.cyansh.CyanSHCore.HomesObj;
@@ -29,8 +29,14 @@ public final class ArgumentSuggestion
             @NotNull ServerPlayerEntity player
     )
     {
-        return CommandSource.suggestMatching(
-                HomesObj.getHomesNames(player.getUuidAsString() + " " + player.getName().getString()), builder);
+        List<String> names = HomesObj.getHomesNames("%s %s".formatted(player.getUuidAsString(),
+                player.getName().getString()
+        ));
+        if (names != null)
+        {
+            return CommandSource.suggestMatching(names, builder);
+        }
+        return new CompletableFuture<>();
     }
 
     /**
@@ -39,7 +45,7 @@ public final class ArgumentSuggestion
      * @return A suggestion with all the trusting player's homes
      */
     @Contract("_, null, _ -> new")
-    public static CompletableFuture<Suggestions> getHomesOf(
+    public static @NotNull CompletableFuture<Suggestions> getHomesOf(
             @NotNull SuggestionsBuilder builder,
             @Nullable ServerPlayerEntity player,
             @NotNull String trustingPlayer
@@ -47,10 +53,16 @@ public final class ArgumentSuggestion
     {
         if (player != null)
         {
-            return (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4)) || TrustsObj.isPlayerTrustingFromName(
-                    trustingPlayer, player.getName().getString())
-                   ? CommandSource.suggestMatching(HomesObj.getHomesNamesOf(trustingPlayer), builder)
-                   : new CompletableFuture<>();
+            if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4))
+                    || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+            )
+            {
+                List<String> homesNames = HomesObj.getHomesNamesOf(trustingPlayer);
+                if (homesNames != null)
+                {
+                    CommandSource.suggestMatching(homesNames, builder);
+                }
+            }
         }
         return new CompletableFuture<>();
     }
@@ -65,17 +77,22 @@ public final class ArgumentSuggestion
             @NotNull ServerCommandSource source
     )
     {
-        ArrayList<String> players = new ArrayList<>(source.getServer().getPlayerManager().getPlayerList().size() - 1);
-        String playerName = Objects.requireNonNull(source.getPlayer()).getName().getString();
-
-        for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
+        if (source.getPlayer() != null)
         {
-            if (!playerName.equals(player.getName().getString()))
+            ArrayList<String> players =
+                    new ArrayList<>(source.getServer().getPlayerManager().getPlayerList().size() - 1);
+            String playerName = source.getPlayer().getName().getString();
+
+            for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList())
             {
-                players.add(player.getName().getString());
+                if (!playerName.equals(player.getName().getString()))
+                {
+                    players.add(player.getName().getString());
+                }
             }
+            return CommandSource.suggestMatching(players, builder);
         }
-        return CommandSource.suggestMatching(players, builder);
+        return new CompletableFuture<>();
     }
 
     /**
@@ -83,6 +100,7 @@ public final class ArgumentSuggestion
      *
      * @return A suggestion with all the trusted players
      */
+    @Contract("_, null -> new")
     public static CompletableFuture<Suggestions> getTrustedPlayersName(
             @NotNull SuggestionsBuilder builder,
             @Nullable ServerPlayerEntity player
@@ -90,7 +108,7 @@ public final class ArgumentSuggestion
     {
         if (player != null)
         {
-            String playerNameUUID = player.getUuidAsString() + " " + player.getName().getString();
+            String playerNameUUID = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
             ArrayList<String> names = new ArrayList<>(TrustsObj.getTrustedPlayers(playerNameUUID).size());
 
             for (String s : TrustsObj.getTrustedPlayers(playerNameUUID))
@@ -99,7 +117,7 @@ public final class ArgumentSuggestion
             }
             return CommandSource.suggestMatching(names, builder);
         }
-        return CommandSource.suggestMatching(new ArrayList<>(0), builder);
+        return new CompletableFuture<>();
     }
 
     /**
@@ -115,12 +133,21 @@ public final class ArgumentSuggestion
     {
         if (player != null)
         {
-            return player.hasPermissionLevel(4) && ALLOW_BYPASS.getValue()
-                   ? CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()), builder)
-                   : CommandSource.suggestMatching(
-                           TrustsObj.getTrustingPlayers(player.getUuidAsString() + " " + player.getName().getString()),
-                           builder
-                   );
+            if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4))
+            {
+                return CommandSource.suggestMatching(HomesObj.getPlayersWithHomes(player.getName().getString()),
+                        builder
+                );
+            }
+            else
+            {
+                CommandSource.suggestMatching(
+                        TrustsObj.getTrustingPlayers("%s %s".formatted(player.getUuidAsString(),
+                                player.getName().getString()
+                        )),
+                        builder
+                );
+            }
         }
         return new CompletableFuture<>();
     }
