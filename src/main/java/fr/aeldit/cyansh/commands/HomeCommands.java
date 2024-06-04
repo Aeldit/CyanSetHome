@@ -129,7 +129,7 @@ public class HomeCommands
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+                    String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
                     if (HomesObj.maxHomesNotReached(playerKey))
                     {
@@ -189,7 +189,7 @@ public class HomeCommands
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+                    String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
                     if (HomesObj.removeHome(playerKey, homeName))
                     {
@@ -230,7 +230,7 @@ public class HomeCommands
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
-                    if (HomesObj.removeAll(player.getUuidAsString() + " " + player.getName().getString()))
+                    if (HomesObj.removeAll("%s %s".formatted(player.getUuidAsString(), player.getName().getString())))
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
@@ -268,7 +268,7 @@ public class HomeCommands
                     String homeName = StringArgumentType.getString(context, "home_name");
                     String newHomeName = StringArgumentType.getString(context, "new_home_name");
 
-                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+                    String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
                     if (HomesObj.rename(playerKey, homeName, newHomeName))
                     {
@@ -309,14 +309,14 @@ public class HomeCommands
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
                     String homeName = StringArgumentType.getString(context, "home_name");
-                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+                    String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
                     if (HomesObj.homeExists(playerKey, homeName))
                     {
                         Homes.Home home = HomesObj.getHome(playerKey, homeName);
                         MinecraftServer server = player.getServer();
 
-                        if (home != null)
+                        if (home != null && server != null)
                         {
                             int requiredXpLevel = 0;
 
@@ -388,7 +388,7 @@ public class HomeCommands
             {
                 if (CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue()))
                 {
-                    String playerKey = player.getUuidAsString() + " " + player.getName().getString();
+                    String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
                     if (!HomesObj.isEmpty(playerKey))
                     {

@@ -68,8 +68,8 @@ public class PermissionCommands
                 String trustingPlayer = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
                 String trustedPlayer =
                         "%s %s".formatted(source.getServer().getPlayerManager().getPlayer(playerName).getUuid(),
-                        playerName
-                );
+                                playerName
+                        );
 
                 if (!trustingPlayer.equals(trustedPlayer))
                 {
@@ -211,11 +211,11 @@ public class PermissionCommands
         {
             if (i == trustedPlayers.size() - 1)
             {
-                players = players.concat(", %s".formatted(trustedPlayers.get(i).split(" ")[1]));
+                players = players.concat("%s".formatted(trustedPlayers.get(i).split(" ")[1]));
             }
             else
             {
-                players = players.concat(", %s,".formatted(trustedPlayers.get(i).split(" ")[1]));
+                players = players.concat("%s, ".formatted(trustedPlayers.get(i).split(" ")[1]));
             }
         }
         return players;

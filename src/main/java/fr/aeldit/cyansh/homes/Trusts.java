@@ -26,7 +26,7 @@ public class Trusts
     {
     };
     private boolean isEditingFile = false;
-    public static Path TRUST_PATH = Path.of(MOD_PATH + "/trusted_players.json");
+    public static Path TRUST_PATH = Path.of("%s/trusted_players.json".formatted(MOD_PATH));
 
     /**
      * Adds {@code trustedPlayerKey} in the list of trusted players of {@code trustingPlayerKey}
@@ -219,7 +219,7 @@ public class Trusts
 
     public void readClient()
     {
-        TRUST_PATH = Path.of(HOMES_PATH + "/trusted_players.json");
+        TRUST_PATH = Path.of("%s/trusted_players.json".formatted(HOMES_PATH));
 
         if (Files.exists(TRUST_PATH))
         {

@@ -96,7 +96,7 @@ public class Homes
     {
     };
     private final List<String> editingFiles = Collections.synchronizedList(new ArrayList<>());
-    public static Path HOMES_PATH = Path.of(MOD_PATH + "/homes");
+    public static Path HOMES_PATH = Path.of("%s/homes".formatted(MOD_PATH));
 
     /**
      * Adds an entry to the map {@code homes} with all the player's homes
@@ -369,7 +369,7 @@ public class Homes
 
             if (listOfFiles != null)
             {
-                String playerKey = playerUUID + " " + playerName;
+                String playerKey = "%s %s".formatted(playerUUID, playerName);
                 for (File file : listOfFiles)
                 {
                     if (file.isFile())
@@ -378,16 +378,16 @@ public class Homes
                         String[] splitFileNameOld = file.getName().split("_");
 
                         if (splitFileName[0].equals(playerUUID)
-                                && !splitFileName[1].equals(playerName + ".json")
+                                && !splitFileName[1].equals("%s.json".formatted(playerName))
                                 || (splitFileNameOld.length == 2 && splitFileNameOld[0].equals(
-                                playerUUID) && !splitFileNameOld[1].equals(playerName + ".json"))
+                                playerUUID) && !splitFileNameOld[1].equals("%s.json".formatted(playerName)))
                         )
                         {
                             try
                             {
                                 Files.move(
-                                        file.toPath(), Path.of(HOMES_PATH + "\\" + playerKey + ".json")
-                                                .resolveSibling(playerKey + ".json"));
+                                        file.toPath(), Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey))
+                                                .resolveSibling("%s.json".formatted(playerKey)));
                                 CYANSH_LOGGER.info(
                                         "[CyanSetHome] Rename the file '{}' to '{}' because the player changed its " +
                                                 "pseudo",
