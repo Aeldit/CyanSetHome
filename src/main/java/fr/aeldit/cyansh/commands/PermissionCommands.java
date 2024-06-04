@@ -65,9 +65,11 @@ public class PermissionCommands
             }
             else
             {
-                String trustingPlayer = player.getUuidAsString() + " " + player.getName().getString();
-                String trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName)
-                        .getUuid() + " " + playerName;
+                String trustingPlayer = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
+                String trustedPlayer =
+                        "%s %s".formatted(source.getServer().getPlayerManager().getPlayer(playerName).getUuid(),
+                        playerName
+                );
 
                 if (!trustingPlayer.equals(trustedPlayer))
                 {
@@ -143,7 +145,7 @@ public class PermissionCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
             ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(
-                    player.getUuidAsString() + " " + player.getName().getString());
+                    "%s %s".formatted(player.getUuidAsString(), player.getName().getString()));
 
             if (!trustingPlayers.isEmpty())
             {
@@ -175,9 +177,9 @@ public class PermissionCommands
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
             List<String> trustedPlayers = TrustsObj.getTrustedPlayers(
-                    player.getUuidAsString() + " " + player.getName().getString());
+                    "%s %s".formatted(player.getUuidAsString(), player.getName().getString()));
 
-            if (!trustedPlayers.isEmpty())
+            if (trustedPlayers != null && !trustedPlayers.isEmpty())
             {
                 String players = getPlayers(trustedPlayers);
 
@@ -196,18 +198,18 @@ public class PermissionCommands
         return Command.SINGLE_SUCCESS;
     }
 
-    @NotNull
-    private static String getPlayers(@NotNull List<String> trustedPlayers)
+    private static @NotNull String getPlayers(@NotNull List<String> trustedPlayers) // TODO -> Test if this still works
     {
+        if (trustedPlayers.size() == 1)
+        {
+            return trustedPlayers.get(0);
+        }
+
         String players = "";
 
-        for (int i = 0; i < trustedPlayers.size(); i++)
+        for (int i = 0; i < trustedPlayers.size(); ++i)
         {
-            if (trustedPlayers.size() == 1)
-            {
-                players = players.concat("%s".formatted(trustedPlayers.get(i).split(" ")[1]));
-            }
-            else if (i == trustedPlayers.size() - 1)
+            if (i == trustedPlayers.size() - 1)
             {
                 players = players.concat(", %s".formatted(trustedPlayers.get(i).split(" ")[1]));
             }

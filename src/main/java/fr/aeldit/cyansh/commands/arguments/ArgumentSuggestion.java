@@ -109,13 +109,17 @@ public final class ArgumentSuggestion
         if (player != null)
         {
             String playerNameUUID = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
-            ArrayList<String> names = new ArrayList<>(TrustsObj.getTrustedPlayers(playerNameUUID).size());
+            List<String> trustedPlayers = TrustsObj.getTrustedPlayers(playerNameUUID);
 
-            for (String s : TrustsObj.getTrustedPlayers(playerNameUUID))
+            if (trustedPlayers != null)
             {
-                names.add(s.split(" ")[1]);
+                ArrayList<String> names = new ArrayList<>(trustedPlayers.size());
+                for (String s : trustedPlayers)
+                {
+                    names.add(s.split(" ")[1]);
+                }
+                return CommandSource.suggestMatching(names, builder);
             }
-            return CommandSource.suggestMatching(names, builder);
         }
         return new CompletableFuture<>();
     }

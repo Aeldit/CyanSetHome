@@ -3,6 +3,7 @@ package fr.aeldit.cyansh.homes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -87,7 +88,6 @@ public class Trusts
 
     public void renameChangedUsernames(String playerUUID, String playerName)
     {
-
         if (Files.exists(TRUST_PATH))
         {
             boolean changed = false;
@@ -95,7 +95,7 @@ public class Trusts
 
             if (isNotEmpty())
             {
-                String playerKey = playerUUID + " " + playerName;
+                String playerKey = "%s %s".formatted(playerUUID, playerName);
                 for (String key : trusts.keySet())
                 {
                     // Changes the player username when it is a key
@@ -160,9 +160,13 @@ public class Trusts
      *
      * @param playerKey The player key (in the form {@code "playerUUID playerName"})
      */
-    public List<String> getTrustedPlayers(String playerKey)
+    public @Nullable List<String> getTrustedPlayers(String playerKey)
     {
-        return trusts.containsKey(playerKey) ? trusts.get(playerKey) : new ArrayList<>(0);
+        if (trusts.containsKey(playerKey))
+        {
+            return trusts.get(playerKey);
+        }
+        return null;
     }
 
     /**
