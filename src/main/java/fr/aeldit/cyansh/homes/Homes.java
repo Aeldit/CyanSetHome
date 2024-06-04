@@ -101,7 +101,7 @@ public class Homes
     /**
      * Adds an entry to the map {@code homes} with all the player's homes
      */
-    public void addPlayer(String playerKey, List<Home> playerHomes)
+    public void addPlayerHomes(String playerKey, List<Home> playerHomes)
     {
         homes.put(playerKey, playerHomes);
         writeHomes(playerKey);
@@ -138,6 +138,11 @@ public class Homes
         if (home != null)
         {
             homes.get(playerKey).remove(home);
+
+            if (homes.get(playerKey).isEmpty())
+            {
+                homes.remove(playerKey);
+            }
             writeHomes(playerKey);
 
             return true;
@@ -157,6 +162,7 @@ public class Homes
             if (!homes.get(playerKey).isEmpty())
             {
                 homes.get(playerKey).clear();
+                homes.remove(playerKey);
                 writeHomes(playerKey);
 
                 return true;
@@ -412,7 +418,7 @@ public class Homes
                         Gson gsonReader = new Gson();
                         Reader reader = Files.newBufferedReader(file.toPath());
                         // TODO -> Don't use \\.
-                        addPlayer(
+                        addPlayerHomes(
                                 file.getName().split("\\.")[0],
                                 Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType)))
                         );
@@ -449,7 +455,7 @@ public class Homes
                             Gson gsonReader = new Gson();
                             Reader reader = Files.newBufferedReader(file.toPath());
                             // TODO -> Don't use \\.
-                            addPlayer(
+                            addPlayerHomes(
                                     file.getName().split("\\.")[0], Collections.synchronizedList(
                                             new ArrayList<>(gsonReader.fromJson(reader, homesType))));
                             reader.close();
