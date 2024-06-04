@@ -194,7 +194,7 @@ public class Homes
      *
      * @return An ArrayList containing all the homes of the player {@code playerName}
      */
-    public List<Home> getPlayerHomes(String playerName)
+    public @Nullable List<Home> getPlayerHomes(String playerName)
     {
         return homes.get(playerName);
     }

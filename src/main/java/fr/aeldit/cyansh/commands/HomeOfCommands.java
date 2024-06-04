@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import static fr.aeldit.cyanlib.lib.utils.TPUtils.getRequiredXpLevelsToTp;
 import static fr.aeldit.cyansh.CyanSHCore.*;
@@ -508,16 +509,19 @@ public class HomeOfCommands
                                 Formatting.AQUA + trustingPlayer
                         );
 
-                        HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer))
-                                .forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                                                player,
-                                                "cyansh.msg.getHome",
-                                                false,
-                                                Formatting.YELLOW + home.getName(),
-                                                Formatting.DARK_AQUA + home.getDimension(),
-                                                Formatting.DARK_AQUA + home.getDate()
-                                        )
-                                );
+                        List<Homes.Home> homes = HomesObj.getPlayerHomes(HomesObj.getKeyFromName(trustingPlayer));
+                        if (homes != null)
+                        {
+                            homes.forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                            player,
+                                            "cyansh.msg.getHome",
+                                            false,
+                                            Formatting.YELLOW + home.getName(),
+                                            Formatting.DARK_AQUA + home.getDimension(),
+                                            Formatting.DARK_AQUA + home.getDate()
+                                    )
+                            );
+                        }
 
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,

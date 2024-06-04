@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 import static fr.aeldit.cyanlib.lib.utils.TPUtils.getRequiredXpLevelsToTp;
@@ -402,16 +403,19 @@ public class HomeCommands
                                 false
                         );
 
-                        HomesObj.getPlayerHomes(playerKey)
-                                .forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                                                player,
-                                                "cyansh.msg.getHome",
-                                                false,
-                                                Formatting.YELLOW + home.getName(),
-                                                Formatting.DARK_AQUA + home.getDimension(),
-                                                Formatting.DARK_AQUA + home.getDate()
-                                        )
-                                );
+                        List<Homes.Home> homes = HomesObj.getPlayerHomes(playerKey);
+                        if (homes != null)
+                        {
+                            homes.forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                            player,
+                                            "cyansh.msg.getHome",
+                                            false,
+                                            Formatting.YELLOW + home.getName(),
+                                            Formatting.DARK_AQUA + home.getDimension(),
+                                            Formatting.DARK_AQUA + home.getDate()
+                                    )
+                            );
+                        }
 
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
