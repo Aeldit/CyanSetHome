@@ -482,9 +482,9 @@ public class Homes
 
         try
         {
-            Path path = Path.of(HOMES_PATH + "/" + playerKey + ".json");
+            Path path = Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey));
 
-            if (homes.get(playerKey).isEmpty())
+            if (!homes.containsKey(playerKey) || (homes.containsKey(playerKey) && homes.get(playerKey).isEmpty()))
             {
                 if (Files.exists(path))
                 {

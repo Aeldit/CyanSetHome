@@ -415,7 +415,7 @@ public class HomeOfCommands
                             if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
                             {
                                 requiredXpLevel = getRequiredXpLevelsToTp(player, player.getBlockPos(),
-                                        BLOCKS_PER_XP_LEVEL_HOME
+                                        BLOCKS_PER_XP_LEVEL_HOME.getValue()
                                 );
 
                                 if (player.experienceLevel < requiredXpLevel)
