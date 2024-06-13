@@ -1,1 +1,1 @@
-Fix issue [#3](https://github.com/Aeldit/CyanSetHome/issues/3)
+Update to 1.21
