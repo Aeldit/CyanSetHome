@@ -4,6 +4,8 @@ plugins {
     id "com.modrinth.minotaur" version "2.+"
 }
 
+version = project.mod_version + "+" + project.minecraft_version
+
 repositories {
     maven { url = "https://api.modrinth.com/maven" }
     maven { url = "https://maven.terraformersmc.com/releases" }
@@ -56,7 +58,7 @@ modrinth {
     projectId = "cyansethome"
 
     versionName = "[$project.minecraft_version] CyanSetHome $project.mod_version"
-    versionNumber = "$project.mod_version+$project.minecraft_version"
+    versionNumber = "$version"
     versionType = "release"
 
     uploadFile = remapJar
