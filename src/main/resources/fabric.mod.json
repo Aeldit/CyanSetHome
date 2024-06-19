@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "cyansh",
+  "id": "cyansethome",
   "version": "${version}",
   "name": "CyanSetHome",
   "description": "This mod adds the /sethome command and everything that comes with it",
