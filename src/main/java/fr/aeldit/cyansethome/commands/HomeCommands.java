@@ -398,7 +398,7 @@ public class HomeCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyanlib.msg.dashSeparation",
+                                "cyansethome.msg.dashSeparation",
                                 false
                         );
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
@@ -423,7 +423,7 @@ public class HomeCommands
 
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyanlib.msg.dashSeparation",
+                                "cyansethome.msg.dashSeparation",
                                 false
                         );
                     }

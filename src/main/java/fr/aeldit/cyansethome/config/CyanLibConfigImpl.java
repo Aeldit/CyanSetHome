@@ -71,6 +71,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("cyansethome.msg.translationsReloaded", "§3Translations have been reloaded"),
                 entry("cyansethome.msg.getHome", "%s §3(%s§3, created on the %s§3)"),
 
+                // SEPARATIONS
+                entry("cyansethome.msg.dashSeparation", "§6------------------------------------"),
+
                 // SETS
                 entry("cyansethome.msg.set.allowHomes", "§3Toggled §dallowHome §3option %s"),
                 entry("cyansethome.msg.set.allowByPass", "§3Toggled ByPass %s"),

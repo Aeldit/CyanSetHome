@@ -56,8 +56,13 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:${modmenuVersion}")
 
     // CyanLib
-    modImplementation("maven.modrinth:cyanlib:${cyanlibVersion}")
-    include("maven.modrinth:cyanlib:${cyanlibVersion}")
+    val debug = false
+    if (debug) {
+        modImplementation(files(projectDir.resolve("../../run/mods/cyanlib-0.4.11-2+1.21.jar")))
+    } else {
+        modImplementation("maven.modrinth:cyanlib:${cyanlibVersion}")
+        include("maven.modrinth:cyanlib:${cyanlibVersion}")
+    }
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")

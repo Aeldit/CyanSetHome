@@ -17,13 +17,13 @@
   "environment": "*",
   "entrypoints": {
     "server": [
-      "fr.aeldit.cyansh.CyanSHServerCore"
+      "fr.aeldit.cyansethome.CyanSHServerCore"
     ],
     "client": [
-      "fr.aeldit.cyansh.CyanSHClientCore"
+      "fr.aeldit.cyansethome.CyanSHClientCore"
     ],
     "modmenu": [
-      "fr.aeldit.cyansh.config.ModMenuApiImpl"
+      "fr.aeldit.cyansethome.config.ModMenuApiImpl"
     ]
   },
   "depends": {
