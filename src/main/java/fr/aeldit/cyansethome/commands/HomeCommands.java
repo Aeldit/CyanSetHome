@@ -410,15 +410,17 @@ public class HomeCommands
                         List<Homes.Home> homes = HomesObj.getPlayerHomes(playerKey);
                         if (homes != null)
                         {
-                            homes.forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                                            player,
-                                            "cyansethome.msg.getHome",
-                                            false,
-                                            Formatting.YELLOW + home.getName(),
-                                            Formatting.DARK_AQUA + home.getDimension(),
-                                            Formatting.DARK_AQUA + home.getDate()
-                                    )
-                            );
+                            for (Homes.Home home : homes)
+                            {
+                                CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                                        player,
+                                        "cyansethome.msg.getHome",
+                                        false,
+                                        Formatting.YELLOW + home.getName(),
+                                        Formatting.DARK_AQUA + home.getDimension(),
+                                        Formatting.DARK_AQUA + home.getDate()
+                                );
+                            }
                         }
 
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
