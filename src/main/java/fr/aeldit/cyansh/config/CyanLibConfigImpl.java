@@ -32,7 +32,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
         translations.put("cyansh.error.notOpOrTrusted", "§cThis player doesn't trust you or you don't have the " +
                 "required permission");
         translations.put("cyansh.error.homesDisabled", "§cThe /home command is disabled");
-        translations.put("cyansh.error.homeAlreadyExists", "§cThis home alreay exists");
+        translations.put("cyansh.error.homeAlreadyExists", "§cThis home already exists");
         translations.put("cyansh.error.homeNotFound", "§cThis home doesn't exist (check the spelling)");
         translations.put("cyansh.error.homeNotFoundOrExists", "The home doesn't exists or you tried to rename it with" +
                 " the name of an existing home");
@@ -49,7 +49,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
         translations.put("cyansh.error.notEnoughXp", "§cYou don't have enough XP (%s §clevels are required)");
 
         // MESSAGES
-        translations.put("cyansh.msg.setHome", "§3The home %s §3have been created");
+        translations.put("cyansh.msg.setHome", "§3The home %s §3has been created");
         translations.put("cyansh.msg.setHomeOf", "§3The home %s §3has been created for the player %s");
         translations.put("cyansh.msg.removeHome", "§3The home %s §3has been removed");
         translations.put("cyansh.msg.removeHomeOf", "§3The home %s §3was removed from %s§3's homes");
