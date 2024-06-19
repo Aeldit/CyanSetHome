@@ -71,9 +71,6 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("cyansethome.msg.translationsReloaded", "§3Translations have been reloaded"),
                 entry("cyansethome.msg.getHome", "%s §3(%s§3, created on the %s§3)"),
 
-                // SEPARATIONS
-                entry("cyansethome.msg.dashSeparation", "§6------------------------------------"),
-
                 // SETS
                 entry("cyansethome.msg.set.allowHomes", "§3Toggled §dallowHome §3option %s"),
                 entry("cyansethome.msg.set.allowByPass", "§3Toggled ByPass %s"),
@@ -111,7 +108,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("cyansethome.msg.getCfg.allowByPass", "§6- §3Allow bypass for OPs : %s"),
                 entry("cyansethome.msg.getCfg.maxHomes", "§6- §3Max homes per player : %s"),
                 entry("cyansethome.msg.getCfg.minOpLvlBypass", "§6- §3Minimum OP level to use Bypass : %s"),
-                entry("cyansethome.msg.getCfg.minOpLvlHomes", "§6- §3Minimum OP level for §dhome §3commands : %s")
+                entry("cyansethome.msg.getCfg.minOpLvlHomes", "§6- §3Minimum OP level for §dhome §3commands : %s"),
+                entry("cyansethome.msg.getCfg.useXpToTpHome", "§6- §3Use XP to tp to a home : %s"),
+                entry("cyansethome.msg.getCfg.blockPerXpLevelHome", "§6- §3Block per XP pointa for home tp : %s")
         );
     }
 }

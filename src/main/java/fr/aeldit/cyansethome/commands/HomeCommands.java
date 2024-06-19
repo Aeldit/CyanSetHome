@@ -10,6 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -396,11 +397,7 @@ public class HomeCommands
 
                     if (!HomesObj.isEmpty(playerKey))
                     {
-                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                                player,
-                                "cyansethome.msg.dashSeparation",
-                                false
-                        );
+                        player.sendMessage(Text.of("§6------------------------------------"), false);
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
                                 "cyansethome.msg.listHomes",
@@ -422,12 +419,7 @@ public class HomeCommands
                                 );
                             }
                         }
-
-                        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                                player,
-                                "cyansethome.msg.dashSeparation",
-                                false
-                        );
+                        player.sendMessage(Text.of("§6------------------------------------"), false);
                     }
                     else
                     {

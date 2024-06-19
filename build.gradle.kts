@@ -56,9 +56,9 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:${modmenuVersion}")
 
     // CyanLib
-    val debug = false
+    val debug = true
     if (debug) {
-        modImplementation(files(projectDir.resolve("../../run/mods/cyanlib-0.4.11-2+1.21.jar")))
+        modImplementation(files(projectDir.resolve("../../run/mods/cyanlib-0.4.12-3+1.21.jar")))
     } else {
         modImplementation("maven.modrinth:cyanlib:${cyanlibVersion}")
         include("maven.modrinth:cyanlib:${cyanlibVersion}")
