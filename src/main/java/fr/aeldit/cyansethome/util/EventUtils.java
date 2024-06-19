@@ -1,10 +1,10 @@
-package fr.aeldit.cyansh.util;
+package fr.aeldit.cyansethome.util;
 
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.jetbrains.annotations.NotNull;
 
-import static fr.aeldit.cyansh.CyanSHCore.HomesObj;
-import static fr.aeldit.cyansh.CyanSHCore.TrustsObj;
+import static fr.aeldit.cyansethome.CyanSHCore.HomesObj;
+import static fr.aeldit.cyansethome.CyanSHCore.TrustsObj;
 
 public class EventUtils
 {

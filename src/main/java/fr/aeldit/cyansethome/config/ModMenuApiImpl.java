@@ -1,11 +1,11 @@
-package fr.aeldit.cyansh.config;
+package fr.aeldit.cyansethome.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import fr.aeldit.cyanlib.lib.gui.CyanLibConfigScreen;
 
 import static fr.aeldit.cyanlib.lib.CyanLib.CONFIG_CLASS_INSTANCES;
-import static fr.aeldit.cyansh.CyanSHCore.MODID;
+import static fr.aeldit.cyansethome.CyanSHCore.MODID;
 
 public class ModMenuApiImpl implements ModMenuApi
 {

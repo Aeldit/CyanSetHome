@@ -1,11 +1,11 @@
-package fr.aeldit.cyansh;
+package fr.aeldit.cyansethome;
 
 import fr.aeldit.cyanlib.lib.CyanLib;
 import fr.aeldit.cyanlib.lib.CyanLibLanguageUtils;
 import fr.aeldit.cyanlib.lib.config.CyanLibOptionsStorage;
-import fr.aeldit.cyansh.config.CyanLibConfigImpl;
-import fr.aeldit.cyansh.homes.Homes;
-import fr.aeldit.cyansh.homes.Trusts;
+import fr.aeldit.cyansethome.config.CyanLibConfigImpl;
+import fr.aeldit.cyansethome.homes.Homes;
+import fr.aeldit.cyansethome.homes.Trusts;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +15,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
+import static fr.aeldit.cyansethome.homes.Homes.HOMES_PATH;
 
 public class CyanSHCore
 {
-    public static final String MODID = "cyansh";
+    public static final String MODID = "cyansethome";
     public static final Logger CYANSH_LOGGER = LoggerFactory.getLogger(MODID);
     public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
 

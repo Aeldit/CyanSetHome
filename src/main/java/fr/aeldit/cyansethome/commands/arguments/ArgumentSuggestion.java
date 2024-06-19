@@ -1,4 +1,4 @@
-package fr.aeldit.cyansh.commands.arguments;
+package fr.aeldit.cyansethome.commands.arguments;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansh.CyanSHCore.HomesObj;
-import static fr.aeldit.cyansh.CyanSHCore.TrustsObj;
-import static fr.aeldit.cyansh.config.CyanLibConfigImpl.ALLOW_BYPASS;
+import static fr.aeldit.cyansethome.CyanSHCore.HomesObj;
+import static fr.aeldit.cyansethome.CyanSHCore.TrustsObj;
+import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.ALLOW_BYPASS;
 
 public final class ArgumentSuggestion
 {

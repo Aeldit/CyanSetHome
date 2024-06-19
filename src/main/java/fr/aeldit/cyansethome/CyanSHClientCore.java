@@ -1,16 +1,16 @@
-package fr.aeldit.cyansh;
+package fr.aeldit.cyansethome;
 
 import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
-import fr.aeldit.cyansh.commands.HomeCommands;
-import fr.aeldit.cyansh.commands.HomeOfCommands;
-import fr.aeldit.cyansh.commands.PermissionCommands;
+import fr.aeldit.cyansethome.commands.HomeCommands;
+import fr.aeldit.cyansethome.commands.HomeOfCommands;
+import fr.aeldit.cyansethome.commands.PermissionCommands;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import static fr.aeldit.cyansh.CyanSHCore.*;
-import static fr.aeldit.cyansh.util.EventUtils.renameFileIfUsernameChanged;
+import static fr.aeldit.cyansethome.CyanSHCore.*;
+import static fr.aeldit.cyansethome.util.EventUtils.renameFileIfUsernameChanged;
 
 public class CyanSHClientCore implements ClientModInitializer
 {

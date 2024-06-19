@@ -1,4 +1,4 @@
-package fr.aeldit.cyansh.homes;
+package fr.aeldit.cyansethome.homes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static fr.aeldit.cyansh.CyanSHCore.*;
-import static fr.aeldit.cyansh.config.CyanLibConfigImpl.MAX_HOMES;
+import static fr.aeldit.cyansethome.CyanSHCore.*;
+import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
 {
@@ -407,7 +407,7 @@ public class Homes
     }
 
     /**
-     * Directory : minecraft/config/cyansh/homes
+     * Directory : minecraft/config/cyansethome/homes
      */
     public void readServer()
     {
@@ -440,7 +440,7 @@ public class Homes
     }
 
     /**
-     * Directory (client) : minecraft/config/cyansh/save_name
+     * Directory (client) : minecraft/config/cyansethome/save_name
      */
     public void readClient(String saveName)
     {

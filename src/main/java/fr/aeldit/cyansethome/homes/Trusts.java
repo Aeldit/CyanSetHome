@@ -1,4 +1,4 @@
-package fr.aeldit.cyansh.homes;
+package fr.aeldit.cyansethome.homes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static fr.aeldit.cyansh.CyanSHCore.*;
-import static fr.aeldit.cyansh.homes.Homes.HOMES_PATH;
+import static fr.aeldit.cyansethome.CyanSHCore.*;
+import static fr.aeldit.cyansethome.homes.Homes.HOMES_PATH;
 
 public class Trusts
 {

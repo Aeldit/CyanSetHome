@@ -1,11 +1,11 @@
-package fr.aeldit.cyansh.commands;
+package fr.aeldit.cyansethome.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
-import fr.aeldit.cyansh.homes.Homes;
+import fr.aeldit.cyansethome.commands.arguments.ArgumentSuggestion;
+import fr.aeldit.cyansethome.homes.Homes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -19,8 +19,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import static fr.aeldit.cyanlib.lib.utils.TPUtils.getRequiredXpLevelsToTp;
-import static fr.aeldit.cyansh.CyanSHCore.*;
-import static fr.aeldit.cyansh.config.CyanLibConfigImpl.*;
+import static fr.aeldit.cyansethome.CyanSHCore.*;
+import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.*;
 
 public class HomeOfCommands
 {
@@ -198,7 +198,7 @@ public class HomeOfCommands
      */
     public static int setHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -216,9 +216,13 @@ public class HomeOfCommands
                     {
                         if (HomesObj.addHome(
                                 playerKey,
-                                new Homes.Home(homeName,
-                                        player.getWorld().getDimensionEntry().getIdAsString()
-                                                .replace("minecraft:", "").replace("the_", ""),
+                                new Homes.Home(homeName, player.getWorld().getDimensionEntry()
+                                        //? if >1.20.4 {
+                                        .getIdAsString()
+                                        //?} else {
+                                        /*.toString()
+                                         *///?}
+                                        .replace("minecraft:", "").replace("the_", ""),
                                         player.getX(), player.getY(), player.getZ(), player.getYaw(),
                                         player.getPitch(),
                                         new SimpleDateFormat("dd/MM/yyyy HH:mm").format(
@@ -228,14 +232,14 @@ public class HomeOfCommands
                         {
                             CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
-                                    "cyansh.msg.setHomeOf",
+                                    "cyansethome.msg.setHomeOf",
                                     Formatting.YELLOW + homeName,
                                     Formatting.AQUA + trustingPlayer
                             );
                         }
                         else
                         {
-                            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.homeAlreadyExists");
+                            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.homeAlreadyExists");
                         }
                     }
                 }
@@ -253,7 +257,7 @@ public class HomeOfCommands
      */
     public static int removeHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -271,7 +275,7 @@ public class HomeOfCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.removeHomeOf",
+                                "cyansethome.msg.removeHomeOf",
                                 Formatting.YELLOW + homeName,
                                 Formatting.AQUA + trustingPlayer
                         );
@@ -280,7 +284,7 @@ public class HomeOfCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.error.homeNotFound",
+                                "cyansethome.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
@@ -300,7 +304,7 @@ public class HomeOfCommands
     // TODO -> ask for confirmation
     public static int removeAllHomesOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -316,13 +320,13 @@ public class HomeOfCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.removeAllHomesOf",
+                                "cyansethome.msg.removeAllHomesOf",
                                 Formatting.AQUA + trustingPlayer
                         );
                     }
                     else
                     {
-                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noHomesOf");
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.noHomesOf");
                     }
                 }
             }
@@ -339,7 +343,7 @@ public class HomeOfCommands
      */
     public static int renameHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -359,7 +363,7 @@ public class HomeOfCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.renameHomeOf",
+                                "cyansethome.msg.renameHomeOf",
                                 Formatting.YELLOW + homeName,
                                 Formatting.YELLOW + newHomeName,
                                 Formatting.AQUA + trustingPlayer
@@ -369,7 +373,7 @@ public class HomeOfCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.error.homeNotFoundOrExists",
+                                "cyansethome.error.homeNotFoundOrExists",
                                 homeName
                         );
                     }
@@ -389,7 +393,7 @@ public class HomeOfCommands
      */
     public static int goToHomeOf(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -422,7 +426,7 @@ public class HomeOfCommands
                                 {
                                     CYANSH_LANG_UTILS.sendPlayerMessage(
                                             player,
-                                            "cyansh.error.notEnoughXp",
+                                            "cyansethome.error.notEnoughXp",
                                             Formatting.GOLD + String.valueOf(requiredXpLevel)
                                     );
                                     return 0;
@@ -446,7 +450,7 @@ public class HomeOfCommands
 
                             CYANSH_LANG_UTILS.sendPlayerMessage(
                                     player,
-                                    "cyansh.msg.goToHome",
+                                    "cyansethome.msg.goToHome",
                                     Formatting.YELLOW + homeName
                             );
                         }
@@ -455,14 +459,14 @@ public class HomeOfCommands
                     {
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.error.homeNotFound",
+                                "cyansethome.error.homeNotFound",
                                 Formatting.YELLOW + homeName
                         );
                     }
                 }
                 else
                 {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.msg.notOpOrTrusted");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.notOpOrTrusted");
                 }
             }
         }
@@ -479,7 +483,7 @@ public class HomeOfCommands
      */
     public static int getHomesOfList(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -489,7 +493,7 @@ public class HomeOfCommands
 
                 if (player.getName().getString().equals(trustingPlayer))
                 {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.useSelfHomes");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.useSelfHomes");
                 }
                 else if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
                         || TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
@@ -504,7 +508,7 @@ public class HomeOfCommands
                         );
                         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                 player,
-                                "cyansh.msg.listHomesOf",
+                                "cyansethome.msg.listHomesOf",
                                 false,
                                 Formatting.AQUA + trustingPlayer
                         );
@@ -514,7 +518,7 @@ public class HomeOfCommands
                         {
                             homes.forEach(home -> CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                                             player,
-                                            "cyansh.msg.getHome",
+                                            "cyansethome.msg.getHome",
                                             false,
                                             Formatting.YELLOW + home.getName(),
                                             Formatting.DARK_AQUA + home.getDimension(),
@@ -531,12 +535,12 @@ public class HomeOfCommands
                     }
                     else
                     {
-                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noHomesOf");
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.noHomesOf");
                     }
                 }
                 else
                 {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.notOpOrTrusted");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.notOpOrTrusted");
                 }
             }
         }

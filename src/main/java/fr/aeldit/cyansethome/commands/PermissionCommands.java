@@ -1,10 +1,10 @@
-package fr.aeldit.cyansh.commands;
+package fr.aeldit.cyansethome.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.aeldit.cyansh.commands.arguments.ArgumentSuggestion;
+import fr.aeldit.cyansethome.commands.arguments.ArgumentSuggestion;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -14,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.aeldit.cyansh.CyanSHCore.*;
+import static fr.aeldit.cyansethome.CyanSHCore.CYANSH_LANG_UTILS;
+import static fr.aeldit.cyansethome.CyanSHCore.TrustsObj;
 
 public class PermissionCommands
 {
@@ -54,14 +55,14 @@ public class PermissionCommands
     public static int trustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
-        if (CYANSH_LIB_UTILS.isPlayer(source))
+        if (source.getPlayer() != null)
         {
             ServerPlayerEntity player = source.getPlayer();
             String playerName = StringArgumentType.getString(context, "player");
 
             if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
             {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.playerNotOnline");
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotOnline");
             }
             else
             {
@@ -79,18 +80,18 @@ public class PermissionCommands
 
                         CYANSH_LANG_UTILS.sendPlayerMessage(
                                 player,
-                                "cyansh.msg.playerTrusted",
+                                "cyansethome.msg.playerTrusted",
                                 Formatting.AQUA + playerName
                         );
                     }
                     else
                     {
-                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.playerAlreadyTrusted");
+                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerAlreadyTrusted");
                     }
                 }
                 else
                 {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.selfTrust");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
                 }
             }
         }
@@ -104,7 +105,7 @@ public class PermissionCommands
      */
     public static int untrustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
             String untrustedPlayerName = StringArgumentType.getString(context, "player");
@@ -117,18 +118,18 @@ public class PermissionCommands
 
                     CYANSH_LANG_UTILS.sendPlayerMessage(
                             player,
-                            "cyansh.msg.playerUnTrusted",
+                            "cyansethome.msg.playerUnTrusted",
                             Formatting.AQUA + untrustedPlayerName
                     );
                 }
                 else
                 {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.playerNotTrusted");
+                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotTrusted");
                 }
             }
             else
             {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.selfTrust");
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -141,7 +142,7 @@ public class PermissionCommands
      */
     public static int getTrustingPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
             ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(
@@ -153,14 +154,14 @@ public class PermissionCommands
 
                 CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                         player,
-                        "cyansh.msg.getTrustingPlayers",
+                        "cyansethome.msg.getTrustingPlayers",
                         false,
                         Formatting.AQUA + players
                 );
             }
             else
             {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noTrustingPlayer");
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.noTrustingPlayer");
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -173,7 +174,7 @@ public class PermissionCommands
      */
     public static int getTrustedPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (CYANSH_LIB_UTILS.isPlayer(context.getSource()))
+        if (context.getSource().getPlayer() != null)
         {
             ServerPlayerEntity player = context.getSource().getPlayer();
             List<String> trustedPlayers = TrustsObj.getTrustedPlayers(
@@ -185,14 +186,14 @@ public class PermissionCommands
 
                 CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                         player,
-                        "cyansh.msg.getTrustedPlayers",
+                        "cyansethome.msg.getTrustedPlayers",
                         false,
                         Formatting.AQUA + players
                 );
             }
             else
             {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansh.error.noTrustedPlayer");
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.noTrustedPlayer");
             }
         }
         return Command.SINGLE_SUCCESS;
