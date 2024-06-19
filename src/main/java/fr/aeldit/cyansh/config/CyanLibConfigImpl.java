@@ -50,13 +50,13 @@ public class CyanLibConfigImpl implements ICyanLibConfig
 
         // MESSAGES
         translations.put("cyansh.msg.setHome", "§3The home %s §3have been created");
-        translations.put("cyansh.msg.setHomeOf", "§3The home %s §3have been created for the player %s");
-        translations.put("cyansh.msg.removeHome", "§3The home %s §3have been removed");
-        translations.put("cyansh.msg.removeHomeOf", "§3The home %s §3have been removed from %s§3's homes");
+        translations.put("cyansh.msg.setHomeOf", "§3The home %s §3has been created for the player %s");
+        translations.put("cyansh.msg.removeHome", "§3The home %s §3has been removed");
+        translations.put("cyansh.msg.removeHomeOf", "§3The home %s §3was removed from %s§3's homes");
         translations.put("cyansh.msg.removeAllHomes", "§3All your homes have been removed");
-        translations.put("cyansh.msg.removeAllHomesOf", "§3All %s§3's homes have been removed");
-        translations.put("cyansh.msg.renameHome", "§3The home %s §3have been renamed to %s");
-        translations.put("cyansh.msg.renameHomeOf", "§3The home %s §3have been renamed to %s §3for the player %s");
+        translations.put("cyansh.msg.removeAllHomesOf", "§3All %s§3's homes were removed");
+        translations.put("cyansh.msg.renameHome", "§3The home %s §3has been renamed to %s");
+        translations.put("cyansh.msg.renameHomeOf", "§3The home %s §3has been renamed to %s §3for the player %s");
         translations.put("cyansh.msg.goToHome", "§3You have been teleported to the home %s");
         translations.put("cyansh.msg.getTrustingPlayers", "§3Players that trust you : %s");
         translations.put("cyansh.msg.getTrustedPlayers", "§3Players that you trust : %s");
@@ -70,7 +70,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
         // SETS
         translations.put("cyansh.msg.set.allowHomes", "§3Toggled §dallowHome §3option %s");
         translations.put("cyansh.msg.set.allowByPass", "§3Toggled ByPass %s");
-        translations.put("cyansh.msg.set.maxHomes", "§3The maximun number of homes per player is now %s");
+        translations.put("cyansh.msg.set.maxHomes", "§3The maximum number of homes per player is now %s");
         translations.put("cyansh.msg.set.minOpLvlBypass", "§3The minimum OP level required to bypass permissions is " +
                 "now %s");
         translations.put("cyansh.msg.set.minOpLvlHomes", "§3The minimum OP level required to use the §dhome " +
@@ -81,9 +81,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
         translations.put("cyansh.msg.listHomesOf", "§6CyanSetHome - HOMES OF %s\n");
 
         // CONFIG_DESC
-        translations.put("cyansh.msg.getDesc.allowHomes", "§3The §dallowHomes §3option defines wether the home " +
+        translations.put("cyansh.msg.getDesc.allowHomes", "§3The §dallowHomes §3option defines whether the home " +
                 "commands are enabled or not");
-        translations.put("cyansh.msg.getDesc.allowByPass", "§3The §dallowByPass §3option defines wether admins with " +
+        translations.put("cyansh.msg.getDesc.allowByPass", "§3The §dallowByPass §3option defines whether admins with " +
                 "the correct OP level can bypass permissions like trust between players");
         translations.put("cyansh.msg.getDesc.maxHomes", "§3The §dmaxHomes §3option defines the maximum number of " +
                 "homes a player can have");
