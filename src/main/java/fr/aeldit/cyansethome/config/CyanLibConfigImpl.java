@@ -27,7 +27,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
     @Override
     public Map<String, String> getDefaultTranslations()
     {
-        return Map.ofEntries(
+        return Map.<String, String>ofEntries(
                 // ERRORS
                 entry("cyansethome.error.notOpOrTrusted",
                         "§cThis player doesn't trust you or you don't have the required permission"
