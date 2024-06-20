@@ -217,12 +217,12 @@ public class HomeOfCommands
                     {
                         if (HomesObj.addHome(
                                 playerKey,
-                                new Homes.Home(homeName, player.getWorld().getDimensionEntry()
-                                        //? if >1.20.4 {
-                                        .getIdAsString()
-                                        //?} else {
-                                        /*.toString()
-                                         *///?}
+                                new Homes.Home(homeName, player.getWorld()
+                                        //? if <1.20.6 {
+                                        /*.getDimensionKey().getValue().toString()
+                                        *///?} else {
+                                        .getDimensionEntry().getIdAsString()
+                                         //?}
                                         .replace("minecraft:", "").replace("the_", ""),
                                         player.getX(), player.getY(), player.getZ(), player.getYaw(),
                                         player.getPitch(),
