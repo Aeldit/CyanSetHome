@@ -1,1 +1,2 @@
-Update to 1.21
+- Fix grammar errors (Fixes [#4](https://github.com/Aeldit/CyanSetHome/issues/4))
+- Upgrade to CyanLib 0.4.14

@@ -153,7 +153,7 @@ publishMods {
             ?.readText()
             ?: "No changelog provided."
 
-        dryRun = true
+        dryRun = false
     }
 }
 
