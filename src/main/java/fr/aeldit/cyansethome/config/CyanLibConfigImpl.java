@@ -101,6 +101,14 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("cyansethome.msg.getDesc.minOpLvlHomes",
                         "§3The §dminOpLvlHomes §3option defines the OP level required to run the home commands"
                 ),
+                entry("cyansethome.msg.getDesc.blockPerXpLevelHome",
+                        "§3The number of blocks that will consume 1 XP level for teleportation to a home.\n" +
+                                "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
+                                " will lose 1 XP level, 2 XP level for 600 blocks, ..."
+                ),
+                entry("cyansethome.msg.getDesc.useXpToTpHome",
+                        "§3Whether or not to consume XP on teleportation to a home"
+                ),
 
                 // GET_CFG
                 entry("cyansethome.msg.getCfg.header", "§6CyanSetHome - OPTIONS\n"),
