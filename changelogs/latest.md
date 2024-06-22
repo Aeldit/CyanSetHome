@@ -1,2 +1,3 @@
-- Fix grammar errors (Fixes [#4](https://github.com/Aeldit/CyanSetHome/issues/4))
-- Upgrade to CyanLib 0.4.14
+- Fix the `home-of` commands not suggesting the players names and homes
+- Fix some translation errors with the trust system
+- Fix most of the issues that could have happened with the trust system
