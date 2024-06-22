@@ -51,6 +51,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "§cThe ByPass option is disabled or you are not OP level 4"
                 ),
                 entry("cyansethome.error.notEnoughXp", "§cYou don't have enough XP (%s §clevels are required)"),
+                entry("cyansethome.error.playerNotFound", "§cCouldn't find the player %s"),
 
                 // MESSAGES
                 entry("cyansethome.msg.setHome", "§3The home %s §3has been created"),

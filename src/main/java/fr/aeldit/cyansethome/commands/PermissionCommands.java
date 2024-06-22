@@ -161,7 +161,7 @@ public class PermissionCommands
             }
             else
             {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.noTrustingPlayer");
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustingPlayer");
             }
         }
         return Command.SINGLE_SUCCESS;
@@ -193,32 +193,32 @@ public class PermissionCommands
             }
             else
             {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.noTrustedPlayer");
+                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustedPlayer");
             }
         }
         return Command.SINGLE_SUCCESS;
     }
 
-    private static @NotNull String getPlayers(@NotNull List<String> trustedPlayers) // TODO -> Test if this still works
+    private static @NotNull String getPlayers(@NotNull List<String> trustedPlayers)
     {
         if (trustedPlayers.size() == 1)
         {
             return trustedPlayers.get(0);
         }
 
-        String players = "";
-
-        for (int i = 0; i < trustedPlayers.size(); ++i)
+        StringBuilder players = new StringBuilder();
+        int size = trustedPlayers.size();
+        for (int i = 0; i < size; ++i)
         {
-            if (i == trustedPlayers.size() - 1)
+            if (i == size - 1)
             {
-                players = players.concat("%s".formatted(trustedPlayers.get(i).split(" ")[1]));
+                players.append("%s".formatted(trustedPlayers.get(i)));
             }
             else
             {
-                players = players.concat("%s, ".formatted(trustedPlayers.get(i).split(" ")[1]));
+                players.append("%s, ".formatted(trustedPlayers.get(i)));
             }
         }
-        return players;
+        return players.toString();
     }
 }

@@ -21,6 +21,7 @@ import static fr.aeldit.cyansethome.homes.Homes.HOMES_PATH;
 
 public class Trusts
 {
+    // Map<playerKey, players trusted by playerKey>
     private final ConcurrentHashMap<String, List<String>> trusts = new ConcurrentHashMap<>();
     public final TypeToken<ConcurrentHashMap<String, List<String>>> trustType = new TypeToken<>()
     {
@@ -164,7 +165,13 @@ public class Trusts
     {
         if (trusts.containsKey(playerKey))
         {
-            return trusts.get(playerKey);
+            List<String> trustedPlayersKeys = trusts.get(playerKey);
+            List<String> trustedPlayers = new ArrayList<>(trustedPlayersKeys.size());
+            for (String player : trustedPlayersKeys)
+            {
+                trustedPlayers.add(player.split(" ")[1]);
+            }
+            return trustedPlayers;
         }
         return null;
     }

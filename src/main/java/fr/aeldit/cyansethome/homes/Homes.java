@@ -244,7 +244,7 @@ public class Homes
         {
             if (key.split(" ")[1].equals(playerName))
             {
-                List<String> names = new ArrayList<>(homes.get(playerName).size());
+                List<String> names = new ArrayList<>(homes.get(key).size());
                 for (Home home : homes.get(key))
                 {
                     names.add(home.name);
@@ -258,7 +258,7 @@ public class Homes
     /**
      * Returns the key associated with the name {@code playerName}
      */
-    public String getKeyFromName(String playerName)
+    public @Nullable String getKeyFromName(String playerName)
     {
         for (String key : homes.keySet())
         {
@@ -267,7 +267,7 @@ public class Homes
                 return key;
             }
         }
-        return "";
+        return null;
     }
 
     public boolean isEmpty(String playerKey)
