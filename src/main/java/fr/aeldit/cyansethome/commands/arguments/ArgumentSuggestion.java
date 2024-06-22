@@ -60,7 +60,7 @@ public final class ArgumentSuggestion
                 List<String> homesNames = HomesObj.getHomesNamesOf(trustingPlayer);
                 if (homesNames != null)
                 {
-                    CommandSource.suggestMatching(homesNames, builder);
+                    return CommandSource.suggestMatching(homesNames, builder);
                 }
             }
         }
@@ -145,7 +145,7 @@ public final class ArgumentSuggestion
             }
             else
             {
-                CommandSource.suggestMatching(
+                return CommandSource.suggestMatching(
                         TrustsObj.getTrustingPlayers("%s %s".formatted(player.getUuidAsString(),
                                 player.getName().getString()
                         )),
