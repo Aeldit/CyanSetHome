@@ -1,3 +1,3 @@
-- Fix the `home-of` commands not suggesting the players names and homes
-- Fix some translation errors with the trust system
-- Fix most of the issues that could have happened with the trust system
+- Use CyanLib 0.4.15 to fix translation issues
+- Set the `minOpLvlHomes` option to 0 by default
+- Set the `useXpToTpHome` option to false by default
