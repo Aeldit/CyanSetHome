@@ -14,11 +14,11 @@ public class CyanLibConfigImpl implements ICyanLibConfig
     public static final BooleanOption ALLOW_HOMES = new BooleanOption("allowHomes", true);
     public static final BooleanOption ALLOW_BYPASS = new BooleanOption("allowByPass", false);
 
-    public static final IntegerOption MIN_OP_LVL_HOMES = new IntegerOption("minOpLvlHomes", 4, RULES.OP_LEVELS);
+    public static final IntegerOption MIN_OP_LVL_HOMES = new IntegerOption("minOpLvlHomes", 0, RULES.OP_LEVELS);
     public static final IntegerOption MAX_HOMES = new IntegerOption("maxHomes", 20, RULES.POSITIVE_VALUE);
     public static final IntegerOption MIN_OP_LVL_BYPASS = new IntegerOption("minOpLvlBypass", 4, RULES.OP_LEVELS);
 
-    public static final BooleanOption USE_XP_TO_TP_HOME = new BooleanOption("useXpToTpHome", true);
+    public static final BooleanOption USE_XP_TO_TP_HOME = new BooleanOption("useXpToTpHome", false);
 
     public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption("blockPerXpLevelHome", 300,
             RULES.POSITIVE_VALUE

@@ -19,7 +19,7 @@ object Constants {
     const val ARCHIVES_BASE_NAME: String = "cyansethome"
     const val MOD_VERSION: String = "0.1.10"
     const val LOADER_VERSION: String = "0.15.11"
-    const val CYANLIB_VERSION: String = "0.4.14"
+    const val CYANLIB_VERSION: String = "0.4.15"
 }
 
 class ModData {
