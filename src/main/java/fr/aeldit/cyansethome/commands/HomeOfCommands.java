@@ -201,9 +201,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
         )
         {
             return 0;
@@ -269,9 +269,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
         )
         {
             return 0;
@@ -318,9 +318,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
         )
         {
             return 0;
@@ -363,9 +363,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
         )
         {
             return 0;

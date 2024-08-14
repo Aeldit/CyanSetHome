@@ -123,8 +123,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -175,8 +175,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -206,8 +206,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -232,8 +232,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -268,8 +268,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -344,8 +344,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
                 || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
