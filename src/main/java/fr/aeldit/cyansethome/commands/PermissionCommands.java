@@ -22,28 +22,28 @@ public class PermissionCommands
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("home-trust")
-                .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests(
-                                (context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
-                                        builder, context.getSource()))
-                        .executes(PermissionCommands::trustPlayer)
-                )
+                                    .then(CommandManager.argument("player", StringArgumentType.string())
+                                                  .suggests(
+                                                          (context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
+                                                                  builder, context.getSource()))
+                                                  .executes(PermissionCommands::trustPlayer)
+                                    )
         );
 
         dispatcher.register(CommandManager.literal("home-untrust")
-                .then(CommandManager.argument("player", StringArgumentType.string())
-                        .suggests(
-                                (context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
-                                        builder, context.getSource().getPlayer()))
-                        .executes(PermissionCommands::untrustPlayer)
-                )
+                                    .then(CommandManager.argument("player", StringArgumentType.string())
+                                                  .suggests(
+                                                          (context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
+                                                                  builder, context.getSource().getPlayer()))
+                                                  .executes(PermissionCommands::untrustPlayer)
+                                    )
         );
 
         dispatcher.register(CommandManager.literal("get-trusting-players")
-                .executes(PermissionCommands::getTrustingPlayers)
+                                    .executes(PermissionCommands::getTrustingPlayers)
         );
         dispatcher.register(CommandManager.literal("get-trusted-players")
-                .executes(PermissionCommands::getTrustedPlayers)
+                                    .executes(PermissionCommands::getTrustedPlayers)
         );
     }
 
@@ -55,46 +55,39 @@ public class PermissionCommands
     public static int trustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
         ServerCommandSource source = context.getSource();
-        if (source.getPlayer() != null)
+        if (source.getPlayer() == null)
         {
-            ServerPlayerEntity player = source.getPlayer();
-            String playerName = StringArgumentType.getString(context, "player");
-
-            if (source.getServer().getPlayerManager().getPlayer(playerName) == null)
-            {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotOnline");
-            }
-            else
-            {
-                String trustingPlayer = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
-                String trustedPlayer =
-                        "%s %s".formatted(source.getServer().getPlayerManager().getPlayer(playerName).getUuid(),
-                                playerName
-                        );
-
-                if (!trustingPlayer.equals(trustedPlayer))
-                {
-                    if (!TrustsObj.isPlayerTrustingFromName(player.getName().getString(), playerName))
-                    {
-                        TrustsObj.trustPlayer(trustingPlayer, trustedPlayer);
-
-                        CYANSH_LANG_UTILS.sendPlayerMessage(
-                                player,
-                                "cyansethome.msg.playerTrusted",
-                                Formatting.AQUA + playerName
-                        );
-                    }
-                    else
-                    {
-                        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerAlreadyTrusted");
-                    }
-                }
-                else
-                {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
-                }
-            }
+            return 0;
         }
+
+        ServerPlayerEntity player = source.getPlayer();
+        String playerName = StringArgumentType.getString(context, "player");
+
+        ServerPlayerEntity trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName);
+        if (trustedPlayer == null)
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotOnline");
+            return 0;
+        }
+
+        String trustingPlayerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
+        String trustedPlayerKey = "%s %s".formatted(player.getUuid(), playerName);
+
+        if (trustingPlayerKey.equals(trustedPlayerKey))
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
+            return 0;
+        }
+
+        if (TrustsObj.isPlayerTrustingFromName(player.getName().getString(), playerName))
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerAlreadyTrusted");
+            return 0;
+        }
+
+        TrustsObj.trustPlayer(trustingPlayerKey, trustedPlayerKey);
+
+        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.playerTrusted", Formatting.AQUA + playerName);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -105,33 +98,32 @@ public class PermissionCommands
      */
     public static int untrustPlayer(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (context.getSource().getPlayer() != null)
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null)
         {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            String untrustedPlayerName = StringArgumentType.getString(context, "player");
-
-            if (!player.getName().getString().equals(untrustedPlayerName))
-            {
-                if (TrustsObj.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
-                {
-                    TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
-
-                    CYANSH_LANG_UTILS.sendPlayerMessage(
-                            player,
-                            "cyansethome.msg.playerUnTrusted",
-                            Formatting.AQUA + untrustedPlayerName
-                    );
-                }
-                else
-                {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotTrusted");
-                }
-            }
-            else
-            {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
-            }
+            return 0;
         }
+
+        String untrustedPlayerName = StringArgumentType.getString(context, "player");
+        if (player.getName().getString().equals(untrustedPlayerName))
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
+            return 0;
+        }
+
+        if (!TrustsObj.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotTrusted");
+            return 0;
+        }
+
+        TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
+
+        CYANSH_LANG_UTILS.sendPlayerMessage(
+                player,
+                "cyansethome.msg.playerUnTrusted",
+                Formatting.AQUA + untrustedPlayerName
+        );
         return Command.SINGLE_SUCCESS;
     }
 
@@ -142,28 +134,29 @@ public class PermissionCommands
      */
     public static int getTrustingPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (context.getSource().getPlayer() != null)
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null)
         {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(
-                    "%s %s".formatted(player.getUuidAsString(), player.getName().getString()));
-
-            if (!trustingPlayers.isEmpty())
-            {
-                String players = getPlayers(trustingPlayers);
-
-                CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                        player,
-                        "cyansethome.msg.getTrustingPlayers",
-                        false,
-                        Formatting.AQUA + players
-                );
-            }
-            else
-            {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustingPlayer");
-            }
+            return 0;
         }
+
+        ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(
+                "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
+        );
+        if (trustingPlayers == null || trustingPlayers.isEmpty())
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustingPlayer");
+            return 0;
+        }
+
+        String players = getPlayers(trustingPlayers);
+
+        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                player,
+                "cyansethome.msg.getTrustingPlayers",
+                false,
+                Formatting.AQUA + players
+        );
         return Command.SINGLE_SUCCESS;
     }
 
@@ -174,28 +167,27 @@ public class PermissionCommands
      */
     public static int getTrustedPlayers(@NotNull CommandContext<ServerCommandSource> context)
     {
-        if (context.getSource().getPlayer() != null)
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null)
         {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            List<String> trustedPlayers = TrustsObj.getTrustedPlayers(
-                    "%s %s".formatted(player.getUuidAsString(), player.getName().getString()));
-
-            if (trustedPlayers != null && !trustedPlayers.isEmpty())
-            {
-                String players = getPlayers(trustedPlayers);
-
-                CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                        player,
-                        "cyansethome.msg.getTrustedPlayers",
-                        false,
-                        Formatting.AQUA + players
-                );
-            }
-            else
-            {
-                CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustedPlayer");
-            }
+            return 0;
         }
+
+        List<String> trustedPlayers = TrustsObj.getTrustedPlayers(
+                "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
+        );
+        if (trustedPlayers == null || trustedPlayers.isEmpty())
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustedPlayer");
+            return 0;
+        }
+
+        CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                player,
+                "cyansethome.msg.getTrustedPlayers",
+                false,
+                Formatting.AQUA + getPlayers(trustedPlayers)
+        );
         return Command.SINGLE_SUCCESS;
     }
 

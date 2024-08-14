@@ -153,7 +153,7 @@ public class Homes
     /**
      * Removes the key:value entry of the player {@code playerName} if it exists
      *
-     * @return {@code true} on success | {@code false} on failure
+     * @return {@code true} if homes were removed | {@code false} otherwise
      */
     public boolean removeAll(String playerKey)
     {
@@ -190,13 +190,11 @@ public class Homes
     }
 
     /**
-     * Can be called if and only if the result of {@link Homes#isEmpty} is false
-     *
-     * @return An ArrayList containing all the homes of the player {@code playerName}
+     * @return An ArrayList containing all the homes of the player {@code playerKey}
      */
-    public @Nullable List<Home> getPlayerHomes(String playerName)
+    public @Nullable List<Home> getPlayerHomes(String playerKey)
     {
-        return homes.get(playerName);
+        return isEmpty(playerKey) ? null : homes.get(playerKey);
     }
 
     /**
