@@ -263,18 +263,6 @@ public class Homes
         return !homes.containsKey(playerKey) || homes.get(playerKey).isEmpty();
     }
 
-    public boolean isEmptyFromName(String playerName)
-    {
-        for (String s : homes.keySet())
-        {
-            if (s.split(" ")[1].equals(playerName))
-            {
-                return homes.get(s).isEmpty();
-            }
-        }
-        return true;
-    }
-
     /**
      * Returns whether the given player has reached its maximum amount of homes
      * <p>
@@ -282,9 +270,9 @@ public class Homes
      *
      * @param playerKey The player key (in the form {@code "playerUUID playerName"})
      */
-    public boolean maxHomesNotReached(String playerKey)
+    public boolean maxHomesReached(String playerKey)
     {
-        return !homes.containsKey(playerKey) || homes.get(playerKey).size() < MAX_HOMES.getValue();
+        return homes.containsKey(playerKey) && homes.get(playerKey).size() >= MAX_HOMES.getValue();
     }
 
     /**
@@ -298,28 +286,6 @@ public class Homes
     public boolean homeExists(String playerKey, String homeName)
     {
         return getHome(playerKey, homeName) != null;
-    }
-
-    /**
-     * Checks if a home exists for the player named {@code playerName}
-     */
-    public boolean homeExistsFromName(String playerName, String homeName)
-    {
-        for (String key : homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                for (Home home : homes.get(key))
-                {
-                    if (home.name.equals(homeName))
-                    {
-                        return true;
-                    }
-                }
-                break;
-            }
-        }
-        return false;
     }
 
     /**
@@ -520,7 +486,8 @@ public class Homes
                         CYANSH_LOGGER.info(
                                 ("[CyanSetHome] Could not write the file %s because it is already being written (for " +
                                         "more than 1 sec)").formatted(
-                                        path.getFileName().toString()));
+                                        path.getFileName().toString())
+                        );
                     }
                 }
             }

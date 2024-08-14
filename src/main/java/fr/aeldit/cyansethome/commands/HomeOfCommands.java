@@ -221,7 +221,7 @@ public class HomeOfCommands
             return 0;
         }
 
-        if (!HomesObj.maxHomesNotReached(playerKey))
+        if (HomesObj.maxHomesReached(playerKey))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.maxHomesReached", MAX_HOMES.getValue());
             return 0;

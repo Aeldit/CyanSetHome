@@ -132,7 +132,7 @@ public class HomeCommands
         String homeName = StringArgumentType.getString(context, "home_name");
         String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
-        if (!HomesObj.maxHomesNotReached(playerKey))
+        if (HomesObj.maxHomesReached(playerKey))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
                     player,
