@@ -71,7 +71,7 @@ public class PermissionCommands
         }
 
         String trustingPlayerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
-        String trustedPlayerKey = "%s %s".formatted(player.getUuid(), playerName);
+        String trustedPlayerKey = "%s %s".formatted(trustedPlayer.getUuid(), playerName);
 
         if (trustingPlayerKey.equals(trustedPlayerKey))
         {
