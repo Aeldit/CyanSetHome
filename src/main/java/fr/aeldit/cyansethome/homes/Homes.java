@@ -3,6 +3,10 @@ package fr.aeldit.cyansethome.homes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +32,7 @@ public class Homes
         private String name;
         private final String dimension, date;
         private final double x, y, z;
-        private final float yaw;
-        private final float pitch;
+        private final float yaw, pitch;
 
         @Contract(pure = true)
         public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
@@ -44,49 +47,36 @@ public class Homes
             this.date = date;
         }
 
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
         public String getName()
         {
             return name;
         }
 
-        public String getDimension()
+        public void setName(String name)
         {
-            return dimension;
+            this.name = name;
         }
 
-        public double getX()
+        public void sendFormatedMessage(ServerPlayerEntity player)
         {
-            return x;
+            CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
+                    player,
+                    "cyansethome.msg.getHome",
+                    false,
+                    Formatting.YELLOW + name,
+                    Formatting.DARK_AQUA + dimension,
+                    Formatting.DARK_AQUA + date
+            );
         }
 
-        public double getY()
+        public void teleport(ServerPlayerEntity player, MinecraftServer server)
         {
-            return y;
-        }
-
-        public double getZ()
-        {
-            return z;
-        }
-
-        public float getYaw()
-        {
-            return yaw;
-        }
-
-        public float getPitch()
-        {
-            return pitch;
-        }
-
-        public String getDate()
-        {
-            return date;
+            switch (dimension)
+            {
+                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
+                case "nether" -> player.teleport(server.getWorld(World.NETHER), x, y, z, yaw, pitch);
+                case "end" -> player.teleport(server.getWorld(World.END), x, y, z, yaw, pitch);
+            }
         }
     }
 

@@ -12,7 +12,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -475,21 +474,7 @@ public class HomeOfCommands
             }
         }
 
-        switch (home.getDimension())
-        {
-            case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), home.getX(),
-                                                home.getY(), home.getZ(), home.getYaw(),
-                                                home.getPitch()
-            );
-            case "nether" -> player.teleport(server.getWorld(World.NETHER), home.getX(),
-                                             home.getY(), home.getZ(), home.getYaw(),
-                                             home.getPitch()
-            );
-            case "end" -> player.teleport(server.getWorld(World.END), home.getX(),
-                                          home.getY(), home.getZ(), home.getYaw(),
-                                          home.getPitch()
-            );
-        }
+        home.teleport(player, server);
 
         player.addExperienceLevels(-1 * requiredXpLevel);
 
@@ -565,15 +550,9 @@ public class HomeOfCommands
 
         for (Homes.Home home : homes)
         {
-            CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                    player,
-                    "cyansethome.msg.getHome",
-                    false,
-                    Formatting.YELLOW + home.getName(),
-                    Formatting.DARK_AQUA + home.getDimension(),
-                    Formatting.DARK_AQUA + home.getDate()
-            );
+            home.sendFormatedMessage(player);
         }
+
         player.sendMessage(Text.of("§6------------------------------------"), false);
         return Command.SINGLE_SUCCESS;
     }
