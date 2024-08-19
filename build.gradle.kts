@@ -16,31 +16,30 @@ repositories {
 }
 
 object Constants {
-    const val ARCHIVES_BASE_NAME: String = "cyansethome"
-    const val MOD_VERSION: String = "0.1.11"
-    const val LOADER_VERSION: String = "0.15.11"
-    const val CYANLIB_VERSION: String = "0.4.15"
+    const val MOD_VERSION: String = "0.1.12"
+    const val LOADER_VERSION: String = "0.16.2"
+    const val CYANLIB_VERSION: String = "0.5.0"
 }
 
 class ModData {
     val mcVersion = property("minecraft_version").toString()
-    val javaVersion = property("java_version").toString()
-
     val fabricVersion = property("fabric_version").toString()
     val modmenuVersion = property("modmenu_version").toString()
     val cyanlibVersion = "${Constants.CYANLIB_VERSION}+${mcVersion}"
 
     val fullVersion = "${Constants.MOD_VERSION}+${mcVersion}"
 
-    val isj21 = javaVersion == "1.21"
+    val isj21 = mcVersion !in listOf("1.19.4", "1.20.2", "1.20.4")
+
+    val javaVersion = if (isj21) "21" else "17"
 }
 
 val mod = ModData()
 
 // Sets the name of the output jar files
 base {
-    archivesName = "${Constants.ARCHIVES_BASE_NAME}-${mod.fullVersion}"
-    group = "fr.aeldit.cyansh"
+    archivesName = "${rootProject.name}-${mod.fullVersion}"
+    group = "fr.aeldit.cyansethome"
 }
 
 dependencies {
@@ -49,16 +48,20 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${Constants.LOADER_VERSION}")
 
     // Fabric API
-    fun addFabricModule(name: String) {
+    for (name in listOf(
+        // ModMenu dependencies
+        "fabric-resource-loader-v0",
+        "fabric-key-binding-api-v1",
+        // CyanLib dependencies
+        "fabric-command-api-v2",
+        "fabric-lifecycle-events-v1",
+        "fabric-screen-api-v1",
+        // CyanSetHome dependencies
+        "fabric-networking-api-v1"
+    )) {
         val module = fabricApi.module(name, mod.fabricVersion)
         modImplementation(module)
     }
-    addFabricModule("fabric-resource-loader-v0")
-    addFabricModule("fabric-command-api-v2")
-    addFabricModule("fabric-lifecycle-events-v1")
-    addFabricModule("fabric-networking-api-v1")
-    addFabricModule("fabric-key-binding-api-v1")
-    addFabricModule("fabric-screen-api-v1")
 
     // ModMenu
     modImplementation("com.terraformersmc:modmenu:${mod.modmenuVersion}")
@@ -91,7 +94,7 @@ java {
 val buildAndCollect = tasks.register<Copy>("buildAndCollect") {
     group = "build"
     from(tasks.remapJar.get().archiveFile)
-    into(rootProject.layout.buildDirectory.file("libs/${Constants.ARCHIVES_BASE_NAME}-${mod.fullVersion}"))
+    into(rootProject.layout.buildDirectory.file("libs/${rootProject.name}-${mod.fullVersion}"))
     dependsOn("build")
 }
 
@@ -160,7 +163,7 @@ publishMods {
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
 
-    projectId.set(Constants.ARCHIVES_BASE_NAME)
+    projectId.set(rootProject.name)
     if (rootProject.file("README.md").exists()) {
         syncBodyFrom.set(rootProject.file("README.md").readText())
     }

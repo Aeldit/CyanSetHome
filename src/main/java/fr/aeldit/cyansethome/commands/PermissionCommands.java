@@ -69,7 +69,7 @@ public class PermissionCommands
         // The player to trust is not online
         if (trustedPlayer == null)
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotOnline");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerNotOnline");
             return 0;
         }
 
@@ -79,20 +79,20 @@ public class PermissionCommands
         // The player tried to trust themselves
         if (trustingPlayerKey.equals(trustedPlayerKey))
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.selfTrust");
             return 0;
         }
 
         // The player is already trusted
         if (TrustsObj.isPlayerTrustingFromName(player.getName().getString(), playerName))
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerAlreadyTrusted");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerAlreadyTrusted");
             return 0;
         }
 
         TrustsObj.trustPlayer(trustingPlayerKey, trustedPlayerKey);
 
-        CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.playerTrusted", Formatting.AQUA + playerName);
+        CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.playerTrusted", Formatting.AQUA + playerName);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -113,14 +113,14 @@ public class PermissionCommands
         // The player tried to untrust themselves
         if (player.getName().getString().equals(untrustedPlayerName))
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.selfTrust");
             return 0;
         }
 
         // The given player is already not trusted
         if (!TrustsObj.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotTrusted");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerNotTrusted");
             return 0;
         }
 
@@ -128,7 +128,7 @@ public class PermissionCommands
 
         CYANSH_LANG_UTILS.sendPlayerMessage(
                 player,
-                "cyansethome.msg.playerUnTrusted",
+                "msg.playerUnTrusted",
                 Formatting.AQUA + untrustedPlayerName
         );
         return Command.SINGLE_SUCCESS;
@@ -152,7 +152,7 @@ public class PermissionCommands
         );
         if (trustingPlayers == null || trustingPlayers.isEmpty())
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustingPlayer");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.noTrustingPlayer");
             return 0;
         }
 
@@ -160,7 +160,7 @@ public class PermissionCommands
 
         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                 player,
-                "cyansethome.msg.getTrustingPlayers",
+                "msg.getTrustingPlayers",
                 false,
                 Formatting.AQUA + players
         );
@@ -185,13 +185,13 @@ public class PermissionCommands
         );
         if (trustedPlayers == null || trustedPlayers.isEmpty())
         {
-            CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.msg.noTrustedPlayer");
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.noTrustedPlayer");
             return 0;
         }
 
         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                 player,
-                "cyansethome.msg.getTrustedPlayers",
+                "msg.getTrustedPlayers",
                 false,
                 Formatting.AQUA + getPlayers(trustedPlayers)
         );
@@ -215,7 +215,7 @@ public class PermissionCommands
 
         if (trustedPlayers.size() == 1)
         {
-            return trustedPlayers.get(0);
+            return trustedPlayers.getFirst();
         }
 
         StringBuilder players = new StringBuilder();

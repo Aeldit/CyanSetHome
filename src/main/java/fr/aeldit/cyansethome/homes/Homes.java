@@ -61,7 +61,7 @@ public class Homes
         {
             CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
                     player,
-                    "cyansethome.msg.getHome",
+                    "msg.getHome",
                     false,
                     Formatting.YELLOW + name,
                     Formatting.DARK_AQUA + dimension,
