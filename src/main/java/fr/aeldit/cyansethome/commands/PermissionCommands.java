@@ -21,22 +21,24 @@ public class PermissionCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
-        dispatcher.register(CommandManager.literal("home-trust")
-                                    .then(CommandManager.argument("player", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
-                                                                  builder, context.getSource()))
-                                                  .executes(PermissionCommands::trustPlayer)
-                                    )
+        dispatcher.register(
+                CommandManager.literal("home-trust")
+                        .then(CommandManager.argument("player", StringArgumentType.string())
+                                      .suggests((context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
+                                              builder, context.getSource())
+                                      )
+                                      .executes(PermissionCommands::trustPlayer)
+                        )
         );
 
-        dispatcher.register(CommandManager.literal("home-untrust")
-                                    .then(CommandManager.argument("player", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
-                                                                  builder, context.getSource().getPlayer()))
-                                                  .executes(PermissionCommands::untrustPlayer)
-                                    )
+        dispatcher.register(
+                CommandManager.literal("home-untrust")
+                        .then(CommandManager.argument("player", StringArgumentType.string())
+                                      .suggests((context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
+                                              builder, context.getSource().getPlayer())
+                                      )
+                                      .executes(PermissionCommands::untrustPlayer)
+                        )
         );
 
         dispatcher.register(CommandManager.literal("get-trusting-players")
@@ -64,6 +66,7 @@ public class PermissionCommands
         String playerName = StringArgumentType.getString(context, "player");
 
         ServerPlayerEntity trustedPlayer = source.getServer().getPlayerManager().getPlayer(playerName);
+        // The player to trust is not online
         if (trustedPlayer == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotOnline");
@@ -73,12 +76,14 @@ public class PermissionCommands
         String trustingPlayerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
         String trustedPlayerKey = "%s %s".formatted(trustedPlayer.getUuid(), playerName);
 
+        // The player tried to trust themselves
         if (trustingPlayerKey.equals(trustedPlayerKey))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
             return 0;
         }
 
+        // The player is already trusted
         if (TrustsObj.isPlayerTrustingFromName(player.getName().getString(), playerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerAlreadyTrusted");
@@ -105,12 +110,14 @@ public class PermissionCommands
         }
 
         String untrustedPlayerName = StringArgumentType.getString(context, "player");
+        // The player tried to untrust themselves
         if (player.getName().getString().equals(untrustedPlayerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.selfTrust");
             return 0;
         }
 
+        // The given player is already not trusted
         if (!TrustsObj.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "cyansethome.error.playerNotTrusted");
@@ -191,6 +198,14 @@ public class PermissionCommands
         return Command.SINGLE_SUCCESS;
     }
 
+    /**
+     * Takes a list of player names and creates a String that contains them all, in a form that is understandable by any
+     * player
+     *
+     * @param trustedPlayers The list of the trusted player's names
+     * @return The String containing the list of all player names in the proper form (ex: {@code "Player1, Player2,
+     * Player3"})
+     */
     private static @NotNull String getPlayers(@NotNull List<String> trustedPlayers)
     {
         if (trustedPlayers.size() == 1)
@@ -200,6 +215,7 @@ public class PermissionCommands
 
         StringBuilder players = new StringBuilder();
         int size = trustedPlayers.size();
+        // TODO -> Use size - 1 instead of checking at each iteration
         for (int i = 0; i < size; ++i)
         {
             if (i == size - 1)
