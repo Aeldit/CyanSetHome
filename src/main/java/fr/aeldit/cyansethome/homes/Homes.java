@@ -102,7 +102,7 @@ public class Homes
      */
     public boolean addHome(String playerKey, @NotNull Home home)
     {
-        if (!homeExists(playerKey, home.getName()))
+        if (getHome(playerKey, home.getName()) == null)
         {
             if (!homes.containsKey(playerKey))
             {
@@ -180,11 +180,12 @@ public class Homes
     }
 
     /**
-     * @return An ArrayList containing all the homes of the player {@code playerKey}
+     * @return An ArrayList containing all the homes of the player {@code playerKey}, {@code null} if the player doesn't
+     * have homes
      */
     public @Nullable List<Home> getPlayerHomes(String playerKey)
     {
-        return isEmpty(playerKey) ? null : homes.get(playerKey);
+        return (!homes.containsKey(playerKey) || homes.get(playerKey).isEmpty()) ? null : homes.get(playerKey);
     }
 
     /**
@@ -258,11 +259,6 @@ public class Homes
         return null;
     }
 
-    public boolean isEmpty(String playerKey)
-    {
-        return !homes.containsKey(playerKey) || homes.get(playerKey).isEmpty();
-    }
-
     /**
      * Returns whether the given player has reached its maximum amount of homes
      * <p>
@@ -273,19 +269,6 @@ public class Homes
     public boolean maxHomesReached(String playerKey)
     {
         return homes.containsKey(playerKey) && homes.get(playerKey).size() >= MAX_HOMES.getValue();
-    }
-
-    /**
-     * Returns whether the home with the name {@code homeName} exists in the list of the player's homes
-     * <p>
-     * If the player is not found in the list, this returns {@code false}
-     *
-     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
-     * @param homeName  The name of the home
-     */
-    public boolean homeExists(String playerKey, String homeName)
-    {
-        return getHome(playerKey, homeName) != null;
     }
 
     /**
