@@ -17,8 +17,6 @@ public class CyanSHClientCore implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
-        CYANSH_LIB_UTILS.init(MODID, CYANSH_OPTS_STORAGE);
-
         // Join World Event
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             renameFileIfUsernameChanged(handler);
