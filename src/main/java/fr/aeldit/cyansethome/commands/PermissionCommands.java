@@ -215,17 +215,14 @@ public class PermissionCommands
 
         StringBuilder players = new StringBuilder();
         int size = trustedPlayers.size();
-        // TODO -> Use size - 1 instead of checking at each iteration
-        for (int i = 0; i < size; ++i)
+        for (int i = 0; i < size - 1; ++i)
         {
-            if (i == size - 1)
-            {
-                players.append("%s".formatted(trustedPlayers.get(i)));
-            }
-            else
-            {
-                players.append("%s, ".formatted(trustedPlayers.get(i)));
-            }
+            players.append("%s, ".formatted(trustedPlayers.get(i)));
+        }
+
+        if (size > 0)
+        {
+            players.append("%s".formatted(trustedPlayers.get(size - 1)));
         }
         return players.toString();
     }
