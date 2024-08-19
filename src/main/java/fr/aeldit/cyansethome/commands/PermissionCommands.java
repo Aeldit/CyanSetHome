@@ -208,6 +208,11 @@ public class PermissionCommands
      */
     private static @NotNull String getPlayers(@NotNull List<String> trustedPlayers)
     {
+        if (trustedPlayers.isEmpty())
+        {
+            return "";
+        }
+
         if (trustedPlayers.size() == 1)
         {
             return trustedPlayers.get(0);
@@ -220,10 +225,7 @@ public class PermissionCommands
             players.append("%s, ".formatted(trustedPlayers.get(i)));
         }
 
-        if (size > 0)
-        {
-            players.append("%s".formatted(trustedPlayers.get(size - 1)));
-        }
+        players.append("%s".formatted(trustedPlayers.get(size - 1)));
         return players.toString();
     }
 }
