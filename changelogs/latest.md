@@ -1,3 +1,2 @@
-- Use CyanLib 0.4.15 to fix translation issues
-- Set the `minOpLvlHomes` option to 0 by default
-- Set the `useXpToTpHome` option to false by default
+Add the possibility for players to choose whether XP points or XP levels will be used if the `USE_XP_TP_TP_HOME`
+option is enabled

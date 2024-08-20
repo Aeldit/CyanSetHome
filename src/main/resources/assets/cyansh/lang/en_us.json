@@ -11,5 +11,6 @@
   "cyanlib.config.option.minOpLvlBypass": "MinOpLvlBypass",
   "cyanlib.config.option.minOpLvlHomes": "MinOpLvlHomes",
   "cyanlib.config.option.useXpToTpHome": "UseXpToTpHome",
+  "cyanlib.config.option.xpUsePoints": "XpUsePoints",
   "cyanlib.config.option.blockPerXpLevelHome": "BlockPerXpLevelHome"
 }

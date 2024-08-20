@@ -299,12 +299,13 @@ public class HomeCommands
                     BLOCKS_PER_XP_LEVEL_HOME.getValue()
             );
 
-            if (player.experienceLevel < requiredXpLevel)
+            if ((XP_USE_POINTS.getValue() ? player.totalExperience : player.experienceLevel) < requiredXpLevel)
             {
                 CYANSH_LANG_UTILS.sendPlayerMessage(
                         player,
                         "error.notEnoughXp",
-                        Formatting.GOLD + String.valueOf(requiredXpLevel)
+                        Formatting.GOLD + String.valueOf(requiredXpLevel),
+                        Formatting.RED + (XP_USE_POINTS.getValue() ? "points" : "levels")
                 );
                 return 0;
             }
@@ -312,7 +313,14 @@ public class HomeCommands
 
         home.teleport(player, server);
 
-        player.addExperienceLevels(-1 * requiredXpLevel);
+        if (XP_USE_POINTS.getValue())
+        {
+            player.addExperience(-1 * requiredXpLevel);
+        }
+        else
+        {
+            player.addExperienceLevels(-1 * requiredXpLevel);
+        }
 
         CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.goToHome", Formatting.YELLOW + homeName);
         return Command.SINGLE_SUCCESS;
