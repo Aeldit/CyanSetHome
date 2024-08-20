@@ -19,6 +19,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
     public static final IntegerOption MIN_OP_LVL_BYPASS = new IntegerOption("minOpLvlBypass", 4, RULES.OP_LEVELS);
 
     public static final BooleanOption USE_XP_TO_TP_HOME = new BooleanOption("useXpToTpHome", false);
+    public static final BooleanOption XP_USE_POINTS = new BooleanOption("xpUsePoints", false);
 
     public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
             "blockPerXpLevelHome", 300,
@@ -88,6 +89,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "msg.set.minOpLvlHomes",
                         "§3The minimum OP level required to use the§d home §3commands is now %s"
                 ),
+                entry("msg.set.useXpToTeleport", "§3Toggled the use of XP to teleport %s"),
 
                 // HEADERS
                 entry("msg.listHomes", "§6CyanSetHome - YOUR HOMES\n"),
@@ -122,6 +124,11 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "msg.getDesc.useXpToTpHome",
                         "§3Whether or not to consume XP on teleportation to a home"
                 ),
+                entry(
+                        "msg.getDesc.xpUsePoints",
+                        "§3The§e xpUsePoints §3option defines whether the necessary XP will be in points or in " +
+                                "levels"
+                ),
 
                 // GET_CFG
                 entry("msg.getCfg.header", "§6CyanSetHome - OPTIONS\n"),
@@ -131,6 +138,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.getCfg.minOpLvlBypass", "§6- §3Minimum OP level to use Bypass : %s"),
                 entry("msg.getCfg.minOpLvlHomes", "§6- §3Minimum OP level for§d home §3commands : %s"),
                 entry("msg.getCfg.useXpToTpHome", "§6- §3Use XP to tp to a home : %s"),
+                entry("msg.getCfg.xpUsePoints", "§6- §3Use XP points instead of XP levels : %s"),
                 entry("msg.getCfg.blockPerXpLevelHome", "§6- §3Block per XP point for home tp : %s")
         );
     }
