@@ -55,7 +55,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "error.bypassDisabled",
                         "§cThe ByPass option is disabled or you are not OP level 4"
                 ),
-                entry("error.notEnoughXp", "§cYou don't have enough XP (%s§c levels are required)"),
+                entry("error.notEnoughXp", "§cYou don't have enough XP (%s§c %s§c are required)"),
                 entry("error.playerNotFound", "§cCouldn't find the player %s"),
 
                 // MESSAGES
@@ -90,6 +90,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "§3The minimum OP level required to use the§d home §3commands is now %s"
                 ),
                 entry("msg.set.useXpToTeleport", "§3Toggled the use of XP to teleport %s"),
+                entry("msg.set.xpUsePoints", "§3Toggled the use of XP points instead of XP levels %s"),
 
                 // HEADERS
                 entry("msg.listHomes", "§6CyanSetHome - YOUR HOMES\n"),

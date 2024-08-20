@@ -126,11 +126,7 @@ public class PermissionCommands
 
         TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
 
-        CYANSH_LANG_UTILS.sendPlayerMessage(
-                player,
-                "msg.playerUnTrusted",
-                Formatting.AQUA + untrustedPlayerName
-        );
+        CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.playerUnTrusted", Formatting.AQUA + untrustedPlayerName);
         return Command.SINGLE_SUCCESS;
     }
 

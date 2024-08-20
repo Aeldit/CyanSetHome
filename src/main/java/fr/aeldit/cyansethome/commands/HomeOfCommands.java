@@ -455,20 +455,22 @@ public class HomeOfCommands
             return 0;
         }
 
-        int requiredXpLevel = 0;
+        int requiredXpLevelOrPoints = 0;
 
         if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
         {
-            requiredXpLevel = getRequiredXpLevelsToTp(player, player.getBlockPos(),
-                                                      BLOCKS_PER_XP_LEVEL_HOME.getValue()
+            requiredXpLevelOrPoints = getRequiredXpLevelsToTp(
+                    player, player.getBlockPos(),
+                    BLOCKS_PER_XP_LEVEL_HOME.getValue()
             );
 
-            if (player.experienceLevel < requiredXpLevel)
+            if ((XP_USE_POINTS.getValue() ? player.totalExperience : player.experienceLevel) < requiredXpLevelOrPoints)
             {
                 CYANSH_LANG_UTILS.sendPlayerMessage(
                         player,
                         "error.notEnoughXp",
-                        Formatting.GOLD + String.valueOf(requiredXpLevel)
+                        Formatting.GOLD + String.valueOf(requiredXpLevelOrPoints),
+                        Formatting.RED + (XP_USE_POINTS.getValue() ? "points" : "levels")
                 );
                 return 0;
             }
@@ -476,13 +478,16 @@ public class HomeOfCommands
 
         home.teleport(player, server);
 
-        player.addExperienceLevels(-1 * requiredXpLevel);
+        if (XP_USE_POINTS.getValue())
+        {
+            player.addExperience(-1 * requiredXpLevelOrPoints);
+        }
+        else
+        {
+            player.addExperienceLevels(-1 * requiredXpLevelOrPoints);
+        }
 
-        CYANSH_LANG_UTILS.sendPlayerMessage(
-                player,
-                "msg.goToHome",
-                Formatting.YELLOW + homeName
-        );
+        CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.goToHome", Formatting.YELLOW + homeName);
         return Command.SINGLE_SUCCESS;
     }
 
