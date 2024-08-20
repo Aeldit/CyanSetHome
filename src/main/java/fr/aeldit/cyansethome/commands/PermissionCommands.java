@@ -211,7 +211,11 @@ public class PermissionCommands
 
         if (trustedPlayers.size() == 1)
         {
+            //? if <=1.20.4 {
+            /*return trustedPlayers.get(0);
+            *///?} else {
             return trustedPlayers.getFirst();
+             //?}
         }
 
         StringBuilder players = new StringBuilder();
