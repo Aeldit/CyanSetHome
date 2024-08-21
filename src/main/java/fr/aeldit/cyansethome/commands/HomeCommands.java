@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import static fr.aeldit.cyanlib.lib.utils.TPUtils.getRequiredXpLevelsToTp;
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.*;
 
@@ -294,10 +293,7 @@ public class HomeCommands
 
         if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
         {
-            requiredXpLevel = getRequiredXpLevelsToTp(
-                    player, player.getBlockPos(),
-                    BLOCKS_PER_XP_LEVEL_HOME.getValue()
-            );
+            requiredXpLevel = home.getRequiredXpLevelsToTp(player);
 
             if ((XP_USE_POINTS.getValue() ? player.totalExperience : player.experienceLevel) < requiredXpLevel)
             {

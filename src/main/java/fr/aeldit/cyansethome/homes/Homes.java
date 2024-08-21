@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.aeldit.cyansethome.CyanSHCore.*;
+import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.BLOCKS_PER_XP_LEVEL_HOME;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
@@ -67,6 +68,30 @@ public class Homes
                     Formatting.DARK_AQUA + dimension,
                     Formatting.DARK_AQUA + date
             );
+        }
+
+        public int getRequiredXpLevelsToTp(@NotNull ServerPlayerEntity player)
+        {
+            double distanceX = player.getX() - x;
+            double distanceZ = player.getZ() - z;
+
+            // Converts to a positive distance
+            if (distanceX < 0)
+            {
+                distanceX *= -1;
+            }
+            if (distanceZ < 0)
+            {
+                distanceZ *= -1;
+            }
+            // Minecraft doesn't center the position to the middle of the block but in 1 corner,
+            // so this allows for a better centering
+            ++distanceX;
+            ++distanceZ;
+
+            int coordinatesDistance = (int) (distanceX + distanceZ) / 2;
+            int option = BLOCKS_PER_XP_LEVEL_HOME.getValue();
+            return coordinatesDistance < option ? 1 : 1 + coordinatesDistance / option;
         }
 
         public void teleport(ServerPlayerEntity player, MinecraftServer server)
