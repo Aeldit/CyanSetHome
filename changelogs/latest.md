@@ -1,2 +1,3 @@
-Add the possibility for players to choose whether XP points or XP levels will be used if the `USE_XP_TP_TP_HOME`
-option is enabled
+Fix `getRequiredXpLevelsToTp()` not returning the correct value, as it was called with the position of the player to the
+position of the player, which made the return value always 1 *(basically the xp taken from the player when it teleported
+to a home was always 1)*
