@@ -29,7 +29,7 @@ class ModData {
 
     val fullVersion = "${Constants.MOD_VERSION}+${mcVersion}"
 
-    val isj21 = mcVersion !in listOf("1.19.4", "1.20.2", "1.20.4")
+    val isj21 = mcVersion !in listOf("1.19.4", "1.20.1", "1.20.2", "1.20.4")
 
     val javaVersion = if (isj21) "21" else "17"
 }
