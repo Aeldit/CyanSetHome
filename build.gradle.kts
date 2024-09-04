@@ -22,12 +22,21 @@ object Constants {
 }
 
 class ModData {
+    val hasVersionRange = properties.containsKey("range_name")
+
     val mcVersion = property("minecraft_version").toString()
+
+    val rangedName = if (hasVersionRange) property("range_name").toString() else mcVersion
+    private val modrinthVersions = if (hasVersionRange) property("modrinth_versions") else mcVersion
+    val versionsList = modrinthVersions.toString().split(" ")
+    val min = if (hasVersionRange) versionsList[0] else mcVersion
+    val max = if (hasVersionRange) versionsList[versionsList.size - 1] else mcVersion
+
     val fabricVersion = property("fabric_version").toString()
     val modmenuVersion = property("modmenu_version").toString()
-    val cyanlibVersion = "${Constants.CYANLIB_VERSION}+${mcVersion}"
+    val cyanlibVersion = "${Constants.CYANLIB_VERSION}+${rangedName}"
 
-    val fullVersion = "${Constants.MOD_VERSION}+${mcVersion}"
+    val fullVersion = "${Constants.MOD_VERSION}+${rangedName}"
 
     val isj21 = mcVersion !in listOf("1.19.4", "1.20.1", "1.20.2", "1.20.4")
 
@@ -109,7 +118,8 @@ tasks {
     processResources {
         inputs.property("version", mod.fullVersion)
         inputs.property("loader_version", Constants.LOADER_VERSION)
-        inputs.property("mc_version", mod.mcVersion)
+        inputs.property("min", mod.min)
+        inputs.property("max", mod.max)
         inputs.property("java_version", mod.javaVersion)
 
         filesMatching("fabric.mod.json") {
@@ -117,7 +127,8 @@ tasks {
                 mapOf(
                     "version" to mod.fullVersion,
                     "loader_version" to Constants.LOADER_VERSION,
-                    "mc_version" to mod.mcVersion,
+                    "min" to mod.min,
+                    "max" to mod.max,
                     "java_version" to mod.javaVersion
                 )
             )
@@ -139,13 +150,17 @@ publishMods {
         accessToken = System.getenv("MODRINTH_TOKEN")
 
         projectId = "9auOqb3o"
-        displayName = "[${mod.mcVersion}] CyanSetHome ${Constants.MOD_VERSION}"
+        displayName = "[${mod.rangedName}] CyanSetHome ${Constants.MOD_VERSION}"
         version = mod.fullVersion
         type = STABLE
 
         file = tasks.remapJar.get().archiveFile
 
-        minecraftVersions.add(mod.mcVersion)
+        if (mod.hasVersionRange) {
+            minecraftVersions.addAll(mod.versionsList)
+        } else {
+            minecraftVersions.add(mod.mcVersion)
+        }
         modLoaders.add("fabric")
 
         requires("fabric-api", "modmenu")
