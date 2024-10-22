@@ -3,11 +3,6 @@ package fr.aeldit.cyansethome.homes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,88 +18,10 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.aeldit.cyansethome.CyanSHCore.*;
-import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.BLOCKS_PER_XP_LEVEL_HOME;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
 {
-    public static class Home
-    {
-        private String name;
-        private final String dimension, date;
-        private final double x, y, z;
-        private final float yaw, pitch;
-
-        @Contract(pure = true)
-        public Home(String name, String dimension, double x, double y, double z, float yaw, float pitch, String date)
-        {
-            this.name = name;
-            this.dimension = dimension;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.yaw = yaw;
-            this.pitch = pitch;
-            this.date = date;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
-        public void sendFormatedMessage(ServerPlayerEntity player)
-        {
-            CYANSH_LANG_UTILS.sendPlayerMessageActionBar(
-                    player,
-                    "msg.getHome",
-                    false,
-                    Formatting.YELLOW + name,
-                    Formatting.DARK_AQUA + dimension,
-                    Formatting.DARK_AQUA + date
-            );
-        }
-
-        public int getRequiredXpLevelsToTp(@NotNull ServerPlayerEntity player)
-        {
-            double distanceX = player.getX() - x;
-            double distanceZ = player.getZ() - z;
-
-            // Converts to a positive distance
-            if (distanceX < 0)
-            {
-                distanceX *= -1;
-            }
-            if (distanceZ < 0)
-            {
-                distanceZ *= -1;
-            }
-            // Minecraft doesn't center the position to the middle of the block but in 1 corner,
-            // so this allows for a better centering
-            ++distanceX;
-            ++distanceZ;
-
-            int coordinatesDistance = (int) (distanceX + distanceZ) / 2;
-            int option = BLOCKS_PER_XP_LEVEL_HOME.getValue();
-            return coordinatesDistance < option ? 1 : 1 + coordinatesDistance / option;
-        }
-
-        public void teleport(ServerPlayerEntity player, MinecraftServer server)
-        {
-            switch (dimension)
-            {
-                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
-                case "nether" -> player.teleport(server.getWorld(World.NETHER), x, y, z, yaw, pitch);
-                case "end" -> player.teleport(server.getWorld(World.END), x, y, z, yaw, pitch);
-            }
-        }
-    }
-
     // HashMap<playerName, List<Home>>
     private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
     private final TypeToken<List<Home>> homesType = new TypeToken<>()
@@ -127,7 +44,7 @@ public class Homes
      */
     public boolean addHome(String playerKey, @NotNull Home home)
     {
-        if (getHome(playerKey, home.getName()) == null)
+        if (getHome(playerKey, home.name()) == null)
         {
             if (!homes.containsKey(playerKey))
             {
@@ -196,7 +113,8 @@ public class Homes
         Home home = getHome(playerKey, homeName);
         if (home != null)
         {
-            home.setName(newHomeName);
+            homes.get(playerKey).remove(home);
+            homes.get(playerKey).add(home.getRenamed(newHomeName));
             writeHomes(playerKey);
 
             return true;
@@ -237,10 +155,7 @@ public class Homes
         if (homes.containsKey(playerKey))
         {
             List<String> names = new ArrayList<>(homes.get(playerKey).size());
-            for (Home home : homes.get(playerKey))
-            {
-                names.add(home.name);
-            }
+            homes.get(playerKey).forEach(home -> names.add(home.name()));
             return names;
         }
         return null;
@@ -259,10 +174,7 @@ public class Homes
             if (key.split(" ")[1].equals(playerName))
             {
                 List<String> names = new ArrayList<>(homes.get(key).size());
-                for (Home home : homes.get(key))
-                {
-                    names.add(home.name);
-                }
+                homes.get(key).forEach(home -> names.add(home.name()));
                 return names;
             }
         }
@@ -308,7 +220,7 @@ public class Homes
         {
             for (Home home : homes.get(playerKey))
             {
-                if (home.name.equals(homeName))
+                if (home.name().equals(homeName))
                 {
                     return home;
                 }
@@ -406,7 +318,7 @@ public class Homes
      */
     public void readClient(String saveName)
     {
-        HOMES_PATH = Path.of(MOD_PATH + "/" + saveName);
+        HOMES_PATH = Path.of("%s/%s".formatted(MOD_PATH,saveName));
         checkOrCreateHomesDir();
         File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 

@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansethome.commands.arguments.ArgumentSuggestion;
-import fr.aeldit.cyansethome.homes.Homes;
+import fr.aeldit.cyansethome.homes.Home;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,88 +27,93 @@ public class HomeCommands
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("set-home")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .executes(HomeCommands::setHome)
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .executes(HomeCommands::setHome)
+                                          )
         );
         dispatcher.register(CommandManager.literal("sh")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .executes(HomeCommands::setHome)
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .executes(HomeCommands::setHome)
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("remove-home")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
-                                                          builder,
-                                                          Objects.requireNonNull(
-                                                                  context.getSource()
-                                                                          .getPlayer())
-                                                  ))
-                                                  .executes(HomeCommands::removeHome)
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
+                                                                              builder,
+                                                                              Objects.requireNonNull(
+                                                                                      context.getSource()
+                                                                                             .getPlayer())
+                                                                      ))
+                                                              .executes(HomeCommands::removeHome)
+                                          )
         );
         dispatcher.register(CommandManager.literal("rh")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
-                                                          builder,
-                                                          Objects.requireNonNull(
-                                                                  context.getSource()
-                                                                          .getPlayer())
-                                                  ))
-                                                  .executes(HomeCommands::removeHome)
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
+                                                                              builder,
+                                                                              Objects.requireNonNull(
+                                                                                      context.getSource()
+                                                                                             .getPlayer())
+                                                                      ))
+                                                              .executes(HomeCommands::removeHome)
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("rename-home")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
-                                                          builder,
-                                                          Objects.requireNonNull(
-                                                                  context.getSource()
-                                                                          .getPlayer())
-                                                  ))
-                                                  .then(CommandManager.argument(
-                                                                        "new_home_name",
-                                                                        StringArgumentType.string()
-                                                                )
-                                                                .executes(HomeCommands::renameHome)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
+                                                                              builder,
+                                                                              Objects.requireNonNull(
+                                                                                      context.getSource()
+                                                                                             .getPlayer())
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "new_home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .executes(HomeCommands::renameHome)
+                                                              )
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("remove-all-homes")
-                                    .executes(HomeCommands::removeAllHomes)
+                                          .executes(HomeCommands::removeAllHomes)
         );
 
         dispatcher.register(CommandManager.literal("home")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
-                                                          builder,
-                                                          Objects.requireNonNull(
-                                                                  context.getSource()
-                                                                          .getPlayer())
-                                                  ))
-                                                  .executes(HomeCommands::goToHome)
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
+                                                                              builder,
+                                                                              Objects.requireNonNull(
+                                                                                      context.getSource()
+                                                                                             .getPlayer())
+                                                                      ))
+                                                              .executes(HomeCommands::goToHome)
+                                          )
         );
         dispatcher.register(CommandManager.literal("h")
-                                    .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                  .suggests((context, builder) -> ArgumentSuggestion.getHomes(
-                                                          builder,
-                                                          Objects.requireNonNull(
-                                                                  context.getSource()
-                                                                          .getPlayer())
-                                                  ))
-                                                  .executes(HomeCommands::goToHome)
-                                    )
+                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
+                                                                              builder,
+                                                                              Objects.requireNonNull(
+                                                                                      context.getSource()
+                                                                                             .getPlayer())
+                                                                      ))
+                                                              .executes(HomeCommands::goToHome)
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("get-homes")
-                                    .executes(HomeCommands::getHomesList)
+                                          .executes(HomeCommands::getHomesList)
         );
         dispatcher.register(CommandManager.literal("gh")
-                                    .executes(HomeCommands::getHomesList)
+                                          .executes(HomeCommands::getHomesList)
         );
     }
 
@@ -121,8 +126,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -141,16 +146,16 @@ public class HomeCommands
             return 0;
         }
 
-        if (!HomesObj.addHome(playerKey, new Homes.Home(
+        if (!HomesObj.addHome(playerKey, new Home(
                 homeName,
                 player.getWorld()
-                        //? if <1.20.6 {
-                        /*.getDimensionKey().getValue().toString()
-                         *///?} else {
-                        .getDimensionEntry().getIdAsString()
-                        //?}
-                        .replace("minecraft:", "")
-                        .replace("the_", ""),
+                      //? if <1.20.6 {
+                      /*.getDimensionKey().getValue().toString()
+                       *///?} else {
+                      .getDimensionEntry().getIdAsString()
+                      //?}
+                      .replace("minecraft:", "")
+                      .replace("the_", ""),
                 player.getX(), player.getY(), player.getZ(),
                 player.getYaw(), player.getPitch(),
                 new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
@@ -173,8 +178,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -204,8 +209,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -230,8 +235,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -266,8 +271,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -276,7 +281,7 @@ public class HomeCommands
         String homeName = StringArgumentType.getString(context, "home_name");
         String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
-        Homes.Home home = HomesObj.getHome(playerKey, homeName);
+        Home home = HomesObj.getHome(playerKey, homeName);
         if (home == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFound", Formatting.YELLOW + homeName);
@@ -331,14 +336,14 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
         }
 
-        List<Homes.Home> homes = HomesObj.getPlayerHomes(
+        List<Home> homes = HomesObj.getPlayerHomes(
                 "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
         );
         if (homes == null)
@@ -350,10 +355,7 @@ public class HomeCommands
         player.sendMessage(Text.of("§6------------------------------------"), false);
         CYANSH_LANG_UTILS.sendPlayerMessageActionBar(player, "msg.listHomes", false);
 
-        for (Homes.Home home : homes)
-        {
-            home.sendFormatedMessage(player);
-        }
+        homes.forEach(home -> home.sendFormatedMessage(player));
 
         player.sendMessage(Text.of("§6------------------------------------"), false);
         return Command.SINGLE_SUCCESS;

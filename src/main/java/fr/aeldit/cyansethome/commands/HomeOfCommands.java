@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import fr.aeldit.cyansethome.commands.arguments.ArgumentSuggestion;
-import fr.aeldit.cyansethome.homes.Homes;
+import fr.aeldit.cyansethome.homes.Home;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -26,165 +26,192 @@ public class HomeOfCommands
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(CommandManager.literal("set-home-of")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .executes(HomeOfCommands::setHomeOf)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .executes(HomeOfCommands::setHomeOf)
+                                                              )
+                                          )
         );
         dispatcher.register(CommandManager.literal("sho")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .executes(HomeOfCommands::setHomeOf)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .executes(HomeOfCommands::setHomeOf)
+                                                              )
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("remove-home-of")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .suggests(
-                                                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
-                                                                                builder,
-                                                                                context.getSource().getPlayer(),
-                                                                                context.getInput().split(" ")[1]
-                                                                        ))
-                                                                .executes(HomeOfCommands::removeHomeOf)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .suggests(
+                                                                                          (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                                                                  builder,
+                                                                                                  context.getSource()
+                                                                                                         .getPlayer(),
+                                                                                                  context.getInput()
+                                                                                                         .split(" ")[1]
+                                                                                          ))
+                                                                                  .executes(
+                                                                                          HomeOfCommands::removeHomeOf)
+                                                              )
+                                          )
         );
         dispatcher.register(CommandManager.literal("rho")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .suggests(
-                                                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
-                                                                                builder,
-                                                                                context.getSource().getPlayer(),
-                                                                                context.getInput().split(" ")[1]
-                                                                        ))
-                                                                .executes(HomeOfCommands::removeHomeOf)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .suggests(
+                                                                                          (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                                                                  builder,
+                                                                                                  context.getSource()
+                                                                                                         .getPlayer(),
+                                                                                                  context.getInput()
+                                                                                                         .split(" ")[1]
+                                                                                          ))
+                                                                                  .executes(
+                                                                                          HomeOfCommands::removeHomeOf)
+                                                              )
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("remove-all-homes-of")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .executes(HomeOfCommands::removeAllHomesOf)
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .executes(HomeOfCommands::removeAllHomesOf)
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("rename-home-of")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .suggests(
-                                                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
-                                                                                builder,
-                                                                                context.getSource().getPlayer(),
-                                                                                context.getInput().split(" ")[1]
-                                                                        ))
-                                                                .then(CommandManager.argument(
-                                                                                      "new_home_name",
-                                                                                      StringArgumentType.string()
-                                                                              )
-                                                                              .executes(HomeOfCommands::renameHomeOf)
-                                                                )
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .suggests(
+                                                                                          (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                                                                  builder,
+                                                                                                  context.getSource()
+                                                                                                         .getPlayer(),
+                                                                                                  context.getInput()
+                                                                                                         .split(" ")[1]
+                                                                                          ))
+                                                                                  .then(CommandManager.argument(
+                                                                                                              "new_home_name",
+                                                                                                              StringArgumentType.string()
+                                                                                                      )
+                                                                                                      .executes(
+                                                                                                              HomeOfCommands::renameHomeOf)
+                                                                                  )
+                                                              )
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("home-of")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .suggests(
-                                                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
-                                                                                builder,
-                                                                                context.getSource().getPlayer(),
-                                                                                context.getInput().split(" ")[1]
-                                                                        ))
-                                                                .executes(HomeOfCommands::goToHomeOf)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .suggests(
+                                                                                          (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                                                                  builder,
+                                                                                                  context.getSource()
+                                                                                                         .getPlayer(),
+                                                                                                  context.getInput()
+                                                                                                         .split(" ")[1]
+                                                                                          ))
+                                                                                  .executes(HomeOfCommands::goToHomeOf)
+                                                              )
+                                          )
         );
         dispatcher.register(CommandManager.literal("ho")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .then(CommandManager.argument(
-                                                                  "home_name", StringArgumentType.string())
-                                                                .suggests(
-                                                                        (context, builder) -> ArgumentSuggestion.getHomesOf(
-                                                                                builder,
-                                                                                context.getSource().getPlayer(),
-                                                                                context.getInput().split(" ")[1]
-                                                                        ))
-                                                                .executes(HomeOfCommands::goToHomeOf)
-                                                  )
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .then(CommandManager.argument(
+                                                                                          "home_name",
+                                                                                          StringArgumentType.string()
+                                                                                  )
+                                                                                  .suggests(
+                                                                                          (context, builder) -> ArgumentSuggestion.getHomesOf(
+                                                                                                  builder,
+                                                                                                  context.getSource()
+                                                                                                         .getPlayer(),
+                                                                                                  context.getInput()
+                                                                                                         .split(" ")[1]
+                                                                                          ))
+                                                                                  .executes(HomeOfCommands::goToHomeOf)
+                                                              )
+                                          )
         );
 
         dispatcher.register(CommandManager.literal("get-homes-of")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .executes(HomeOfCommands::getHomesOfList)
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .executes(HomeOfCommands::getHomesOfList)
+                                          )
         );
         dispatcher.register(CommandManager.literal("gho")
-                                    .then(CommandManager.argument("player_name", StringArgumentType.string())
-                                                  .suggests(
-                                                          (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
-                                                                  builder,
-                                                                  context.getSource().getPlayer()
-                                                          ))
-                                                  .executes(HomeOfCommands::getHomesOfList)
-                                    )
+                                          .then(CommandManager.argument("player_name", StringArgumentType.string())
+                                                              .suggests(
+                                                                      (context, builder) -> ArgumentSuggestion.getTrustingPlayersName(
+                                                                              builder,
+                                                                              context.getSource().getPlayer()
+                                                                      ))
+                                                              .executes(HomeOfCommands::getHomesOfList)
+                                          )
         );
     }
 
@@ -199,9 +226,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -228,16 +255,16 @@ public class HomeOfCommands
 
         String homeName = StringArgumentType.getString(context, "home_name");
 
-        if (!HomesObj.addHome(playerKey, new Homes.Home(
+        if (!HomesObj.addHome(playerKey, new Home(
                 homeName,
                 player.getWorld()
-                        //? if <1.20.6 {
-                        /*.getDimensionKey().getValue().toString()
-                         *///?} else {
-                        .getDimensionEntry().getIdAsString()
-                        //?}
-                        .replace("minecraft:", "")
-                        .replace("the_", ""),
+                      //? if <1.20.6 {
+                      /*.getDimensionKey().getValue().toString()
+                       *///?} else {
+                      .getDimensionEntry().getIdAsString()
+                      //?}
+                      .replace("minecraft:", "")
+                      .replace("the_", ""),
                 player.getX(), player.getY(), player.getZ(), player.getYaw(),
                 player.getPitch(),
                 new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
@@ -267,9 +294,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -316,9 +343,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -361,9 +388,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -413,7 +440,7 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
         {
             return 0;
         }
@@ -431,7 +458,7 @@ public class HomeOfCommands
         }
 
         if ((!ALLOW_BYPASS.getValue() || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
-                && !TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+            && !TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
         )
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.notOpOrTrusted");
@@ -441,7 +468,7 @@ public class HomeOfCommands
 
         String homeName = StringArgumentType.getString(context, "home_name");
 
-        Homes.Home home = HomesObj.getHome(playerKey, homeName);
+        Home home = HomesObj.getHome(playerKey, homeName);
         if (home == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFound", Formatting.YELLOW + homeName);
@@ -499,7 +526,7 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
         {
             return 0;
         }
@@ -514,7 +541,7 @@ public class HomeOfCommands
 
         // The player does not have sufficient permissions or is not trusted
         if ((!ALLOW_BYPASS.getValue() || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
-                && !TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+            && !TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
         )
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.notOpOrTrusted");
@@ -534,7 +561,7 @@ public class HomeOfCommands
         }
 
         // The player doesn't have homes
-        List<Homes.Home> homes = HomesObj.getPlayerHomes(playerKey);
+        List<Home> homes = HomesObj.getPlayerHomes(playerKey);
         if (homes == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.noHomesOf");
@@ -549,10 +576,7 @@ public class HomeOfCommands
                 Formatting.AQUA + trustingPlayer
         );
 
-        for (Homes.Home home : homes)
-        {
-            home.sendFormatedMessage(player);
-        }
+        homes.forEach(home -> home.sendFormatedMessage(player));
 
         player.sendMessage(Text.of("§6------------------------------------"), false);
         return Command.SINGLE_SUCCESS;
