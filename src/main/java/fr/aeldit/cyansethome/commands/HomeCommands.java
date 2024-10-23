@@ -312,7 +312,7 @@ public class HomeCommands
             }
         }
 
-        home.teleport(player, server);
+        home.teleport(server, player);
 
         if (XP_USE_POINTS.getValue())
         {
