@@ -16,9 +16,9 @@ repositories {
 }
 
 object Constants {
-    const val MOD_VERSION: String = "0.1.14"
+    const val MOD_VERSION: String = "0.1.15"
     const val LOADER_VERSION: String = "0.16.7"
-    const val CYANLIB_VERSION: String = "0.5.1"
+    const val CYANLIB_VERSION: String = "0.5.2"
 }
 
 class ModData {
@@ -34,7 +34,9 @@ class ModData {
 
     val fabricVersion = property("fabric_version").toString()
     val modmenuVersion = property("modmenu_version").toString()
-    val cyanlibVersion = "${Constants.CYANLIB_VERSION}+${rangedName}"
+    val cyanlibVersion =
+        if (properties.containsKey("cyanlib_version")) property("cyanlib_version").toString()
+        else "${Constants.CYANLIB_VERSION}+${rangedName}"
 
     val fullVersion = "${Constants.MOD_VERSION}+${rangedName}"
 

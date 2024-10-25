@@ -1,1 +1,1 @@
-Add support for 1.21.2 + add missing null checks
+Add support for 1.21.3 + update to CyanLib 0.5.2

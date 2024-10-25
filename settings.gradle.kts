@@ -13,7 +13,7 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.kikugie.stonecutter") version "0.4"
+    id("dev.kikugie.stonecutter") version "0.4.5"
 }
 
 extensions.configure<StonecutterSettings> {
@@ -21,8 +21,8 @@ extensions.configure<StonecutterSettings> {
     centralScript = "build.gradle.kts"
 
     shared {
-        versions("1.19.4", "1.20.1", "1.20.2", "1.20.4", "1.20.6", "1.21.0", "1.21.2")
-        vcsVersion = "1.21.2"
+        versions("1.19.4", "1.20.1", "1.20.2", "1.20.4", "1.20.6", "1.21-1.21.1", "1.21.2-1.21.3")
+        vcsVersion = "1.21.2-1.21.3"
     }
 
     create(rootProject)
