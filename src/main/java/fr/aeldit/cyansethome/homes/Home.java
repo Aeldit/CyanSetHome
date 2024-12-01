@@ -7,8 +7,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-
 import static fr.aeldit.cyansethome.CyanSHCore.CYANSH_LANG_UTILS;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.BLOCKS_PER_XP_LEVEL_HOME;
 
@@ -61,7 +59,7 @@ public record Home(String name, String dimension, double x, double y, double z, 
         if (player != null)
         {
             //? if >=1.21.2-1.21.3 {
-            switch (dimension)
+            /*switch (dimension)
             {
                 case "overworld" ->
                         player.teleport(server.getWorld(World.OVERWORLD), x, y, z, new HashSet<>(), yaw, pitch, false);
@@ -69,14 +67,14 @@ public record Home(String name, String dimension, double x, double y, double z, 
                         player.teleport(server.getWorld(World.NETHER), x, y, z, new HashSet<>(), yaw, pitch, false);
                 case "end" -> player.teleport(server.getWorld(World.END), x, y, z, new HashSet<>(), yaw, pitch, false);
             }
-            //?} else {
-            /*switch (dimension)
+            *///?} else {
+            switch (dimension)
             {
-                case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
-                case "nether" -> player.teleport(server.getWorld(World.NETHER), x, y, z, yaw, pitch);
-                case "end" -> player.teleport(server.getWorld(World.END), x, y, z, yaw, pitch);
+            case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
+            case "nether" -> player.teleport(server.getWorld(World.NETHER), x, y, z, yaw, pitch);
+            case "end" -> player.teleport(server.getWorld(World.END), x, y, z, yaw, pitch);
             }
-            *///?}
+            //?}
         }
     }
 }
