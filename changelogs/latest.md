@@ -1,1 +1,1 @@
-Use CyanLib 1.0.0, fixing crash on 1.21-1.21.1 versions
+Add 1.21.4 support

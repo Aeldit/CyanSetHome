@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("maven-publish")
-    id("fabric-loom") version "1.8-SNAPSHOT"
+    id("fabric-loom") version "1.9-SNAPSHOT"
     id("com.modrinth.minotaur") version "2.+"
     id("me.modmuss50.mod-publish-plugin") version "0.5.+"
 }
@@ -17,7 +17,7 @@ repositories {
 
 object Constants {
     const val MOD_VERSION: String = "1.0.0"
-    const val LOADER_VERSION: String = "0.16.9"
+    const val LOADER_VERSION: String = "0.16.10"
     const val CYANLIB_VERSION: String = "1.0.0"
 }
 
