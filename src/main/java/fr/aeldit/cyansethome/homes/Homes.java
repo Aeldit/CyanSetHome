@@ -2,7 +2,6 @@ package fr.aeldit.cyansethome.homes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,21 +12,18 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
 {
-    // HashMap<playerName, List<Home>>
     private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
-    private final TypeToken<List<Home>> homesType = new TypeToken<>()
-    {
-    };
-    private final List<String> editingFiles = Collections.synchronizedList(new ArrayList<>());
     public static Path HOMES_PATH = Path.of("%s/homes".formatted(MOD_PATH));
 
     /**
@@ -136,15 +132,9 @@ public class Homes
      */
     public List<String> getPlayersWithHomes(String excludedPlayer)
     {
-        List<String> list = new ArrayList<>(homes.keySet().size());
-        for (String key : homes.keySet())
-        {
-            if (!key.split(" ")[1].equals(excludedPlayer))
-            {
-                list.add(key.split(" ")[1]);
-            }
-        }
-        return list;
+        return homes.keySet().stream().filter(key -> !key.split(" ")[1].equals(excludedPlayer))
+                    .map(key -> key.split(" ")[1])
+                    .collect(Collectors.toCollection(() -> new ArrayList<>(homes.size())));
     }
 
     /**
@@ -186,14 +176,7 @@ public class Homes
      */
     public @Nullable String getKeyFromName(String playerName)
     {
-        for (String key : homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                return key;
-            }
-        }
-        return null;
+        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName)).findFirst().orElse(null);
     }
 
     /**
@@ -218,13 +201,7 @@ public class Homes
     {
         if (homes.containsKey(playerKey))
         {
-            for (Home home : homes.get(playerKey))
-            {
-                if (home.name().equals(homeName))
-                {
-                    return home;
-                }
-            }
+            return homes.get(playerKey).stream().filter(home -> home.name().equals(homeName)).findFirst().orElse(null);
         }
         return null;
     }
@@ -237,184 +214,155 @@ public class Homes
      */
     public void renameChangedUsernames(String playerUUID, String playerName)
     {
-        if (Files.exists(HOMES_PATH))
+        if (!Files.exists(HOMES_PATH))
         {
-            File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
-
-            if (listOfFiles != null)
-            {
-                String playerKey = "%s %s".formatted(playerUUID, playerName);
-                for (File file : listOfFiles)
-                {
-                    if (file.isFile())
-                    {
-                        String[] splitFileName = file.getName().split(" ");
-                        String[] splitFileNameOld = file.getName().split("_");
-
-                        if (splitFileName[0].equals(playerUUID)
-                                && !splitFileName[1].equals("%s.json".formatted(playerName))
-                                || (splitFileNameOld.length == 2 && splitFileNameOld[0].equals(
-                                playerUUID) && !splitFileNameOld[1].equals("%s.json".formatted(playerName)))
-                        )
-                        {
-                            try
-                            {
-                                Files.move(
-                                        file.toPath(), Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey))
-                                                .resolveSibling("%s.json".formatted(playerKey)));
-                                CYANSH_LOGGER.info(
-                                        "[CyanSetHome] Rename the file '{}' to '{}' because the player changed its " +
-                                                "pseudo",
-                                        file.getName(), playerKey + ".json"
-                                );
-                            }
-                            catch (IOException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
+            return;
         }
-    }
 
-    /**
-     * Directory : minecraft/config/cyansethome/homes
-     */
-    public void readServer()
-    {
         File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
-
-        if (listOfFiles != null)
+        if (listOfFiles == null)
         {
-            for (File file : listOfFiles)
+            return;
+        }
+
+        String playerKey = "%s %s".formatted(playerUUID, playerName);
+        for (File file : listOfFiles)
+        {
+            if (file.isFile())
             {
-                if (file.isFile())
+                String[] splitFileName = file.getName().split(" ");
+                String[] splitFileNameOld = file.getName().split("_");
+
+                if (splitFileName[0].equals(playerUUID)
+                    && !splitFileName[1].equals("%s.json".formatted(playerName))
+                    || (
+                            splitFileNameOld.length == 2 && splitFileNameOld[0].equals(
+                                    playerUUID) && !splitFileNameOld[1].equals("%s.json".formatted(playerName))
+                    )
+                )
                 {
                     try
                     {
-                        Gson gsonReader = new Gson();
-                        Reader reader = Files.newBufferedReader(file.toPath());
-                        // TODO -> Don't use \\.
-                        addPlayerHomes(
-                                file.getName().split("\\.")[0],
-                                Collections.synchronizedList(new ArrayList<>(gsonReader.fromJson(reader, homesType)))
+                        Files.move(
+                                file.toPath(), Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey))
+                                                   .resolveSibling("%s.json".formatted(playerKey))
                         );
-                        reader.close();
+                        CYANSH_LOGGER.info(
+                                "[CyanSetHome] Rename the file '{}' to '{}' because the player changed its pseudo",
+                                file.getName(), playerKey + ".json"
+                        );
                     }
                     catch (IOException e)
                     {
                         throw new RuntimeException(e);
                     }
+                    break;
                 }
             }
         }
     }
 
     /**
-     * Directory (client) : minecraft/config/cyansethome/save_name
+     * Iterates over each file in the folder of the single-player world folder give as argument
+     * (minecraft/config/cyansethome/homes)
+     * <p>
+     * Used when running as a SERVER
+     */
+    public void readServer()
+    {
+        File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
+
+        if (listOfFiles == null)
+        {
+            return;
+        }
+
+        Gson gson = new Gson();
+        Arrays.stream(listOfFiles).filter(File::isFile).forEach(file -> {
+            try (Reader reader = Files.newBufferedReader(file.toPath()))
+            {
+                addPlayerHomes(
+                        file.getName().split("\\.")[0],
+                        Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
+                );
+            }
+            catch (IOException e)
+            {
+                CYANSH_LOGGER.error("Could not open the file '{}' to read homes (readServer)", file.getPath());
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    /**
+     * Iterates over each file in the folder of the single-player world folder give as argument
+     * <p>
+     * Used when running as a CLIENT
+     *
+     * @param saveName: The name of the folder containing the world the player is in
+     *                  (minecraft/config/cyansethome/save_name)
      */
     public void readClient(String saveName)
     {
-        HOMES_PATH = Path.of("%s/%s".formatted(MOD_PATH,saveName));
+        HOMES_PATH = Path.of("%s/%s".formatted(MOD_PATH, saveName));
         checkOrCreateHomesDir();
         File[] listOfFiles = new File(HOMES_PATH.toUri()).listFiles();
 
-        if (listOfFiles != null)
+        if (listOfFiles == null)
         {
-            for (File file : listOfFiles)
-            {
-                if (file.isFile())
-                {
-                    if (!file.getName().equals("trusted_players.json"))
-                    {
-                        try
-                        {
-                            Gson gsonReader = new Gson();
-                            Reader reader = Files.newBufferedReader(file.toPath());
-                            // TODO -> Don't use \\.
-                            addPlayerHomes(
-                                    file.getName().split("\\.")[0], Collections.synchronizedList(
-                                            new ArrayList<>(gsonReader.fromJson(reader, homesType))));
-                            reader.close();
-                        }
-                        catch (IOException e)
-                        {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-            }
+            return;
         }
+
+        Gson gson = new Gson();
+        Arrays.stream(listOfFiles).filter(File::isFile).filter(file -> !file.getName().equals("trusted_players.json"))
+              .forEach(file -> {
+                  try (Reader reader = Files.newBufferedReader(file.toPath()))
+                  {
+                      addPlayerHomes(
+                              file.getName().split("\\.")[0],
+                              Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
+                      );
+                  }
+                  catch (IOException e)
+                  {
+                      CYANSH_LOGGER.error("Could not open the file '{}' to read homes (readClient)", file.getPath());
+                      throw new RuntimeException(e);
+                  }
+              });
     }
 
     private void writeHomes(String playerKey)
     {
         checkOrCreateHomesDir();
 
-        try
-        {
-            Path path = Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey));
+        Path path = Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey));
 
-            if (!homes.containsKey(playerKey) || (homes.containsKey(playerKey) && homes.get(playerKey).isEmpty()))
+        // Remove the player from the map as it doesn't have any home
+        if (!homes.containsKey(playerKey) || (homes.containsKey(playerKey) && homes.get(playerKey).isEmpty()))
+        {
+            if (Files.exists(path))
             {
-                if (Files.exists(path))
+                try
                 {
                     Files.delete(path);
-                    removeEmptyModDir();
                 }
-            }
-            else
-            {
-                if (!editingFiles.contains(path.getFileName().toString()))
+                catch (IOException e)
                 {
-                    editingFiles.add(path.getFileName().toString());
-
-                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                    Writer writer = Files.newBufferedWriter(path);
-                    gsonWriter.toJson(homes.get(playerKey), writer);
-                    writer.close();
-
-                    editingFiles.remove(path.getFileName().toString());
+                    throw new RuntimeException(e);
                 }
-                else
-                {
-                    long end = System.currentTimeMillis() + 1000; // 1 s
-                    boolean couldWrite = false;
-
-                    while (System.currentTimeMillis() < end)
-                    {
-                        if (!editingFiles.contains(path.getFileName().toString()))
-                        {
-                            editingFiles.add(path.getFileName().toString());
-
-                            Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                            Writer writer = Files.newBufferedWriter(path);
-                            gsonWriter.toJson(homes.get(playerKey), writer);
-                            writer.close();
-
-                            couldWrite = true;
-                            editingFiles.remove(path.getFileName().toString());
-                            break;
-                        }
-                    }
-
-                    if (!couldWrite)
-                    {
-                        CYANSH_LOGGER.info(
-                                ("[CyanSetHome] Could not write the file %s because it is already being written (for " +
-                                        "more than 1 sec)").formatted(
-                                        path.getFileName().toString())
-                        );
-                    }
-                }
+                removeEmptyModDir();
             }
         }
-        catch (IOException e)
+        else
         {
-            throw new RuntimeException(e);
+            try (Writer writer = Files.newBufferedWriter(path))
+            {
+                new GsonBuilder().setPrettyPrinting().create().toJson(homes.get(playerKey), writer);
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

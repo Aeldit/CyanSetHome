@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fr.aeldit.cyansethome.CyanSHCore.CYANSH_LANG_UTILS;
-import static fr.aeldit.cyansethome.CyanSHCore.TrustsObj;
+import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS_OBJ;
 
 public class PermissionCommands
 {
@@ -23,29 +23,31 @@ public class PermissionCommands
     {
         dispatcher.register(
                 CommandManager.literal("home-trust")
-                        .then(CommandManager.argument("player", StringArgumentType.string())
-                                      .suggests((context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
-                                              builder, context.getSource())
-                                      )
-                                      .executes(PermissionCommands::trustPlayer)
-                        )
+                              .then(CommandManager.argument("player", StringArgumentType.string())
+                                                  .suggests(
+                                                          (context, builder) -> ArgumentSuggestion.getOnlinePlayersName(
+                                                                  builder, context.getSource())
+                                                  )
+                                                  .executes(PermissionCommands::trustPlayer)
+                              )
         );
 
         dispatcher.register(
                 CommandManager.literal("home-untrust")
-                        .then(CommandManager.argument("player", StringArgumentType.string())
-                                      .suggests((context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
-                                              builder, context.getSource().getPlayer())
-                                      )
-                                      .executes(PermissionCommands::untrustPlayer)
-                        )
+                              .then(CommandManager.argument("player", StringArgumentType.string())
+                                                  .suggests(
+                                                          (context, builder) -> ArgumentSuggestion.getTrustedPlayersName(
+                                                                  builder, context.getSource().getPlayer())
+                                                  )
+                                                  .executes(PermissionCommands::untrustPlayer)
+                              )
         );
 
         dispatcher.register(CommandManager.literal("get-trusting-players")
-                                    .executes(PermissionCommands::getTrustingPlayers)
+                                          .executes(PermissionCommands::getTrustingPlayers)
         );
         dispatcher.register(CommandManager.literal("get-trusted-players")
-                                    .executes(PermissionCommands::getTrustedPlayers)
+                                          .executes(PermissionCommands::getTrustedPlayers)
         );
     }
 
@@ -84,13 +86,13 @@ public class PermissionCommands
         }
 
         // The player is already trusted
-        if (TrustsObj.isPlayerTrustingFromName(player.getName().getString(), playerName))
+        if (TRUSTS_OBJ.isPlayerTrustingFromName(player.getName().getString(), playerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerAlreadyTrusted");
             return 0;
         }
 
-        TrustsObj.trustPlayer(trustingPlayerKey, trustedPlayerKey);
+        TRUSTS_OBJ.trustPlayer(trustingPlayerKey, trustedPlayerKey);
 
         CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.playerTrusted", Formatting.AQUA + playerName);
         return Command.SINGLE_SUCCESS;
@@ -118,13 +120,13 @@ public class PermissionCommands
         }
 
         // The given player is already not trusted
-        if (!TrustsObj.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
+        if (!TRUSTS_OBJ.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerNotTrusted");
             return 0;
         }
 
-        TrustsObj.untrustPlayer(player.getName().getString(), untrustedPlayerName);
+        TRUSTS_OBJ.untrustPlayer(player.getName().getString(), untrustedPlayerName);
 
         CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.playerUnTrusted", Formatting.AQUA + untrustedPlayerName);
         return Command.SINGLE_SUCCESS;
@@ -143,7 +145,7 @@ public class PermissionCommands
             return 0;
         }
 
-        ArrayList<String> trustingPlayers = TrustsObj.getTrustingPlayers(
+        ArrayList<String> trustingPlayers = TRUSTS_OBJ.getTrustingPlayers(
                 "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
         );
         if (trustingPlayers == null || trustingPlayers.isEmpty())
@@ -176,7 +178,7 @@ public class PermissionCommands
             return 0;
         }
 
-        List<String> trustedPlayers = TrustsObj.getTrustedPlayers(
+        List<String> trustedPlayers = TRUSTS_OBJ.getTrustedPlayers(
                 "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
         );
         if (trustedPlayers == null || trustedPlayers.isEmpty())
@@ -213,9 +215,9 @@ public class PermissionCommands
         {
             //? if <=1.20.4 {
             /*return trustedPlayers.get(0);
-            *///?} else {
+             *///?} else {
             return trustedPlayers.getFirst();
-             //?}
+            //?}
         }
 
         StringBuilder players = new StringBuilder();

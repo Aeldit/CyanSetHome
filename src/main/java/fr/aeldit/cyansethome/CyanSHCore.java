@@ -22,8 +22,8 @@ public class CyanSHCore
     public static final Logger CYANSH_LOGGER = LoggerFactory.getLogger(MODID);
     public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
 
-    public static final Homes HomesObj = new Homes();
-    public static final Trusts TrustsObj = new Trusts();
+    public static final Homes HOMES_OBJ = new Homes();
+    public static final Trusts TRUSTS_OBJ = new Trusts();
 
     public static CyanLib CYANSH_LIB_UTILS = new CyanLib(MODID, new CyanLibConfigImpl());
     public static CyanLibLanguageUtils CYANSH_LANG_UTILS = CYANSH_LIB_UTILS.getLanguageUtils();

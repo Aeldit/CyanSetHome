@@ -82,7 +82,7 @@ dependencies {
         include("maven.modrinth:cyanlib:${mod.cyanlibVersion}")
     }
 
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 loom {

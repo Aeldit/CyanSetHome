@@ -60,23 +60,20 @@ public record Home(String name, String dimension, double x, double y, double z, 
     {
         if (player != null)
         {
-            //? if >=1.21.2-1.21.3 {
             switch (dimension)
             {
+            //? if >=1.21.2-1.21.3 {
             case "overworld" -> player.teleport(
                     server.getWorld(World.OVERWORLD), x, y, z, new HashSet<>(), yaw, pitch, false);
             case "nether" -> player.teleport(
                     server.getWorld(World.NETHER), x, y, z, new HashSet<>(), yaw, pitch, false);
             case "end" -> player.teleport(server.getWorld(World.END), x, y, z, new HashSet<>(), yaw, pitch, false);
-            }
             //?} else {
-            /*switch (dimension)
-            {
-            case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
+            /*case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
             case "nether" -> player.teleport(server.getWorld(World.NETHER), x, y, z, yaw, pitch);
             case "end" -> player.teleport(server.getWorld(World.END), x, y, z, yaw, pitch);
-            }
             *///?}
+            }
         }
     }
 }

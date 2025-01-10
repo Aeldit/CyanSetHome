@@ -236,7 +236,7 @@ public class HomeOfCommands
 
         String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-        String playerKey = HomesObj.getKeyFromName(trustingPlayer);
+        String playerKey = HOMES_OBJ.getKeyFromName(trustingPlayer);
         if (playerKey == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
@@ -247,7 +247,7 @@ public class HomeOfCommands
             return 0;
         }
 
-        if (HomesObj.maxHomesReached(playerKey))
+        if (HOMES_OBJ.maxHomesReached(playerKey))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.maxHomesReached", MAX_HOMES.getValue());
             return 0;
@@ -255,20 +255,22 @@ public class HomeOfCommands
 
         String homeName = StringArgumentType.getString(context, "home_name");
 
-        if (!HomesObj.addHome(playerKey, new Home(
-                homeName,
-                player.getWorld()
-                      //? if <1.20.6 {
-                      /*.getDimensionKey().getValue().toString()
-                       *///?} else {
-                      .getDimensionEntry().getIdAsString()
-                      //?}
-                      .replace("minecraft:", "")
-                      .replace("the_", ""),
-                player.getX(), player.getY(), player.getZ(), player.getYaw(),
-                player.getPitch(),
-                new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
-        )))
+        if (!HOMES_OBJ.addHome(
+                playerKey, new Home(
+                        homeName,
+                        player.getWorld()
+                              //? if <1.20.6 {
+                              /*.getDimensionKey().getValue().toString()
+                               *///?} else {
+                              .getDimensionEntry().getIdAsString()
+                              //?}
+                              .replace("minecraft:", "")
+                              .replace("the_", ""),
+                        player.getX(), player.getY(), player.getZ(), player.getYaw(),
+                        player.getPitch(),
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime())
+                )
+        ))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeAlreadyExists");
             return 0;
@@ -304,7 +306,7 @@ public class HomeOfCommands
 
         String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-        String playerKey = HomesObj.getKeyFromName(trustingPlayer);
+        String playerKey = HOMES_OBJ.getKeyFromName(trustingPlayer);
         if (playerKey == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
@@ -316,7 +318,7 @@ public class HomeOfCommands
 
         String homeName = StringArgumentType.getString(context, "home_name");
 
-        if (!HomesObj.removeHome(playerKey, homeName))
+        if (!HOMES_OBJ.removeHome(playerKey, homeName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFound", Formatting.YELLOW + homeName);
             return 0;
@@ -353,7 +355,7 @@ public class HomeOfCommands
 
         String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-        String playerKey = HomesObj.getKeyFromName(trustingPlayer);
+        String playerKey = HOMES_OBJ.getKeyFromName(trustingPlayer);
         if (playerKey == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
@@ -363,7 +365,7 @@ public class HomeOfCommands
             return 0;
         }
 
-        if (!HomesObj.removeAll(playerKey))
+        if (!HOMES_OBJ.removeAll(playerKey))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.noHomesOf");
             return 0;
@@ -398,7 +400,7 @@ public class HomeOfCommands
 
         String trustingPlayer = StringArgumentType.getString(context, "player_name");
 
-        String playerKey = HomesObj.getKeyFromName(trustingPlayer);
+        String playerKey = HOMES_OBJ.getKeyFromName(trustingPlayer);
         if (playerKey == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
@@ -412,7 +414,7 @@ public class HomeOfCommands
         String homeName = StringArgumentType.getString(context, "home_name");
         String newHomeName = StringArgumentType.getString(context, "new_home_name");
 
-        if (!HomesObj.rename(playerKey, homeName, newHomeName))
+        if (!HOMES_OBJ.rename(playerKey, homeName, newHomeName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFoundOrExists", homeName);
             return 0;
@@ -446,7 +448,7 @@ public class HomeOfCommands
         }
 
         String trustingPlayer = StringArgumentType.getString(context, "player_name");
-        String playerKey = HomesObj.getKeyFromName(trustingPlayer);
+        String playerKey = HOMES_OBJ.getKeyFromName(trustingPlayer);
         if (playerKey == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
@@ -458,7 +460,7 @@ public class HomeOfCommands
         }
 
         if ((!ALLOW_BYPASS.getValue() || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
-            && !TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+            && !TRUSTS_OBJ.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
         )
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.notOpOrTrusted");
@@ -468,7 +470,7 @@ public class HomeOfCommands
 
         String homeName = StringArgumentType.getString(context, "home_name");
 
-        Home home = HomesObj.getHome(playerKey, homeName);
+        Home home = HOMES_OBJ.getHome(playerKey, homeName);
         if (home == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFound", Formatting.YELLOW + homeName);
@@ -541,7 +543,7 @@ public class HomeOfCommands
 
         // The player does not have sufficient permissions or is not trusted
         if ((!ALLOW_BYPASS.getValue() || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
-            && !TrustsObj.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+            && !TRUSTS_OBJ.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
         )
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.notOpOrTrusted");
@@ -549,7 +551,7 @@ public class HomeOfCommands
         }
 
         // The player couldn't be found
-        String playerKey = HomesObj.getKeyFromName(trustingPlayer);
+        String playerKey = HOMES_OBJ.getKeyFromName(trustingPlayer);
         if (playerKey == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
@@ -561,7 +563,7 @@ public class HomeOfCommands
         }
 
         // The player doesn't have homes
-        List<Home> homes = HomesObj.getPlayerHomes(playerKey);
+        List<Home> homes = HOMES_OBJ.getPlayerHomes(playerKey);
         if (homes == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.noHomesOf");

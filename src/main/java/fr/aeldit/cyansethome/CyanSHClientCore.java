@@ -20,8 +20,8 @@ public class CyanSHClientCore implements ClientModInitializer
         // Join World Event
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             renameFileIfUsernameChanged(handler);
-            HomesObj.readClient(server.getSaveProperties().getLevelName());
-            TrustsObj.readClient();
+            HOMES_OBJ.readClient(server.getSaveProperties().getLevelName());
+            TRUSTS_OBJ.readClient();
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
