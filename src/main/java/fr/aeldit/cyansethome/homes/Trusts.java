@@ -13,20 +13,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.homes.Homes.HOMES_PATH;
 
 public class Trusts
 {
-    // Map<playerKey, players trusted by playerKey>
     private final ConcurrentHashMap<String, List<String>> trusts = new ConcurrentHashMap<>();
     public final TypeToken<ConcurrentHashMap<String, List<String>>> trustType = new TypeToken<>()
     {
     };
-    private boolean isEditingFile = false;
     public static Path TRUST_PATH = Path.of("%s/trusted_players.json".formatted(MOD_PATH));
 
     /**
@@ -89,52 +87,53 @@ public class Trusts
 
     public void renameChangedUsernames(String playerUUID, String playerName)
     {
-        if (Files.exists(TRUST_PATH))
+        if (!Files.exists(TRUST_PATH) || trusts.isEmpty())
         {
-            boolean changed = false;
-            String prevName = "";
+            return;
+        }
 
-            if (isNotEmpty())
+        boolean changed = false;
+        String prevName = "";
+
+        String playerKey = "%s %s".formatted(playerUUID, playerName);
+        for (String key : trusts.keySet())
+        {
+            // Changes the player username when it is a key
+            if (key.split(" ")[0].equals(playerUUID) && !key.split(" ")[1].equals(playerName))
             {
-                String playerKey = "%s %s".formatted(playerUUID, playerName);
-                for (String key : trusts.keySet())
-                {
-                    // Changes the player username when it is a key
-                    if (key.split(" ")[0].equals(playerUUID) && !key.split(" ")[1].equals(playerName))
-                    {
-                        prevName = key.split(" ")[1];
-                        trusts.put(playerKey, Collections.synchronizedList(new ArrayList<>(trusts.get(key))));
-                        trusts.remove(key);
-                        changed = true;
-                    }
-
-                    if (changed)
-                    {
-                        key = playerKey;
-                    }
-
-                    // Changes the player's username when it is in a list of trusted players
-                    for (String listKey : trusts.get(key))
-                    {
-                        if (listKey.split(" ")[0].equals(playerUUID) && !listKey.split(" ")[1].equals(playerName))
-                        {
-                            prevName = listKey.split(" ")[1];
-                            changed = true;
-
-                            trusts.get(key).add(playerKey);
-                            trusts.get(key).remove(listKey);
-                            write();
-                        }
-                    }
-                }
+                prevName = key.split(" ")[1];
+                trusts.put(playerKey, Collections.synchronizedList(new ArrayList<>(trusts.get(key))));
+                trusts.remove(key);
+                changed = true;
             }
 
             if (changed)
             {
-                write();
-                CYANSH_LOGGER.info("[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed " +
-                        "its pseudo (previously {})", playerName, prevName);
+                key = playerKey;
             }
+
+            // Changes the player's username when it is in a list of trusted players
+            for (String listKey : trusts.get(key))
+            {
+                if (listKey.split(" ")[0].equals(playerUUID) && !listKey.split(" ")[1].equals(playerName))
+                {
+                    prevName = listKey.split(" ")[1];
+                    changed  = true;
+
+                    trusts.get(key).add(playerKey);
+                    trusts.get(key).remove(listKey);
+                    write();
+                }
+            }
+        }
+
+        if (changed)
+        {
+            write();
+            CYANSH_LOGGER.info(
+                    "[CyanSetHome] Updated {}'s pseudo in the trust file, because the player changed " +
+                    "its pseudo (previously {})", playerName, prevName
+            );
         }
     }
 
@@ -145,15 +144,10 @@ public class Trusts
      */
     public ArrayList<String> getTrustingPlayers(String playerKey)
     {
-        ArrayList<String> trustingPlayers = new ArrayList<>(trusts.entrySet().size());
-        for (Map.Entry<String, List<String>> entry : trusts.entrySet())
-        {
-            if (entry.getValue().contains(playerKey))
-            {
-                trustingPlayers.add(entry.getKey().split(" ")[1]);
-            }
-        }
-        return trustingPlayers;
+        return trusts.entrySet().stream()
+                     .filter(entry -> entry.getValue().contains(playerKey))
+                     .map(entry -> entry.getKey().split(" ")[1]).collect(
+                        Collectors.toCollection(() -> new ArrayList<>(trusts.size())));
     }
 
     /**
@@ -166,12 +160,8 @@ public class Trusts
         if (trusts.containsKey(playerKey))
         {
             List<String> trustedPlayersKeys = trusts.get(playerKey);
-            List<String> trustedPlayers = new ArrayList<>(trustedPlayersKeys.size());
-            for (String player : trustedPlayersKeys)
-            {
-                trustedPlayers.add(player.split(" ")[1]);
-            }
-            return trustedPlayers;
+            return trustedPlayersKeys.stream().map(player -> player.split(" ")[1]).collect(
+                    Collectors.toCollection(() -> new ArrayList<>(trustedPlayersKeys.size())));
         }
         return null;
     }
@@ -201,26 +191,20 @@ public class Trusts
         return false;
     }
 
-    public boolean isNotEmpty()
-    {
-        return !trusts.isEmpty();
-    }
-
     public void readServer()
     {
-        if (Files.exists(TRUST_PATH))
+        if (!Files.exists(TRUST_PATH))
         {
-            try
-            {
-                Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(TRUST_PATH);
-                trusts.putAll(gsonReader.fromJson(reader, trustType));
-                reader.close();
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
+            return;
+        }
+
+        try (Reader reader = Files.newBufferedReader(TRUST_PATH))
+        {
+            trusts.putAll(new Gson().fromJson(reader, trustType));
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -228,19 +212,18 @@ public class Trusts
     {
         TRUST_PATH = Path.of("%s/trusted_players.json".formatted(HOMES_PATH));
 
-        if (Files.exists(TRUST_PATH))
+        if (!Files.exists(TRUST_PATH))
         {
-            try
-            {
-                Gson gsonReader = new Gson();
-                Reader reader = Files.newBufferedReader(TRUST_PATH);
-                trusts.putAll(gsonReader.fromJson(reader, trustType));
-                reader.close();
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
+            return;
+        }
+
+        try (Reader reader = Files.newBufferedReader(TRUST_PATH))
+        {
+            trusts.putAll(new Gson().fromJson(reader, trustType));
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -248,62 +231,31 @@ public class Trusts
     {
         checkOrCreateHomesDir();
 
-        try
+        if (trusts.isEmpty())
         {
-            if (trusts.isEmpty())
+            if (Files.exists(TRUST_PATH))
             {
-                if (Files.exists(TRUST_PATH))
+                try
                 {
                     Files.delete(TRUST_PATH);
-                    removeEmptyModDir();
                 }
-            }
-            else
-            {
-                if (!isEditingFile)
+                catch (IOException e)
                 {
-                    isEditingFile = true;
-
-                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                    Writer writer = Files.newBufferedWriter(TRUST_PATH);
-                    gsonWriter.toJson(trusts, writer);
-                    writer.close();
-
-                    isEditingFile = false;
+                    throw new RuntimeException(e);
                 }
-                else
-                {
-                    long end = System.currentTimeMillis() + 1000; // 1 s
-                    boolean couldWrite = false;
-
-                    while (System.currentTimeMillis() < end)
-                    {
-                        if (!isEditingFile)
-                        {
-                            isEditingFile = true;
-
-                            Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                            Writer writer = Files.newBufferedWriter(TRUST_PATH);
-                            gsonWriter.toJson(trusts, writer);
-                            writer.close();
-
-                            couldWrite = true;
-                            isEditingFile = false;
-                            break;
-                        }
-                    }
-
-                    if (!couldWrite)
-                    {
-                        CYANSH_LOGGER.info("[CyanSetHome] Could not write the trusting_players.json file because it " +
-                                "is already being written");
-                    }
-                }
+                removeEmptyModDir();
             }
         }
-        catch (IOException e)
+        else
         {
-            throw new RuntimeException(e);
+            try (Writer writer = Files.newBufferedWriter(TRUST_PATH))
+            {
+                new GsonBuilder().setPrettyPrinting().create().toJson(trusts, writer);
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
