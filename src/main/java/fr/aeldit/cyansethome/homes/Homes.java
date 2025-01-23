@@ -16,14 +16,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 
 public class Homes
 {
-    private final ConcurrentHashMap<String, List<Home>> homes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, List<Home>> playerHomes = new ConcurrentHashMap<>();
     public static Path HOMES_PATH = Path.of("%s/homes".formatted(MOD_PATH));
 
     /**
@@ -31,7 +30,7 @@ public class Homes
      */
     public void addPlayerHomes(String playerKey, List<Home> playerHomes)
     {
-        homes.put(playerKey, playerHomes);
+        this.playerHomes.put(playerKey, playerHomes);
         writeHomes(playerKey);
     }
 
@@ -42,13 +41,14 @@ public class Homes
     {
         if (getHome(playerKey, home.name()) == null)
         {
-            if (!homes.containsKey(playerKey))
+            if (!playerHomes.containsKey(playerKey))
             {
-                homes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
+                playerHomes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
             }
             else
             {
-                homes.get(playerKey).add(home);
+                playerHomes.get(playerKey)
+                           .add(home);
             }
             writeHomes(playerKey);
 
@@ -65,11 +65,13 @@ public class Homes
         Home home = getHome(playerKey, homeName);
         if (home != null)
         {
-            homes.get(playerKey).remove(home);
+            playerHomes.get(playerKey)
+                       .remove(home);
 
-            if (homes.get(playerKey).isEmpty())
+            if (playerHomes.get(playerKey)
+                           .isEmpty())
             {
-                homes.remove(playerKey);
+                playerHomes.remove(playerKey);
             }
             writeHomes(playerKey);
 
@@ -85,12 +87,14 @@ public class Homes
      */
     public boolean removeAll(String playerKey)
     {
-        if (homes.containsKey(playerKey))
+        if (playerHomes.containsKey(playerKey))
         {
-            if (!homes.get(playerKey).isEmpty())
+            if (!playerHomes.get(playerKey)
+                            .isEmpty())
             {
-                homes.get(playerKey).clear();
-                homes.remove(playerKey);
+                playerHomes.get(playerKey)
+                           .clear();
+                playerHomes.remove(playerKey);
                 writeHomes(playerKey);
 
                 return true;
@@ -109,8 +113,10 @@ public class Homes
         Home home = getHome(playerKey, homeName);
         if (home != null)
         {
-            homes.get(playerKey).remove(home);
-            homes.get(playerKey).add(home.getRenamed(newHomeName));
+            playerHomes.get(playerKey)
+                       .remove(home);
+            playerHomes.get(playerKey)
+                       .add(home.getRenamed(newHomeName));
             writeHomes(playerKey);
 
             return true;
@@ -124,7 +130,11 @@ public class Homes
      */
     public @Nullable List<Home> getPlayerHomes(String playerKey)
     {
-        return (!homes.containsKey(playerKey) || homes.get(playerKey).isEmpty()) ? null : homes.get(playerKey);
+        if (!playerHomes.containsKey(playerKey) || playerHomes.get(playerKey).isEmpty())
+        {
+            return null;
+        }
+        return playerHomes.get(playerKey);
     }
 
     /**
@@ -132,9 +142,11 @@ public class Homes
      */
     public List<String> getPlayersWithHomes(String excludedPlayer)
     {
-        return homes.keySet().stream().filter(key -> !key.split(" ")[1].equals(excludedPlayer))
-                    .map(key -> key.split(" ")[1])
-                    .collect(Collectors.toCollection(() -> new ArrayList<>(homes.size())));
+        return playerHomes.keySet()
+                          .stream()
+                          .filter(key -> !key.split(" ")[1].equals(excludedPlayer))
+                          .map(key -> key.split(" ")[1])
+                          .toList();
     }
 
     /**
@@ -142,13 +154,7 @@ public class Homes
      */
     public @Nullable List<String> getHomesNames(String playerKey)
     {
-        if (homes.containsKey(playerKey))
-        {
-            List<String> names = new ArrayList<>(homes.get(playerKey).size());
-            homes.get(playerKey).forEach(home -> names.add(home.name()));
-            return names;
-        }
-        return null;
+        return playerHomes.containsKey(playerKey) ? playerHomes.get(playerKey).stream().map(Home::name).toList() : null;
     }
 
     /**
@@ -159,16 +165,12 @@ public class Homes
      */
     public @Nullable List<String> getHomesNamesOf(String playerName)
     {
-        for (String key : homes.keySet())
-        {
-            if (key.split(" ")[1].equals(playerName))
-            {
-                List<String> names = new ArrayList<>(homes.get(key).size());
-                homes.get(key).forEach(home -> names.add(home.name()));
-                return names;
-            }
-        }
-        return null;
+        return playerHomes.keySet()
+                          .stream()
+                          .filter(key -> key.split(" ")[1].equals(playerName))
+                          .findFirst()
+                          .map(key -> playerHomes.get(key).stream().map(Home::name).toList())
+                          .orElse(null);
     }
 
     /**
@@ -176,7 +178,11 @@ public class Homes
      */
     public @Nullable String getKeyFromName(String playerName)
     {
-        return homes.keySet().stream().filter(key -> key.split(" ")[1].equals(playerName)).findFirst().orElse(null);
+        return playerHomes.keySet()
+                          .stream()
+                          .filter(key -> key.split(" ")[1].equals(playerName))
+                          .findFirst()
+                          .orElse(null);
     }
 
     /**
@@ -188,7 +194,7 @@ public class Homes
      */
     public boolean maxHomesReached(String playerKey)
     {
-        return homes.containsKey(playerKey) && homes.get(playerKey).size() >= MAX_HOMES.getValue();
+        return playerHomes.containsKey(playerKey) && playerHomes.get(playerKey).size() >= MAX_HOMES.getValue();
     }
 
     /**
@@ -199,9 +205,13 @@ public class Homes
      */
     public @Nullable Home getHome(String playerKey, String homeName)
     {
-        if (homes.containsKey(playerKey))
+        if (playerHomes.containsKey(playerKey))
         {
-            return homes.get(playerKey).stream().filter(home -> home.name().equals(homeName)).findFirst().orElse(null);
+            return playerHomes.get(playerKey)
+                              .stream()
+                              .filter(home -> home.name().equals(homeName))
+                              .findFirst()
+                              .orElse(null);
         }
         return null;
     }
@@ -230,8 +240,10 @@ public class Homes
         {
             if (file.isFile())
             {
-                String[] splitFileName = file.getName().split(" ");
-                String[] splitFileNameOld = file.getName().split("_");
+                String[] splitFileName = file.getName()
+                                             .split(" ");
+                String[] splitFileNameOld = file.getName()
+                                                .split("_");
 
                 if (splitFileName[0].equals(playerUUID)
                     && !splitFileName[1].equals("%s.json".formatted(playerName))
@@ -278,20 +290,23 @@ public class Homes
         }
 
         Gson gson = new Gson();
-        Arrays.stream(listOfFiles).filter(File::isFile).forEach(file -> {
-            try (Reader reader = Files.newBufferedReader(file.toPath()))
-            {
-                addPlayerHomes(
-                        file.getName().split("\\.")[0],
-                        Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
-                );
-            }
-            catch (IOException e)
-            {
-                CYANSH_LOGGER.error("Could not open the file '{}' to read homes (readServer)", file.getPath());
-                throw new RuntimeException(e);
-            }
-        });
+        Arrays.stream(listOfFiles)
+              .filter(File::isFile)
+              .forEach(file -> {
+                  try (Reader reader = Files.newBufferedReader(file.toPath()))
+                  {
+                      addPlayerHomes(
+                              file.getName()
+                                  .split("\\.")[0],
+                              Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
+                      );
+                  }
+                  catch (IOException e)
+                  {
+                      CYANSH_LOGGER.error("Could not open the file '{}' to read homes (readServer)", file.getPath());
+                      throw new RuntimeException(e);
+                  }
+              });
     }
 
     /**
@@ -314,12 +329,16 @@ public class Homes
         }
 
         Gson gson = new Gson();
-        Arrays.stream(listOfFiles).filter(File::isFile).filter(file -> !file.getName().equals("trusted_players.json"))
+        Arrays.stream(listOfFiles)
+              .filter(File::isFile)
+              .filter(file -> !file.getName()
+                                   .equals("trusted_players.json"))
               .forEach(file -> {
                   try (Reader reader = Files.newBufferedReader(file.toPath()))
                   {
                       addPlayerHomes(
-                              file.getName().split("\\.")[0],
+                              file.getName()
+                                  .split("\\.")[0],
                               Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
                       );
                   }
@@ -338,7 +357,10 @@ public class Homes
         Path path = Path.of("%s/%s.json".formatted(HOMES_PATH, playerKey));
 
         // Remove the player from the map as it doesn't have any home
-        if (!homes.containsKey(playerKey) || (homes.containsKey(playerKey) && homes.get(playerKey).isEmpty()))
+        if (!playerHomes.containsKey(playerKey) || (
+                playerHomes.containsKey(playerKey) && playerHomes.get(playerKey)
+                                                                 .isEmpty()
+        ))
         {
             if (Files.exists(path))
             {
@@ -357,7 +379,9 @@ public class Homes
         {
             try (Writer writer = Files.newBufferedWriter(path))
             {
-                new GsonBuilder().setPrettyPrinting().create().toJson(homes.get(playerKey), writer);
+                new GsonBuilder().setPrettyPrinting()
+                                 .create()
+                                 .toJson(playerHomes.get(playerKey), writer);
             }
             catch (IOException e)
             {
