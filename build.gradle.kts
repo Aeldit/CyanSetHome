@@ -57,7 +57,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${Constants.LOADER_VERSION}")
 
     // Fabric API
-    for (name in listOf(
+    setOf(
         // ModMenu dependencies
         "fabric-resource-loader-v0",
         "fabric-key-binding-api-v1",
@@ -67,9 +67,8 @@ dependencies {
         "fabric-screen-api-v1",
         // CyanSetHome dependencies
         "fabric-networking-api-v1"
-    )) {
-        val module = fabricApi.module(name, mod.fabricVersion)
-        modImplementation(module)
+    ).forEach {
+        modImplementation(fabricApi.module(it, mod.fabricVersion))
     }
 
     modImplementation("com.terraformersmc:modmenu:${mod.modmenuVersion}")
@@ -79,10 +78,9 @@ dependencies {
         modImplementation(files(projectDir.resolve("../../run/mods/cyanlib-1.0.0+1.21-1.21.1.jar")))
     } else {
         modImplementation("maven.modrinth:cyanlib:${mod.cyanlibVersion}")
-        include("maven.modrinth:cyanlib:${mod.cyanlibVersion}")
     }
 
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.12.1")
 }
 
 loom {
@@ -118,6 +116,7 @@ tasks {
         inputs.property("min", mod.min)
         inputs.property("max", mod.max)
         inputs.property("java_version", mod.javaVersion)
+        inputs.property("modmenu_version", mod.modmenuVersion)
 
         filesMatching("fabric.mod.json") {
             expand(
@@ -126,7 +125,8 @@ tasks {
                     "loader_version" to Constants.LOADER_VERSION,
                     "min" to mod.min,
                     "max" to mod.max,
-                    "java_version" to mod.javaVersion
+                    "java_version" to mod.javaVersion,
+                    "modmenu_version" to mod.modmenuVersion
                 )
             )
         }
@@ -160,8 +160,7 @@ publishMods {
         }
         modLoaders.add("fabric")
 
-        requires("fabric-api", "modmenu")
-        embeds("cyanlib")
+        requires("fabric-api", "cyanlib", "modmenu")
 
         changelog = rootProject.file("changelogs/latest.md")
             .takeIf { it.exists() }

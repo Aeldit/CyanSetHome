@@ -29,7 +29,8 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "minecraft": ">=${min} <=${max}",
-    "java": ">=${java_version}"
+    "java": ">=${java_version}",
+    "modmenu": ">=${modmenu_version}"
   },
   "custom": {
     "modmenu": {
