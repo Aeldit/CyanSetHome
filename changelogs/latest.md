@@ -1,1 +1,3 @@
-Add 1.21.4 support
+- Add 1.21.5 support
+- CyanLib is no longer embedded in the jar
+- Use CyanLib 1.0.1
