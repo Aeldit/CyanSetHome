@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static fr.aeldit.cyansethome.CyanSHCore.HOMES_OBJ;
-import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS_OBJ;
+import static fr.aeldit.cyansethome.CyanSHCore.HOMES;
+import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.ALLOW_BYPASS;
 
 public final class ArgumentSuggestion
@@ -29,7 +29,7 @@ public final class ArgumentSuggestion
             @NotNull ServerPlayerEntity player
     )
     {
-        List<String> names = HOMES_OBJ.getHomesNames("%s %s".formatted(
+        List<String> names = HOMES.getHomesNames("%s %s".formatted(
                 player.getUuidAsString(),
                 player.getName().getString()
         ));
@@ -55,10 +55,10 @@ public final class ArgumentSuggestion
         if (player != null)
         {
             if ((ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4))
-                || TRUSTS_OBJ.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+                || TRUSTS.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
             )
             {
-                List<String> homesNames = HOMES_OBJ.getHomesNamesOf(trustingPlayer);
+                List<String> homesNames = HOMES.getHomesNamesOf(trustingPlayer);
                 if (homesNames != null)
                 {
                     return CommandSource.suggestMatching(homesNames, builder);
@@ -110,7 +110,7 @@ public final class ArgumentSuggestion
         if (player != null)
         {
             String playerNameUUID = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
-            List<String> trustedPlayers = TRUSTS_OBJ.getTrustedPlayers(playerNameUUID);
+            List<String> trustedPlayers = TRUSTS.getTrustedPlayers(playerNameUUID);
 
             if (trustedPlayers != null)
             {
@@ -141,14 +141,14 @@ public final class ArgumentSuggestion
             if (ALLOW_BYPASS.getValue() && player.hasPermissionLevel(4))
             {
                 return CommandSource.suggestMatching(
-                        HOMES_OBJ.getPlayersWithHomes(player.getName().getString()),
+                        HOMES.getPlayersWithHomes(player.getName().getString()),
                         builder
                 );
             }
             else
             {
                 return CommandSource.suggestMatching(
-                        TRUSTS_OBJ.getTrustingPlayers("%s %s".formatted(
+                        TRUSTS.getTrustingPlayers("%s %s".formatted(
                                 player.getUuidAsString(),
                                 player.getName().getString()
                         )),

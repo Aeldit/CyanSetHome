@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fr.aeldit.cyansethome.CyanSHCore.CYANSH_LANG_UTILS;
-import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS_OBJ;
+import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS;
 
 public class PermissionCommands
 {
@@ -86,13 +86,13 @@ public class PermissionCommands
         }
 
         // The player is already trusted
-        if (TRUSTS_OBJ.isPlayerTrustingFromName(player.getName().getString(), playerName))
+        if (TRUSTS.isPlayerTrustingFromName(player.getName().getString(), playerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerAlreadyTrusted");
             return 0;
         }
 
-        TRUSTS_OBJ.trustPlayer(trustingPlayerKey, trustedPlayerKey);
+        TRUSTS.trustPlayer(trustingPlayerKey, trustedPlayerKey);
 
         CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.playerTrusted", Formatting.AQUA + playerName);
         return Command.SINGLE_SUCCESS;
@@ -120,13 +120,13 @@ public class PermissionCommands
         }
 
         // The given player is already not trusted
-        if (!TRUSTS_OBJ.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
+        if (!TRUSTS.isPlayerTrustingFromName(player.getName().getString(), untrustedPlayerName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.playerNotTrusted");
             return 0;
         }
 
-        TRUSTS_OBJ.untrustPlayer(player.getName().getString(), untrustedPlayerName);
+        TRUSTS.untrustPlayer(player.getName().getString(), untrustedPlayerName);
 
         CYANSH_LANG_UTILS.sendPlayerMessage(player, "msg.playerUnTrusted", Formatting.AQUA + untrustedPlayerName);
         return Command.SINGLE_SUCCESS;
@@ -145,7 +145,7 @@ public class PermissionCommands
             return 0;
         }
 
-        ArrayList<String> trustingPlayers = TRUSTS_OBJ.getTrustingPlayers(
+        ArrayList<String> trustingPlayers = TRUSTS.getTrustingPlayers(
                 "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
         );
         if (trustingPlayers == null || trustingPlayers.isEmpty())
@@ -178,7 +178,7 @@ public class PermissionCommands
             return 0;
         }
 
-        List<String> trustedPlayers = TRUSTS_OBJ.getTrustedPlayers(
+        List<String> trustedPlayers = TRUSTS.getTrustedPlayers(
                 "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
         );
         if (trustedPlayers == null || trustedPlayers.isEmpty())

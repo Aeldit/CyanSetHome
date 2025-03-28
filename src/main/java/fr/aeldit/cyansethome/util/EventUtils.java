@@ -3,8 +3,8 @@ package fr.aeldit.cyansethome.util;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.jetbrains.annotations.NotNull;
 
-import static fr.aeldit.cyansethome.CyanSHCore.HOMES_OBJ;
-import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS_OBJ;
+import static fr.aeldit.cyansethome.CyanSHCore.HOMES;
+import static fr.aeldit.cyansethome.CyanSHCore.TRUSTS;
 
 public class EventUtils
 {
@@ -20,7 +20,7 @@ public class EventUtils
         String playerUUID = handler.getPlayer().getUuidAsString();
         String playerName = handler.getPlayer().getName().getString();
 
-        HOMES_OBJ.renameChangedUsernames(playerUUID, playerName);
-        TRUSTS_OBJ.renameChangedUsernames(playerUUID, playerName);
+        HOMES.renameChangedUsernames(playerUUID, playerName);
+        TRUSTS.renameChangedUsernames(playerUUID, playerName);
     }
 }

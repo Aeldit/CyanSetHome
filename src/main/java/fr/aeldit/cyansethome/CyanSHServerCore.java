@@ -17,8 +17,8 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
     @Override
     public void onInitializeServer()
     {
-        HOMES_OBJ.readServer();
-        TRUSTS_OBJ.readServer();
+        HOMES.readServer();
+        TRUSTS.readServer();
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> renameFileIfUsernameChanged(handler));
 

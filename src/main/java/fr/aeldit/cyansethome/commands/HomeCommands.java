@@ -122,7 +122,7 @@ public class HomeCommands
         String homeName = StringArgumentType.getString(context, "home_name");
         String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
-        if (HOMES_OBJ.maxHomesReached(playerKey))
+        if (HOMES.maxHomesReached(playerKey))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(
                     player,
@@ -132,7 +132,7 @@ public class HomeCommands
             return 0;
         }
 
-        if (!HOMES_OBJ.addHome(
+        if (!HOMES.addHome(
                 playerKey, new Home(
                         homeName,
                         player.getWorld()
@@ -176,7 +176,7 @@ public class HomeCommands
         String homeName = StringArgumentType.getString(context, "home_name");
         String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
-        if (!HOMES_OBJ.removeHome(playerKey, homeName))
+        if (!HOMES.removeHome(playerKey, homeName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFound", Formatting.YELLOW + homeName);
             return 0;
@@ -204,7 +204,7 @@ public class HomeCommands
             return 0;
         }
 
-        if (!HOMES_OBJ.removeAll("%s %s".formatted(player.getUuidAsString(), player.getName().getString())))
+        if (!HOMES.removeAll("%s %s".formatted(player.getUuidAsString(), player.getName().getString())))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.noHomes");
             return 0;
@@ -235,7 +235,7 @@ public class HomeCommands
 
         String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
-        if (!HOMES_OBJ.rename(playerKey, homeName, newHomeName))
+        if (!HOMES.rename(playerKey, homeName, newHomeName))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFoundOrExists", homeName);
             return 0;
@@ -269,7 +269,7 @@ public class HomeCommands
         String homeName = StringArgumentType.getString(context, "home_name");
         String playerKey = "%s %s".formatted(player.getUuidAsString(), player.getName().getString());
 
-        Home home = HOMES_OBJ.getHome(playerKey, homeName);
+        Home home = HOMES.getHome(playerKey, homeName);
         if (home == null)
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.homeNotFound", Formatting.YELLOW + homeName);
@@ -331,7 +331,7 @@ public class HomeCommands
             return 0;
         }
 
-        List<Home> homes = HOMES_OBJ.getPlayerHomes(
+        List<Home> homes = HOMES.getPlayerHomes(
                 "%s %s".formatted(player.getUuidAsString(), player.getName().getString())
         );
         if (homes == null)
