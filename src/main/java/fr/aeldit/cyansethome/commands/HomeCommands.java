@@ -26,95 +26,81 @@ public class HomeCommands
 {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher)
     {
-        dispatcher.register(CommandManager.literal("set-home")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .executes(HomeCommands::setHome)
-                                          )
+        dispatcher.register(
+                CommandManager.literal("set-home").then(
+                        CommandManager.argument("home_name", StringArgumentType.string())
+                                      .executes(HomeCommands::setHome)
+                )
         );
-        dispatcher.register(CommandManager.literal("sh")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .executes(HomeCommands::setHome)
-                                          )
-        );
-
-        dispatcher.register(CommandManager.literal("remove-home")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .suggests(
-                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
-                                                                              builder,
-                                                                              Objects.requireNonNull(
-                                                                                      context.getSource()
-                                                                                             .getPlayer())
-                                                                      ))
-                                                              .executes(HomeCommands::removeHome)
-                                          )
-        );
-        dispatcher.register(CommandManager.literal("rh")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .suggests(
-                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
-                                                                              builder,
-                                                                              Objects.requireNonNull(
-                                                                                      context.getSource()
-                                                                                             .getPlayer())
-                                                                      ))
-                                                              .executes(HomeCommands::removeHome)
-                                          )
+        dispatcher.register(
+                CommandManager.literal("sh").then(
+                        CommandManager.argument("home_name", StringArgumentType.string())
+                                      .executes(HomeCommands::setHome)
+                )
         );
 
-        dispatcher.register(CommandManager.literal("rename-home")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .suggests(
-                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
-                                                                              builder,
-                                                                              Objects.requireNonNull(
-                                                                                      context.getSource()
-                                                                                             .getPlayer())
-                                                                      ))
-                                                              .then(CommandManager.argument(
-                                                                                          "new_home_name",
-                                                                                          StringArgumentType.string()
-                                                                                  )
-                                                                                  .executes(HomeCommands::renameHome)
-                                                              )
-                                          )
+        dispatcher.register(
+                CommandManager.literal("remove-home").then(
+                        CommandManager.argument("home_name", StringArgumentType.string())
+                                      .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                              builder,
+                                              Objects.requireNonNull(context.getSource().getPlayer())
+                                      ))
+                                      .executes(HomeCommands::removeHome)
+                )
+        );
+        dispatcher.register(
+                CommandManager.literal("rh").then(
+                        CommandManager.argument("home_name", StringArgumentType.string())
+                                      .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                              builder,
+                                              Objects.requireNonNull(context.getSource().getPlayer())
+                                      ))
+                                      .executes(HomeCommands::removeHome)
+                )
         );
 
-        dispatcher.register(CommandManager.literal("remove-all-homes")
-                                          .executes(HomeCommands::removeAllHomes)
+        dispatcher.register(
+                CommandManager.literal("rename-home").then(
+                        CommandManager.argument("home_name", StringArgumentType.string())
+                                      .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                              builder,
+                                              Objects.requireNonNull(context.getSource().getPlayer())
+                                      ))
+                                      .then(CommandManager.argument("new_home_name", StringArgumentType.string())
+                                                          .executes(HomeCommands::renameHome)
+                                      )
+                )
         );
 
-        dispatcher.register(CommandManager.literal("home")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .suggests(
-                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
-                                                                              builder,
-                                                                              Objects.requireNonNull(
-                                                                                      context.getSource()
-                                                                                             .getPlayer())
-                                                                      ))
-                                                              .executes(HomeCommands::goToHome)
-                                          )
+        dispatcher.register(CommandManager.literal("remove-all-homes").executes(HomeCommands::removeAllHomes));
+
+        dispatcher.register(
+                CommandManager.literal("home")
+                              .then(CommandManager.argument("home_name", StringArgumentType.string())
+                                                  .suggests(
+                                                          (context, builder) -> ArgumentSuggestion.getHomes(
+                                                                  builder,
+                                                                  Objects.requireNonNull(
+                                                                          context.getSource()
+                                                                                 .getPlayer())
+                                                          ))
+                                                  .executes(HomeCommands::goToHome)
+                              )
         );
-        dispatcher.register(CommandManager.literal("h")
-                                          .then(CommandManager.argument("home_name", StringArgumentType.string())
-                                                              .suggests(
-                                                                      (context, builder) -> ArgumentSuggestion.getHomes(
-                                                                              builder,
-                                                                              Objects.requireNonNull(
-                                                                                      context.getSource()
-                                                                                             .getPlayer())
-                                                                      ))
-                                                              .executes(HomeCommands::goToHome)
-                                          )
+        dispatcher.register(
+                CommandManager.literal("h").then(
+                        CommandManager.argument("home_name", StringArgumentType.string())
+                                      .suggests((context, builder) -> ArgumentSuggestion.getHomes(
+                                              builder,
+                                              Objects.requireNonNull(context.getSource().getPlayer())
+                                      ))
+                                      .executes(HomeCommands::goToHome)
+                )
         );
 
-        dispatcher.register(CommandManager.literal("get-homes")
-                                          .executes(HomeCommands::getHomesList)
-        );
-        dispatcher.register(CommandManager.literal("gh")
-                                          .executes(HomeCommands::getHomesList)
-        );
+        dispatcher.register(CommandManager.literal("get-homes").executes(HomeCommands::getHomesList));
+        dispatcher.register(CommandManager.literal("gh").executes(HomeCommands::getHomesList));
     }
 
     /**

@@ -43,12 +43,11 @@ public class Homes
         {
             if (!playerHomes.containsKey(playerKey))
             {
-                playerHomes.put(playerKey, Collections.synchronizedList(new ArrayList<>(Collections.singleton(home))));
+                playerHomes.put(playerKey, Collections.synchronizedList(new ArrayList<>(List.of(home))));
             }
             else
             {
-                playerHomes.get(playerKey)
-                           .add(home);
+                playerHomes.get(playerKey).add(home);
             }
             writeHomes(playerKey);
 
@@ -65,11 +64,9 @@ public class Homes
         Home home = getHome(playerKey, homeName);
         if (home != null)
         {
-            playerHomes.get(playerKey)
-                       .remove(home);
+            playerHomes.get(playerKey).remove(home);
 
-            if (playerHomes.get(playerKey)
-                           .isEmpty())
+            if (playerHomes.get(playerKey).isEmpty())
             {
                 playerHomes.remove(playerKey);
             }
@@ -89,11 +86,9 @@ public class Homes
     {
         if (playerHomes.containsKey(playerKey))
         {
-            if (!playerHomes.get(playerKey)
-                            .isEmpty())
+            if (!playerHomes.get(playerKey).isEmpty())
             {
-                playerHomes.get(playerKey)
-                           .clear();
+                playerHomes.get(playerKey).clear();
                 playerHomes.remove(playerKey);
                 writeHomes(playerKey);
 
@@ -113,10 +108,8 @@ public class Homes
         Home home = getHome(playerKey, homeName);
         if (home != null)
         {
-            playerHomes.get(playerKey)
-                       .remove(home);
-            playerHomes.get(playerKey)
-                       .add(home.getRenamed(newHomeName));
+            playerHomes.get(playerKey).remove(home);
+            playerHomes.get(playerKey).add(home.getRenamed(newHomeName));
             writeHomes(playerKey);
 
             return true;
@@ -296,9 +289,10 @@ public class Homes
                   try (Reader reader = Files.newBufferedReader(file.toPath()))
                   {
                       addPlayerHomes(
-                              file.getName()
-                                  .split("\\.")[0],
-                              Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
+                              file.getName().split("\\.")[0],
+                              Collections.synchronizedList(
+                                      new ArrayList<>(List.of(gson.fromJson(reader, Home[].class)))
+                              )
                       );
                   }
                   catch (IOException e)
@@ -331,15 +325,15 @@ public class Homes
         Gson gson = new Gson();
         Arrays.stream(listOfFiles)
               .filter(File::isFile)
-              .filter(file -> !file.getName()
-                                   .equals("trusted_players.json"))
+              .filter(file -> !file.getName().equals("trusted_players.json"))
               .forEach(file -> {
                   try (Reader reader = Files.newBufferedReader(file.toPath()))
                   {
                       addPlayerHomes(
-                              file.getName()
-                                  .split("\\.")[0],
-                              Collections.synchronizedList(List.of(gson.fromJson(reader, Home[].class)))
+                              file.getName().split("\\.")[0],
+                              Collections.synchronizedList(
+                                      new ArrayList<>(List.of(gson.fromJson(reader, Home[].class)))
+                              )
                       );
                   }
                   catch (IOException e)
@@ -358,8 +352,7 @@ public class Homes
 
         // Remove the player from the map as it doesn't have any home
         if (!playerHomes.containsKey(playerKey) || (
-                playerHomes.containsKey(playerKey) && playerHomes.get(playerKey)
-                                                                 .isEmpty()
+                playerHomes.containsKey(playerKey) && playerHomes.get(playerKey).isEmpty()
         ))
         {
             if (Files.exists(path))
@@ -379,9 +372,7 @@ public class Homes
         {
             try (Writer writer = Files.newBufferedWriter(path))
             {
-                new GsonBuilder().setPrettyPrinting()
-                                 .create()
-                                 .toJson(playerHomes.get(playerKey), writer);
+                new GsonBuilder().setPrettyPrinting().create().toJson(playerHomes.get(playerKey), writer);
             }
             catch (IOException e)
             {
