@@ -1,1 +1,1 @@
-Fix bug that made it impossible to add homes
+Add the possibility to use a fixed amount of XP when teleporting

@@ -16,7 +16,7 @@ repositories {
 }
 
 object Constants {
-    const val MOD_VERSION: String = "1.0.2"
+    const val MOD_VERSION: String = "1.1.2"
     const val LOADER_VERSION: String = "0.16.10"
     const val CYANLIB_VERSION: String = "1.0.1"
 }
@@ -81,6 +81,11 @@ dependencies {
     }
 
     implementation("com.google.code.gson:gson:2.12.1")
+    testImplementation("net.fabricmc:fabric-loader-junit:${Constants.LOADER_VERSION}")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 loom {

@@ -286,7 +286,8 @@ public class HomeCommands
 
         if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
         {
-            requiredXpLevel = home.getRequiredXpLevelsToTp(player);
+            requiredXpLevel = XP_USE_FIXED_AMOUNT.getValue() ? XP_AMOUNT.getValue()
+                                                             : home.getRequiredXpLevelsToTp(player);
 
             if ((XP_USE_POINTS.getValue() ? player.totalExperience : player.experienceLevel) < requiredXpLevel)
             {

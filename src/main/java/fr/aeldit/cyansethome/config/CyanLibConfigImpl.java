@@ -20,10 +20,11 @@ public class CyanLibConfigImpl implements ICyanLibConfig
 
     public static final BooleanOption USE_XP_TO_TP_HOME = new BooleanOption("useXpToTpHome", false);
     public static final BooleanOption XP_USE_POINTS = new BooleanOption("xpUsePoints", false);
+    public static final BooleanOption XP_USE_FIXED_AMOUNT = new BooleanOption("xpUseFixedAmount", false);
+    public static final IntegerOption XP_AMOUNT = new IntegerOption("xpAmount", 1, RULES.POSITIVE_VALUE);
 
     public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
-            "blockPerXpLevelHome", 300,
-            RULES.POSITIVE_VALUE
+            "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
     );
 
     @Override
@@ -89,8 +90,12 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "msg.set.minOpLvlHomes",
                         "§3The minimum OP level required to use the§d home §3commands is now %s"
                 ),
+                entry("msg.set.useXpToTpHome", "§3Toggled the use of XP for /home %s"),
                 entry("msg.set.useXpToTeleport", "§3Toggled the use of XP to teleport %s"),
                 entry("msg.set.xpUsePoints", "§3Toggled the use of XP points instead of XP levels %s"),
+                entry("msg.set.xpUseFixedAmount", "§3Toggled the use of a fixed XP amount %s"),
+                entry("msg.set.xpAmount", "§3The fixed XP amount to use when teleporting is now %s"),
+                entry("msg.set.blockPerXpLevelHome", "§3The number of blocks per 1 XP when teleporting is now %s"),
 
                 // HEADERS
                 entry("msg.listHomes", "§6CyanSetHome - YOUR HOMES\n"),
@@ -101,8 +106,11 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "msg.getDesc.allowHomes",
                         "§3The§d allowHomes §3option defines whether the home commands are enabled or not"
                 ),
-                entry("msg.getDesc.allowByPass", "§3The§d allowByPass §3option defines whether admins " +
-                        "with the correct OP level can bypass permissions like trust between players"),
+                entry(
+                        "msg.getDesc.allowByPass", "§3The§d allowByPass §3option defines whether admins " +
+                                                   "with the correct OP level can bypass permissions like trust "
+                                                   + "between players"
+                ),
                 entry(
                         "msg.getDesc.maxHomes",
                         "§3The§d maxHomes §3option defines the maximum number of homes a player can have"
@@ -118,8 +126,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry(
                         "msg.getDesc.blockPerXpLevelHome",
                         "§3The number of blocks that will consume 1 XP level for teleportation to a home.\n" +
-                                "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
-                                " will lose 1 XP level, 2 XP level for 600 blocks, ..."
+                        "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
+                        " will lose 1 XP level, 2 XP level for 600 blocks, ..."
                 ),
                 entry(
                         "msg.getDesc.useXpToTpHome",
@@ -128,7 +136,17 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry(
                         "msg.getDesc.xpUsePoints",
                         "§3The§e xpUsePoints §3option defines whether the necessary XP will be in points or in " +
-                                "levels"
+                        "levels"
+                ),
+                entry(
+                        "msg.getDesc.xpUseFixedAmount",
+                        "§3The§e xpUseFixedAmount §3option defines the whether the necessary XP to teleport will be a"
+                        + " fixed amount or will depend on the distance"
+                ),
+                entry(
+                        "msg.getDesc.xpAmount",
+                        "§3The§e xpAmount §3option defines the fixed amount of XP used when the xpUseFixedAmount "
+                        + "option is ON"
                 ),
 
                 // GET_CFG
@@ -140,7 +158,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.getCfg.minOpLvlHomes", "§6- §3Minimum OP level for§d home §3commands : %s"),
                 entry("msg.getCfg.useXpToTpHome", "§6- §3Use XP to tp to a home : %s"),
                 entry("msg.getCfg.xpUsePoints", "§6- §3Use XP points instead of XP levels : %s"),
-                entry("msg.getCfg.blockPerXpLevelHome", "§6- §3Block per XP point for home tp : %s")
+                entry("msg.getCfg.blockPerXpLevelHome", "§6- §3Block per XP point for home tp : %s"),
+                entry("msg.getCfg.xpUseFixedAmount", "§6- §3Use fixed amount of XP for TPs: %s"),
+                entry("msg.getCfg.xpAmount", "§6- §3Fixed XP amount: %s")
         );
     }
 }
