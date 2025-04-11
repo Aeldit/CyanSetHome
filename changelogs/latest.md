@@ -1,1 +1,1 @@
-Add the possibility to use a fixed amount of XP when teleporting
+Fix issue where modmenu was marked as required, making it impossible to launch on a server
