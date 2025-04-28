@@ -15,32 +15,68 @@ repositories {
     }
 }
 
-object Constants {
-    const val MOD_VERSION: String = "1.1.3"
-    const val LOADER_VERSION: String = "0.16.10"
-    const val CYANLIB_VERSION: String = "1.0.2"
+object C {
+    const val MOD_VERSION: String = "1.1.4"
+    const val LOADER_VERSION: String = "0.16.14"
+    const val CYANLIB_VERSION: String = "1.0.3"
+    val YARN_MAPPINGS: HashMap<String, String> = hashMapOf(
+        "1.19.4" to "1.19.4+build.2",
+        "1.20.1" to "1.20.1+build.10",
+        "1.20.2" to "1.20.2+build.4",
+        "1.20.4" to "1.20.4+build.3",
+        "1.20.6" to "1.20.6+build.3",
+        "1.21.1" to "1.21.1+build.3",
+        "1.21.3" to "1.21.3+build.2",
+        "1.21.4" to "1.21.4+build.8",
+        "1.21.5" to "1.21.5+build.1",
+    )
+    val RANGES_NAMES: HashMap<String, String> = hashMapOf("1.21.1" to "1.21-1.21.1", "1.21.3" to "1.21.2-1.21.3")
+    val MODRINTH_VERSIONS: HashMap<String, String> = hashMapOf("1.21.1" to "1.21 1.21.1", "1.21.3" to "1.21.2 1.21.3")
+    val FABRIC_VERSIONS: HashMap<String, String> = hashMapOf(
+        "1.19.4" to "0.87.2+1.19.4",
+        "1.20.1" to "0.92.5+1.20.1",
+        "1.20.2" to "0.91.6+1.20.2",
+        "1.20.4" to "0.97.2+1.20.4",
+        "1.20.6" to "0.100.8+1.20.6",
+        "1.21-1.21.1" to "0.115.6+1.21.1",
+        "1.21.2-1.21.3" to "0.114.0+1.21.3",
+        "1.21.4" to "0.119.2+1.21.4",
+        "1.21.5" to "0.121.0+1.21.5",
+    )
+    val MOD_MENU_VERSIONS: HashMap<String, String> = hashMapOf(
+        "1.19.4" to "6.3.1",
+        "1.20.1" to "7.2.2",
+        "1.20.2" to "8.0.1",
+        "1.20.4" to "9.2.0-beta.2",
+        "1.20.6" to "10.0.0",
+        "1.21-1.21.1" to "11.0.3",
+        "1.21.2-1.21.3" to "12.0.0",
+        "1.21.4" to "13.0.3",
+        "1.21.5" to "14.0.0-rc.2",
+    )
 }
 
 class ModData {
-    val hasVersionRange = properties.containsKey("range_name")
-
     val mcVersion = property("minecraft_version").toString()
+    val yarnMappings = C.YARN_MAPPINGS[mcVersion]
 
-    val rangedName = if (hasVersionRange) property("range_name").toString() else mcVersion
-    private val modrinthVersions = if (hasVersionRange) property("modrinth_versions") else mcVersion
-    val versionsList = modrinthVersions.toString().split(" ")
+    val isj21 = mcVersion !in setOf("1.19.4", "1.20.1", "1.20.2", "1.20.4")
+    val javaVersion = if (isj21) "21" else "17"
+
+    val hasVersionRange = C.RANGES_NAMES.containsKey(mcVersion)
+
+    val rangedName = C.RANGES_NAMES.getOrDefault(mcVersion, mcVersion)
+
+    val versionsList = C.MODRINTH_VERSIONS.getOrDefault(mcVersion, mcVersion).split(" ")
     val min = if (hasVersionRange) versionsList[0] else mcVersion
     val max = if (hasVersionRange) versionsList[versionsList.size - 1] else mcVersion
 
-    val fabricVersion = property("fabric_version").toString()
-    val modmenuVersion = property("modmenu_version").toString()
-    val cyanlibVersion = "${Constants.CYANLIB_VERSION}+${rangedName}"
+    val fabricVersion = C.FABRIC_VERSIONS[rangedName]
+    val modmenuVersion = C.MOD_MENU_VERSIONS[rangedName]
 
-    val fullVersion = "${Constants.MOD_VERSION}+${rangedName}"
+    val fullVersion = "${C.MOD_VERSION}+$rangedName"
 
-    val isj21 = mcVersion !in listOf("1.19.4", "1.20.1", "1.20.2", "1.20.4")
-
-    val javaVersion = if (isj21) "21" else "17"
+    val cyanlibVersion = "${C.CYANLIB_VERSION}+${rangedName}"
 }
 
 val mod = ModData()
@@ -53,8 +89,8 @@ base {
 
 dependencies {
     minecraft("com.mojang:minecraft:${mod.mcVersion}")
-    mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${Constants.LOADER_VERSION}")
+    mappings("net.fabricmc:yarn:${mod.yarnMappings}:v2")
+    modImplementation("net.fabricmc:fabric-loader:${C.LOADER_VERSION}")
 
     // Fabric API
     setOf(
@@ -81,7 +117,7 @@ dependencies {
     }
 
     implementation("com.google.code.gson:gson:2.12.1")
-    testImplementation("net.fabricmc:fabric-loader-junit:${Constants.LOADER_VERSION}")
+    testImplementation("net.fabricmc:fabric-loader-junit:${C.LOADER_VERSION}")
 }
 
 tasks.test {
@@ -120,7 +156,7 @@ tasks {
         inputs.property("min", mod.min)
         inputs.property("max", mod.max)
         inputs.property("java_version", mod.javaVersion)
-        inputs.property("loader_version", Constants.LOADER_VERSION)
+        inputs.property("loader_version", C.LOADER_VERSION)
         inputs.property("fabric_api_version", mod.fabricVersion)
         inputs.property("cyanlib_version", mod.cyanlibVersion)
 
@@ -131,7 +167,7 @@ tasks {
                     "min" to mod.min,
                     "max" to mod.max,
                     "java_version" to mod.javaVersion,
-                    "loader_version" to Constants.LOADER_VERSION,
+                    "loader_version" to C.LOADER_VERSION,
                     "fabric_api_version" to mod.fabricVersion,
                     "cyanlib_version" to mod.cyanlibVersion,
                 )
@@ -154,7 +190,7 @@ publishMods {
         accessToken = System.getenv("MODRINTH_TOKEN")
 
         projectId = "9auOqb3o"
-        displayName = "[${mod.rangedName}] CyanSetHome ${Constants.MOD_VERSION}"
+        displayName = "[${mod.rangedName}] CyanSetHome ${C.MOD_VERSION}"
         version = mod.fullVersion
         type = STABLE
 

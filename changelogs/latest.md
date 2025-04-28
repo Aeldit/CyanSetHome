@@ -1,1 +1,4 @@
-Fix issue where modmenu was marked as required, making it impossible to launch on a server
+- Put dependencies in `fabric.mod.json` so that when one is missing, the fabric loader writes a clear message of what
+  is missing instead of just a ClassNotFoundException
+- Bump versions
+- Add missing translations
