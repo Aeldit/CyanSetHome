@@ -117,19 +117,23 @@ if (stonecutter.current.isActive) {
 tasks {
     processResources {
         inputs.property("version", mod.fullVersion)
-        inputs.property("loader_version", Constants.LOADER_VERSION)
         inputs.property("min", mod.min)
         inputs.property("max", mod.max)
         inputs.property("java_version", mod.javaVersion)
+        inputs.property("loader_version", Constants.LOADER_VERSION)
+        inputs.property("fabric_api_version", mod.fabricVersion)
+        inputs.property("cyanlib_version", mod.cyanlibVersion)
 
         filesMatching("fabric.mod.json") {
             expand(
                 mapOf(
                     "version" to mod.fullVersion,
-                    "loader_version" to Constants.LOADER_VERSION,
                     "min" to mod.min,
                     "max" to mod.max,
                     "java_version" to mod.javaVersion,
+                    "loader_version" to Constants.LOADER_VERSION,
+                    "fabric_api_version" to mod.fabricVersion,
+                    "cyanlib_version" to mod.cyanlibVersion,
                 )
             )
         }
