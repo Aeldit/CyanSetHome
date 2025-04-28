@@ -12,5 +12,7 @@
   "cyanlib.config.option.minOpLvlHomes": "MinOpLvlHomes",
   "cyanlib.config.option.useXpToTpHome": "UseXpToTpHome",
   "cyanlib.config.option.xpUsePoints": "XpUsePoints",
+  "cyanlib.config.option.xpUseFixedAmount": "XpUseFixedAmount",
+  "cyanlib.config.option.xpAmount": "XpAmount",
   "cyanlib.config.option.blockPerXpLevelHome": "BlockPerXpLevelHome"
 }
