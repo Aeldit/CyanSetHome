@@ -6,10 +6,8 @@ import fr.aeldit.cyansethome.commands.HomeOfCommands;
 import fr.aeldit.cyansethome.commands.PermissionCommands;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.entity.Entity;
 
 import static fr.aeldit.cyansethome.CombatTracking.removePlayerOnPlayerQuit;
 import static fr.aeldit.cyansethome.CyanSHCore.*;
@@ -28,7 +26,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
         );
 
         //? if >1.20.6 {
-        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
+        /*ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             if (entity.isPlayer())
             {
                 CombatTracking.addEntry(entity.getName().getString(), System.currentTimeMillis());
@@ -39,8 +37,7 @@ public class CyanSHServerCore implements DedicatedServerModInitializer
                 }
             }
         });
-        //?} else {
-        // TODO
+        *///?} else {
         //?}
 
         ServerPlayConnectionEvents.DISCONNECT.register(
