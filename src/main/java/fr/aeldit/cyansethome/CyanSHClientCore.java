@@ -8,6 +8,7 @@ import fr.aeldit.cyansethome.util.MissingLivingEntityEvent;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.Entity;
 
@@ -28,7 +29,7 @@ public class CyanSHClientCore implements ClientModInitializer
         });
 
         //? if >1.20.6 {
-        /*ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             if (entity.isPlayer())
             {
                 CombatTracking.addEntry(entity.getName().getString(), System.currentTimeMillis());
@@ -39,23 +40,19 @@ public class CyanSHClientCore implements ClientModInitializer
                 }
             }
         });
-        *///?} else {
-        MissingLivingEntityEvent.AFTER_DAMAGE.register((entity, source, amount) -> {
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
+        //?} else {
+        /*MissingLivingEntityEvent.AFTER_DAMAGE.register((entity, source, amount) -> {
             if (entity.isPlayer())
             {
                 CombatTracking.addEntry(entity.getName().getString(), System.currentTimeMillis());
                 Entity attacker = source.getAttacker();
                 if (attacker != null)
                 {
-                    CombatTracking.addEntry(
-                            attacker.getName().getString(),
-                            System.currentTimeMillis()
-                    );
+                    CombatTracking.addEntry(attacker.getName().getString(), System.currentTimeMillis());
                 }
             }
         });
-        //?}
+        *///?}
 
         ServerPlayConnectionEvents.DISCONNECT.register(
                 (handler, server) -> removePlayerOnPlayerQuit(handler.player.getName().getString())

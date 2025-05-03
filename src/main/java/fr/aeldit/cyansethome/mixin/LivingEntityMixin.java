@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin
 {
-    @Shadow
+    //? if <=1.20.6 {
+    /*@Shadow
     public abstract boolean isDead();
 
     @Inject(method = "damage", at = @At("TAIL"))
@@ -24,4 +25,5 @@ public abstract class LivingEntityMixin
                                                  .afterDamage((LivingEntity) (Object) this, source, amount);
         }
     }
+    *///?}
 }

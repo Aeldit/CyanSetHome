@@ -7,6 +7,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+
 import static fr.aeldit.cyansethome.CyanSHCore.CYANSH_LANG_UTILS;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.BLOCKS_PER_XP_LEVEL_HOME;
 
@@ -61,16 +63,16 @@ public record Home(String name, String dimension, double x, double y, double z, 
             switch (dimension)
             {
             //? if >=1.21.2-1.21.3 {
-            /*case "overworld" -> player.teleport(
+            case "overworld" -> player.teleport(
                     server.getWorld(World.OVERWORLD), x, y, z, new HashSet<>(), yaw, pitch, false);
             case "nether" -> player.teleport(
                     server.getWorld(World.NETHER), x, y, z, new HashSet<>(), yaw, pitch, false);
             case "end" -> player.teleport(server.getWorld(World.END), x, y, z, new HashSet<>(), yaw, pitch, false);
-            *///?} else {
-            case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
+            //?} else {
+            /*case "overworld" -> player.teleport(server.getWorld(World.OVERWORLD), x, y, z, yaw, pitch);
             case "nether" -> player.teleport(server.getWorld(World.NETHER), x, y, z, yaw, pitch);
             case "end" -> player.teleport(server.getWorld(World.END), x, y, z, yaw, pitch);
-            //?}
+            *///?}
             }
         }
     }
