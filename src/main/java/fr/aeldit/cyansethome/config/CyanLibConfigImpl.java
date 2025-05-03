@@ -23,6 +23,11 @@ public class CyanLibConfigImpl implements ICyanLibConfig
     public static final BooleanOption XP_USE_FIXED_AMOUNT = new BooleanOption("xpUseFixedAmount", false);
     public static final IntegerOption XP_AMOUNT = new IntegerOption("xpAmount", 1, RULES.POSITIVE_VALUE);
 
+    public static final BooleanOption TP_IN_COMBAT = new BooleanOption("tpInCombat", true);
+    public static final IntegerOption COMBAT_TIMEOUT_SECONDS = new IntegerOption(
+            "combatTimeoutSeconds", 30, RULES.POSITIVE_VALUE
+    );
+
     public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
             "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
     );
@@ -58,6 +63,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 ),
                 entry("error.notEnoughXp", "§cYou don't have enough XP (%s§c %s§c are required)"),
                 entry("error.playerNotFound", "§cCouldn't find the player %s"),
+                entry("error.noHomeWhileInCombat", "§cYou cannot teleport to a home while in combat"),
 
                 // MESSAGES
                 entry("msg.setHome", "§3The home %s §3has been created"),
@@ -96,6 +102,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.set.xpUseFixedAmount", "§3Toggled the use of a fixed XP amount %s"),
                 entry("msg.set.xpAmount", "§3The fixed XP amount to use when teleporting is now %s"),
                 entry("msg.set.blockPerXpLevelHome", "§3The number of blocks per 1 XP when teleporting is now %s"),
+                entry("msg.set.tpInCombat", "§3Toggled teleportation while in combat %s"),
+                entry("msg.set.combatTimeoutSeconds", "§3The combat timeout is now %s second(s)"),
 
                 // HEADERS
                 entry("msg.listHomes", "§6CyanSetHome - YOUR HOMES\n"),
@@ -148,6 +156,16 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "§3The§e xpAmount §3option defines the fixed amount of XP used when the xpUseFixedAmount "
                         + "option is ON"
                 ),
+                entry(
+                        "msg.getDesc.tpInCombat",
+                        "§3The§e tpInCombat §3option defines whether players can teleport to homes after taking "
+                        + "damage by a mod or a player"
+                ),
+                entry(
+                        "msg.getDesc.combatTimeoutSeconds",
+                        "§3The§e combatTimeoutSeconds §3option defines the amount of time in seconds a player stays "
+                        + "in combat mode after taking damage"
+                ),
 
                 // GET_CFG
                 entry("msg.getCfg.header", "§6CyanSetHome - OPTIONS\n"),
@@ -160,7 +178,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.getCfg.xpUsePoints", "§6- §3Use XP points instead of XP levels : %s"),
                 entry("msg.getCfg.blockPerXpLevelHome", "§6- §3Block per XP point for home tp : %s"),
                 entry("msg.getCfg.xpUseFixedAmount", "§6- §3Use fixed amount of XP for TPs: %s"),
-                entry("msg.getCfg.xpAmount", "§6- §3Fixed XP amount: %s")
+                entry("msg.getCfg.xpAmount", "§6- §3Fixed XP amount: %s"),
+                entry("msg.getCfg.tpInCombat", "§6- §3TP while in combat: %s"),
+                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s second(s)")
         );
     }
 }

@@ -107,6 +107,8 @@ dependencies {
         modImplementation(fabricApi.module(it, mod.fabricVersion))
     }
 
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${mod.fabricVersion}")
+
     modImplementation("com.terraformersmc:modmenu:${mod.modmenuVersion}")
 
     val debug = false
