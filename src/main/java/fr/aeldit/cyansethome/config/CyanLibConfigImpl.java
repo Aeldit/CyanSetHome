@@ -180,7 +180,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.getCfg.xpUseFixedAmount", "§6- §3Use fixed amount of XP for TPs: %s"),
                 entry("msg.getCfg.xpAmount", "§6- §3Fixed XP amount: %s"),
                 entry("msg.getCfg.tpInCombat", "§6- §3TP while in combat: %s"),
-                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s second(s)")
+                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s §3second(s)")
         );
     }
 }

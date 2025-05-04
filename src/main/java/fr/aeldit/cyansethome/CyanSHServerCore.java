@@ -4,7 +4,7 @@ import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
 import fr.aeldit.cyansethome.commands.HomeCommands;
 import fr.aeldit.cyansethome.commands.HomeOfCommands;
 import fr.aeldit.cyansethome.commands.PermissionCommands;
-import fr.aeldit.cyansethome.util.MissingLivingEntityEvent;
+import fr.aeldit.cyanlib.lib.events.MissingLivingEntityEvent;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;

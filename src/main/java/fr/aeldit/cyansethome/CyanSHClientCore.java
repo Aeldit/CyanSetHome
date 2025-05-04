@@ -1,10 +1,10 @@
 package fr.aeldit.cyansethome;
 
 import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
+import fr.aeldit.cyanlib.lib.events.MissingLivingEntityEvent;
 import fr.aeldit.cyansethome.commands.HomeCommands;
 import fr.aeldit.cyansethome.commands.HomeOfCommands;
 import fr.aeldit.cyansethome.commands.PermissionCommands;
-import fr.aeldit.cyansethome.util.MissingLivingEntityEvent;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
