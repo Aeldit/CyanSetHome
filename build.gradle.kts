@@ -10,15 +10,12 @@ repositories {
     maven("https://api.modrinth.com/maven") {
         name = "Modrinth"
     }
-    maven("https://maven.terraformersmc.com/releases/") {
-        name = "TerraformersMC"
-    }
 }
 
 object C {
-    const val MOD_VERSION: String = "1.1.6"
-    const val LOADER_VERSION: String = "0.16.14"
-    const val CYANLIB_VERSION: String = "1.0.4"
+    const val MOD_VERSION: String = "1.1.7"
+    const val LOADER_VERSION: String = "0.16.13"
+    const val CYANLIB_VERSION: String = "1.0.5"
     val YARN_MAPPINGS: HashMap<String, String> = hashMapOf(
         "1.19.4" to "1.19.4+build.2",
         "1.20.1" to "1.20.1+build.10",
@@ -91,24 +88,10 @@ dependencies {
     minecraft("com.mojang:minecraft:${mod.mcVersion}")
     mappings("net.fabricmc:yarn:${mod.yarnMappings}:v2")
     modImplementation("net.fabricmc:fabric-loader:${C.LOADER_VERSION}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${mod.fabricVersion}")
+    testImplementation("net.fabricmc:fabric-loader-junit:${C.LOADER_VERSION}")
 
-    // Fabric API
-    setOf(
-        // ModMenu dependencies
-        "fabric-resource-loader-v0",
-        "fabric-key-binding-api-v1",
-        // CyanLib dependencies
-        "fabric-command-api-v2",
-        "fabric-lifecycle-events-v1",
-        "fabric-screen-api-v1",
-        // CyanSetHome dependencies
-        "fabric-networking-api-v1",
-        "fabric-entity-events-v1",
-    ).forEach {
-        modImplementation(fabricApi.module(it, mod.fabricVersion))
-    }
-
-    modImplementation("com.terraformersmc:modmenu:${mod.modmenuVersion}")
+    modImplementation("maven.modrinth:modmenu:${mod.modmenuVersion}")
 
     val debug = false
     if (debug) {
@@ -118,7 +101,6 @@ dependencies {
     }
 
     implementation("com.google.code.gson:gson:2.12.1")
-    testImplementation("net.fabricmc:fabric-loader-junit:${C.LOADER_VERSION}")
 }
 
 tasks.test {

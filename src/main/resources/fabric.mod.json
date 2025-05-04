@@ -30,12 +30,7 @@
     "minecraft": ">=${min} <=${max}",
     "java": ">=${java_version}",
     "fabricloader": ">=${loader_version}",
-    "fabric-resource-loader-v0": ">=${fabric_api_version}",
-    "fabric-key-binding-api-v1": ">=${fabric_api_version}",
-    "fabric-command-api-v2": ">=${fabric_api_version}",
-    "fabric-lifecycle-events-v1": ">=${fabric_api_version}",
-    "fabric-screen-api-v1": ">=${fabric_api_version}",
-    "fabric-networking-api-v1": ">=${fabric_api_version}",
+    "fabric-api": ">=${fabric_api_version}",
     "cyanlib": "=${cyanlib_version}"
   },
   "custom": {

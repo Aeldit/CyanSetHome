@@ -1,7 +1,7 @@
 package fr.aeldit.cyansethome;
 
 import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
-import fr.aeldit.cyanlib.lib.events.MissingLivingEntityEvent;
+import fr.aeldit.cyanlib.events.MissingLivingEntityEvent;
 import fr.aeldit.cyansethome.commands.HomeCommands;
 import fr.aeldit.cyansethome.commands.HomeOfCommands;
 import fr.aeldit.cyansethome.commands.PermissionCommands;
