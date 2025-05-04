@@ -267,7 +267,7 @@ public class HomeCommands
             return 0;
         }
 
-        if (TP_IN_COMBAT.getValue() && CombatTracking.isPlayerInCombat(player.getName().getString()))
+        if (!TP_IN_COMBAT.getValue() && CombatTracking.isPlayerInCombat(player.getName().getString()))
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.noHomeWhileInCombat");
             return 0;

@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import fr.aeldit.cyansethome.CombatTracking;
 import fr.aeldit.cyansethome.commands.arguments.ArgumentSuggestion;
 import fr.aeldit.cyansethome.homes.Home;
 import net.minecraft.server.MinecraftServer;
@@ -444,6 +445,12 @@ public class HomeOfCommands
         if (player == null
             || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
         {
+            return 0;
+        }
+
+        if (!TP_IN_COMBAT.getValue() && CombatTracking.isPlayerInCombat(player.getName().getString()))
+        {
+            CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.noHomeWhileInCombat");
             return 0;
         }
 
