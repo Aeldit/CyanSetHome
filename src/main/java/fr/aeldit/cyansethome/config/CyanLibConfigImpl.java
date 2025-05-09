@@ -111,6 +111,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.set.blockPerXpLevelHome", "§3The number of blocks per 1 XP when teleporting is now %s"),
                 entry("msg.set.tpInCombat", "§3Toggled teleportation while in combat %s"),
                 entry("msg.set.combatTimeoutSeconds", "§3The combat timeout is now %s second(s)"),
+                entry("msg.set.tpCooldown", "§3Toggled cooldown for teleportation %s"),
+                entry("msg.set.tpCooldownSeconds", "§3The TP cooldown is now %s second(s)"),
 
                 // HEADERS
                 entry("msg.listHomes", "§6CyanSetHome - YOUR HOMES\n"),
@@ -173,6 +175,15 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                         "§3The§e combatTimeoutSeconds §3option defines the amount of time in seconds a player stays "
                                 + "in combat mode after taking damage"
                 ),
+                entry(
+                        "msg.getDesc.tpCooldown",
+                        "§3The§e tpCooldown §3option defines whether players will have a cooldown before teleporting"
+                ),
+                entry(
+                        "msg.getDesc.tpCooldownSeconds",
+                        "§3The§e tpCooldownSeconds §3option defines the amount of time in seconds a player will wait " +
+                                "before teleporting"
+                ),
 
                 // GET_CFG
                 entry("msg.getCfg.header", "§6CyanSetHome - OPTIONS\n"),
@@ -187,7 +198,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.getCfg.xpUseFixedAmount", "§6- §3Use fixed amount of XP for TPs: %s"),
                 entry("msg.getCfg.xpAmount", "§6- §3Fixed XP amount: %s"),
                 entry("msg.getCfg.tpInCombat", "§6- §3TP while in combat: %s"),
-                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s §3second(s)")
+                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s §3second(s)"),
+                entry("msg.getCfg.tpCooldown", "§6- §3TP cooldown: %s"),
+                entry("msg.getCfg.tpCooldownSeconds", "§6- §3TP cooldown: %s §3second(s)")
         );
     }
 }
