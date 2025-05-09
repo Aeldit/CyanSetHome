@@ -189,7 +189,7 @@ publishMods {
         requires("fabric-api", "cyanlib")
         optional("modmenu")
 
-        changelog = rootProject.file("changelogs/latest.md")
+        changelog = rootProject.file("changelog.md")
             .takeIf { it.exists() }
             ?.readText()
             ?: "No changelog provided."
