@@ -14,12 +14,6 @@ public class PlayerMoveEvent
     /**
      * An event that is called after a player moved. This is fired from {@link ServerPlayerEntity#applyMovementEffects}
      * after moving
-     * <p>
-     * The base damage taken is the damage initially applied to the entity. Damage taken is the amount of damage the
-     * entity actually took, after effects such as shields and extra freezing damage are applied. Damage taken does NOT
-     * include damage reduction from armor and enchantments.
-     * <p>
-     * This event is not fired if the entity is not a player.
      */
     public static final Event<AfterMove> AFTER_MOVE = EventFactory.createArrayBacked(
             AfterMove.class, callbacks -> (player) -> {
