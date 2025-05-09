@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import static fr.aeldit.cyansethome.CooldownManager.addPlayerCooldown;
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.*;
 
@@ -227,9 +228,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -297,9 +298,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -346,9 +347,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -391,9 +392,9 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
+                || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_BYPASS.getValue(), "bypassDisabled")
         )
         {
             return 0;
@@ -443,7 +444,7 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
         {
             return 0;
         }
@@ -467,7 +468,7 @@ public class HomeOfCommands
         }
 
         if ((!ALLOW_BYPASS.getValue() || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
-            && !TRUSTS.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+                && !TRUSTS.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
         )
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.notOpOrTrusted");
@@ -495,7 +496,7 @@ public class HomeOfCommands
         if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
         {
             requiredXpLevelOrPoints = XP_USE_FIXED_AMOUNT.getValue() ? XP_AMOUNT.getValue()
-                                                                     : home.getRequiredXpLevelsToTp(player);
+                    : home.getRequiredXpLevelsToTp(player);
 
             if ((XP_USE_POINTS.getValue() ? player.totalExperience : player.experienceLevel) < requiredXpLevelOrPoints)
             {
@@ -507,6 +508,21 @@ public class HomeOfCommands
                 );
                 return 0;
             }
+        }
+
+        if (TP_COOLDOWN.getValue())
+        {
+            String playerName = player.getName().getString();
+            HOMES.requestTp(playerName);
+            addPlayerCooldown(
+                    player, TP_COOLDOWN_SECONDS.getValue() * 1000, System.currentTimeMillis(), home,
+                    requiredXpLevelOrPoints, server
+            );
+            CYANSH_LANG_UTILS.sendPlayerMessage(
+                    player, "msg.waitingXSeconds", Formatting.GOLD + String.valueOf(TP_COOLDOWN_SECONDS.getValue())
+            );
+            // Teleportation will be executed in the CyanSHClientCore and CyanSHServerCore classes
+            return Command.SINGLE_SUCCESS;
         }
 
         home.teleport(server, player);
@@ -536,7 +552,7 @@ public class HomeOfCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled"))
         {
             return 0;
         }
@@ -551,7 +567,7 @@ public class HomeOfCommands
 
         // The player does not have sufficient permissions or is not trusted
         if ((!ALLOW_BYPASS.getValue() || !player.hasPermissionLevel(MIN_OP_LVL_BYPASS.getValue()))
-            && !TRUSTS.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
+                && !TRUSTS.isPlayerTrustingFromName(trustingPlayer, player.getName().getString())
         )
         {
             CYANSH_LANG_UTILS.sendPlayerMessage(player, "error.notOpOrTrusted");

@@ -4,12 +4,16 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerMoveEvent
 {
     /**
-     * An event that is called after a player moved. This is fired from {@link Entity#move} after moving
+     * An event that is called after a player moved. This is fired from {@link ServerPlayerEntity#applyMovementEffects}
+     * after moving
      * <p>
      * The base damage taken is the damage initially applied to the entity. Damage taken is the amount of damage the
      * entity actually took, after effects such as shields and extra freezing damage are applied. Damage taken does NOT
@@ -18,10 +22,10 @@ public class PlayerMoveEvent
      * This event is not fired if the entity is not a player.
      */
     public static final Event<AfterMove> AFTER_MOVE = EventFactory.createArrayBacked(
-            AfterMove.class, callbacks -> (playerEntity, type, movement) -> {
+            AfterMove.class, callbacks -> (player) -> {
                 for (AfterMove callback : callbacks)
                 {
-                    callback.afterMove(playerEntity, type, movement);
+                    callback.afterMove(player);
                 }
             }
     );
@@ -29,11 +33,6 @@ public class PlayerMoveEvent
     @FunctionalInterface
     public interface AfterMove
     {
-        /**
-         * Called after a player entity moved.
-         *
-         * @param playerEntity the player entity that moved
-         */
-        void afterMove(Entity playerEntity, MovementType type, Vec3d movement);
+        void afterMove(ServerPlayerEntity player);
     }
 }

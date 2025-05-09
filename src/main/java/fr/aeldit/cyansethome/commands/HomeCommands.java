@@ -13,8 +13,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -22,6 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
+import static fr.aeldit.cyansethome.CooldownManager.addPlayerCooldown;
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.*;
 
@@ -312,32 +311,17 @@ public class HomeCommands
 
         if (TP_COOLDOWN.getValue())
         {
-            long startTime = System.currentTimeMillis();
-            long cooldown = TP_COOLDOWN_SECONDS.getValue() * 1000;
             String playerName = player.getName().getString();
+            HOMES.requestTp(playerName);
+            addPlayerCooldown(
+                    player, TP_COOLDOWN_SECONDS.getValue() * 1000, System.currentTimeMillis(), home, requiredXpLevel,
+                    server
+            );
             CYANSH_LANG_UTILS.sendPlayerMessage(
                     player, "msg.waitingXSeconds", Formatting.GOLD + String.valueOf(TP_COOLDOWN_SECONDS.getValue())
             );
-            while (System.currentTimeMillis() - startTime < cooldown)
-            {
-                if (HOMES.playerMoved(playerName))
-                {
-                    CYANSH_LANG_UTILS.sendPlayerMessage(
-                            player, "error.movedWhileWaitingForTp", Formatting.YELLOW + homeName
-                    );
-                    HOMES.removeMovedPlayer(playerName);
-                    return 0;
-                }
-                try
-                {
-                    Thread.sleep(500);
-                }
-                catch (InterruptedException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-            HOMES.removeMovedPlayer(playerName);
+            // Teleportation will be executed in the CyanSHClientCore and CyanSHServerCore classes
+            return Command.SINGLE_SUCCESS;
         }
 
         home.teleport(server, player);

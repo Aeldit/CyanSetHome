@@ -23,26 +23,22 @@ import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 public class Homes
 {
     private final ConcurrentHashMap<String, List<Home>> playerHomes = new ConcurrentHashMap<>();
-    private final List<String> movedPlayers = Collections.synchronizedList(new ArrayList<>());
+    private final List<String> tpRequests = Collections.synchronizedList(new ArrayList<>());
     public static Path HOMES_PATH = Path.of("%s/homes".formatted(MOD_PATH));
 
-    public void addMovedPlayer(String playerName)
+    public void requestTp(String playerName)
     {
-        if (!movedPlayers.contains(playerName))
-        {
-            movedPlayers.add(playerName);
-        }
-        System.out.println(movedPlayers);
+        tpRequests.add(playerName);
     }
 
-    public boolean playerMoved(String playerName)
+    public boolean playerRequestedTp(String playerName)
     {
-        return movedPlayers.contains(playerName);
+        return tpRequests.contains(playerName);
     }
 
-    public void removeMovedPlayer(String playerName)
+    public synchronized void endTpRequest(String playerName)
     {
-        movedPlayers.remove(playerName);
+        tpRequests.remove(playerName);
     }
 
     public void addPlayerHomes(String playerKey, List<Home> playerHomes)
