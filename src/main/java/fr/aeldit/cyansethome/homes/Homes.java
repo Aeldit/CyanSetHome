@@ -329,7 +329,7 @@ public class Homes
                   try (Reader reader = Files.newBufferedReader(file.toPath()))
                   {
                       addPlayerHomes(
-                              file.getName().substring(file.getName().lastIndexOf('.')),
+                              file.getName().substring(0, file.getName().lastIndexOf('.')),
                               Collections.synchronizedList(
                                       new ArrayList<>(List.of(gson.fromJson(reader, Home[].class)))
                               )
