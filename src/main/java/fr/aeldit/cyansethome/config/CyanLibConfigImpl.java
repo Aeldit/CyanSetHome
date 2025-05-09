@@ -23,13 +23,13 @@ public class CyanLibConfigImpl implements ICyanLibConfig
     public static final BooleanOption XP_USE_FIXED_AMOUNT = new BooleanOption("xpUseFixedAmount", false);
     public static final IntegerOption XP_AMOUNT = new IntegerOption("xpAmount", 1, RULES.POSITIVE_VALUE);
 
+    public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
+            "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
+    );
+
     public static final BooleanOption TP_IN_COMBAT = new BooleanOption("tpInCombat", true);
     public static final IntegerOption COMBAT_TIMEOUT_SECONDS = new IntegerOption(
             "combatTimeoutSeconds", 30, RULES.POSITIVE_VALUE
-    );
-
-    public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
-            "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
     );
 
     public static final BooleanOption TP_COOLDOWN = new BooleanOption("tpCooldown", false);
