@@ -208,16 +208,15 @@ public class Homes
         {
             if (file.isFile())
             {
-                String[] splitFileName = file.getName()
-                                             .split(" ");
-                String[] splitFileNameOld = file.getName()
-                                                .split("_");
+                String[] splitFileName = file.getName().split(" ");
+                String[] splitFileNameOld = file.getName().split("_");
 
                 if (splitFileName[0].equals(playerUUID)
                         && !splitFileName[1].equals("%s.json".formatted(playerName))
                         || (
                         splitFileNameOld.length == 2 && splitFileNameOld[0].equals(
-                                playerUUID) && !splitFileNameOld[1].equals("%s.json".formatted(playerName))
+                                playerUUID) && !splitFileNameOld[1].equals("%s.json".formatted(playerName)
+                        )
                 )
                 )
                 {
