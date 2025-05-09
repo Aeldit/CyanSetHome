@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
+import static fr.aeldit.cyansethome.CooldownManager.addPlayerCooldown;
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.*;
 
@@ -113,8 +114,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -167,8 +168,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -198,8 +199,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -224,8 +225,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -260,8 +261,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;
@@ -294,7 +295,7 @@ public class HomeCommands
         if (USE_XP_TO_TP_HOME.getValue() && !player.isCreative())
         {
             requiredXpLevel = XP_USE_FIXED_AMOUNT.getValue() ? XP_AMOUNT.getValue()
-                                                             : home.getRequiredXpLevelsToTp(player);
+                    : home.getRequiredXpLevelsToTp(player);
 
             if ((XP_USE_POINTS.getValue() ? player.totalExperience : player.experienceLevel) < requiredXpLevel)
             {
@@ -306,6 +307,21 @@ public class HomeCommands
                 );
                 return 0;
             }
+        }
+
+        if (TP_COOLDOWN.getValue())
+        {
+            String playerName = player.getName().getString();
+            HOMES.requestTp(playerName);
+            addPlayerCooldown(
+                    player, TP_COOLDOWN_SECONDS.getValue() * 1000, System.currentTimeMillis(), home, requiredXpLevel,
+                    server
+            );
+            CYANSH_LANG_UTILS.sendPlayerMessage(
+                    player, "msg.waitingXSeconds", Formatting.GOLD + String.valueOf(TP_COOLDOWN_SECONDS.getValue())
+            );
+            // Teleportation will be executed in the CyanSHClientCore and CyanSHServerCore classes
+            return Command.SINGLE_SUCCESS;
         }
 
         home.teleport(server, player);
@@ -332,8 +348,8 @@ public class HomeCommands
     {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null
-            || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
-            || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
+                || !CYANSH_LIB_UTILS.hasPermission(player, MIN_OP_LVL_HOMES.getValue())
+                || !CYANSH_LIB_UTILS.isOptionEnabled(player, ALLOW_HOMES.getValue(), "homesDisabled")
         )
         {
             return 0;

@@ -14,5 +14,9 @@
   "cyanlib.config.option.xpUsePoints": "XpUsePoints",
   "cyanlib.config.option.xpUseFixedAmount": "XpUseFixedAmount",
   "cyanlib.config.option.xpAmount": "XpAmount",
-  "cyanlib.config.option.blockPerXpLevelHome": "BlockPerXpLevelHome"
+  "cyanlib.config.option.blockPerXpLevelHome": "BlockPerXpLevelHome",
+  "cyanlib.config.option.tpInCombat": "TpInCombat",
+  "cyanlib.config.option.combatTimeoutSeconds": "CombatTimeoutSeconds",
+  "cyanlib.config.option.tpCooldown": "TpCooldown",
+  "cyanlib.config.option.tpCooldownSeconds": "TpCooldownSeconds"
 }

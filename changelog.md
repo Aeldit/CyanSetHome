@@ -1,1 +1,1 @@
-Fix home files duplicating when they belong to a bedrock player that joined via Geyser
+Add the possibility to set a cooldown before players teleport

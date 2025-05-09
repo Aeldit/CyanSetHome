@@ -23,13 +23,18 @@ public class CyanLibConfigImpl implements ICyanLibConfig
     public static final BooleanOption XP_USE_FIXED_AMOUNT = new BooleanOption("xpUseFixedAmount", false);
     public static final IntegerOption XP_AMOUNT = new IntegerOption("xpAmount", 1, RULES.POSITIVE_VALUE);
 
+    public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
+            "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
+    );
+
     public static final BooleanOption TP_IN_COMBAT = new BooleanOption("tpInCombat", true);
     public static final IntegerOption COMBAT_TIMEOUT_SECONDS = new IntegerOption(
             "combatTimeoutSeconds", 30, RULES.POSITIVE_VALUE
     );
 
-    public static final IntegerOption BLOCKS_PER_XP_LEVEL_HOME = new IntegerOption(
-            "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
+    public static final BooleanOption TP_COOLDOWN = new BooleanOption("tpCooldown", false);
+    public static final IntegerOption TP_COOLDOWN_SECONDS = new IntegerOption(
+            "tpCooldownSeconds", 5, RULES.POSITIVE_VALUE
     );
 
     @Override
@@ -64,6 +69,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("error.notEnoughXp", "§cYou don't have enough XP (%s§c %s§c are required)"),
                 entry("error.playerNotFound", "§cCouldn't find the player %s"),
                 entry("error.noHomeWhileInCombat", "§cYou cannot teleport to a home while in combat"),
+                entry("error.movedWhileWaitingForTp", "§cYou moved, teleportation aborted"),
 
                 // MESSAGES
                 entry("msg.setHome", "§3The home %s §3has been created"),
@@ -83,6 +89,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.playerUnTrusted", "§3You no longer trust %s"),
                 entry("msg.translationsReloaded", "§3Translations have been reloaded"),
                 entry("msg.getHome", "%s §3(%s§3, created on the %s§3)"),
+                entry("msg.waitingXSeconds", "§3Waiting %s §3seconds before teleportation"),
 
                 // SETS
                 entry("msg.set.allowHomes", "§3Toggled§d allowHome §3option %s"),
@@ -104,6 +111,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.set.blockPerXpLevelHome", "§3The number of blocks per 1 XP when teleporting is now %s"),
                 entry("msg.set.tpInCombat", "§3Toggled teleportation while in combat %s"),
                 entry("msg.set.combatTimeoutSeconds", "§3The combat timeout is now %s second(s)"),
+                entry("msg.set.tpCooldown", "§3Toggled cooldown for teleportation %s"),
+                entry("msg.set.tpCooldownSeconds", "§3The TP cooldown is now %s second(s)"),
 
                 // HEADERS
                 entry("msg.listHomes", "§6CyanSetHome - YOUR HOMES\n"),
@@ -116,8 +125,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 ),
                 entry(
                         "msg.getDesc.allowByPass", "§3The§d allowByPass §3option defines whether admins " +
-                                                   "with the correct OP level can bypass permissions like trust "
-                                                   + "between players"
+                                "with the correct OP level can bypass permissions like trust "
+                                + "between players"
                 ),
                 entry(
                         "msg.getDesc.maxHomes",
@@ -134,8 +143,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry(
                         "msg.getDesc.blockPerXpLevelHome",
                         "§3The number of blocks that will consume 1 XP level for teleportation to a home.\n" +
-                        "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
-                        " will lose 1 XP level, 2 XP level for 600 blocks, ..."
+                                "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
+                                " will lose 1 XP level, 2 XP level for 600 blocks, ..."
                 ),
                 entry(
                         "msg.getDesc.useXpToTpHome",
@@ -144,27 +153,36 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry(
                         "msg.getDesc.xpUsePoints",
                         "§3The§e xpUsePoints §3option defines whether the necessary XP will be in points or in " +
-                        "levels"
+                                "levels"
                 ),
                 entry(
                         "msg.getDesc.xpUseFixedAmount",
                         "§3The§e xpUseFixedAmount §3option defines the whether the necessary XP to teleport will be a"
-                        + " fixed amount or will depend on the distance"
+                                + " fixed amount or will depend on the distance"
                 ),
                 entry(
                         "msg.getDesc.xpAmount",
                         "§3The§e xpAmount §3option defines the fixed amount of XP used when the xpUseFixedAmount "
-                        + "option is ON"
+                                + "option is ON"
                 ),
                 entry(
                         "msg.getDesc.tpInCombat",
                         "§3The§e tpInCombat §3option defines whether players can teleport to homes after taking "
-                        + "damage by a mod or a player"
+                                + "damage by a mod or a player"
                 ),
                 entry(
                         "msg.getDesc.combatTimeoutSeconds",
                         "§3The§e combatTimeoutSeconds §3option defines the amount of time in seconds a player stays "
-                        + "in combat mode after taking damage"
+                                + "in combat mode after taking damage"
+                ),
+                entry(
+                        "msg.getDesc.tpCooldown",
+                        "§3The§e tpCooldown §3option defines whether players will have a cooldown before teleporting"
+                ),
+                entry(
+                        "msg.getDesc.tpCooldownSeconds",
+                        "§3The§e tpCooldownSeconds §3option defines the amount of time in seconds a player will wait " +
+                                "before teleporting"
                 ),
 
                 // GET_CFG
@@ -180,7 +198,9 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.getCfg.xpUseFixedAmount", "§6- §3Use fixed amount of XP for TPs: %s"),
                 entry("msg.getCfg.xpAmount", "§6- §3Fixed XP amount: %s"),
                 entry("msg.getCfg.tpInCombat", "§6- §3TP while in combat: %s"),
-                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s §3second(s)")
+                entry("msg.getCfg.combatTimeoutSeconds", "§6- §3Combat timeout: %s §3second(s)"),
+                entry("msg.getCfg.tpCooldown", "§6- §3TP cooldown: %s"),
+                entry("msg.getCfg.tpCooldownSeconds", "§6- §3TP cooldown: %s §3second(s)")
         );
     }
 }

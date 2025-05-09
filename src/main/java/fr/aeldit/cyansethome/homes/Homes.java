@@ -23,20 +23,30 @@ import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.MAX_HOMES;
 public class Homes
 {
     private final ConcurrentHashMap<String, List<Home>> playerHomes = new ConcurrentHashMap<>();
+    private final List<String> tpRequests = Collections.synchronizedList(new ArrayList<>());
     public static Path HOMES_PATH = Path.of("%s/homes".formatted(MOD_PATH));
 
-    /**
-     * Adds an entry to the map {@code homes} with all the player's homes
-     */
+    public void requestTp(String playerName)
+    {
+        tpRequests.add(playerName);
+    }
+
+    public boolean playerRequestedTp(String playerName)
+    {
+        return tpRequests.contains(playerName);
+    }
+
+    public synchronized void endTpRequest(String playerName)
+    {
+        tpRequests.remove(playerName);
+    }
+
     public void addPlayerHomes(String playerKey, List<Home> playerHomes)
     {
         this.playerHomes.put(playerKey, playerHomes);
         writeHomes(playerKey);
     }
 
-    /**
-     * @return {@code true} on success | {@code false} on failure
-     */
     public boolean addHome(String playerKey, @NotNull Home home)
     {
         if (getHome(playerKey, home.name()) == null)
@@ -56,9 +66,6 @@ public class Homes
         return false;
     }
 
-    /**
-     * @return {@code true} on success | {@code false} on failure
-     */
     public boolean removeHome(@NotNull String playerKey, String homeName)
     {
         Home home = getHome(playerKey, homeName);
@@ -77,11 +84,6 @@ public class Homes
         return false;
     }
 
-    /**
-     * Removes the key:value entry of the player {@code playerName} if it exists
-     *
-     * @return {@code true} if homes were removed | {@code false} otherwise
-     */
     public boolean removeAll(String playerKey)
     {
         if (playerHomes.containsKey(playerKey))
@@ -98,11 +100,6 @@ public class Homes
         return false;
     }
 
-    /**
-     * Renames the home of the player
-     *
-     * @return {@code true} on success | {@code false} on failure
-     */
     public boolean rename(String playerKey, String homeName, String newHomeName)
     {
         Home home = getHome(playerKey, homeName);
@@ -117,10 +114,6 @@ public class Homes
         return false;
     }
 
-    /**
-     * @return An ArrayList containing all the homes of the player {@code playerKey}, {@code null} if the player doesn't
-     * have homes
-     */
     public @Nullable List<Home> getPlayerHomes(String playerKey)
     {
         if (!playerHomes.containsKey(playerKey) || playerHomes.get(playerKey).isEmpty())
@@ -130,9 +123,6 @@ public class Homes
         return playerHomes.get(playerKey);
     }
 
-    /**
-     * @return An ArrayList containing the names of all the players that have at least 1 home
-     */
     public List<String> getPlayersWithHomes(String excludedPlayer)
     {
         return playerHomes.keySet()
@@ -142,9 +132,6 @@ public class Homes
                           .toList();
     }
 
-    /**
-     * @return An ArrayList containing all the homes names of the player {@code playerName}
-     */
     public @Nullable List<String> getHomesNames(String playerKey)
     {
         return playerHomes.containsKey(playerKey) ? playerHomes.get(playerKey).stream().map(Home::name).toList() : null;
@@ -166,9 +153,6 @@ public class Homes
                           .orElse(null);
     }
 
-    /**
-     * Returns the key associated with the name {@code playerName}
-     */
     public @Nullable String getKeyFromName(String playerName)
     {
         return playerHomes.keySet()
@@ -178,24 +162,11 @@ public class Homes
                           .orElse(null);
     }
 
-    /**
-     * Returns whether the given player has reached its maximum amount of homes
-     * <p>
-     * If the player is not found in the list (has no homes), this returns {@code false}
-     *
-     * @param playerKey The player key (in the form {@code "playerUUID playerName"})
-     */
     public boolean maxHomesReached(String playerKey)
     {
         return playerHomes.containsKey(playerKey) && playerHomes.get(playerKey).size() >= MAX_HOMES.getValue();
     }
 
-    /**
-     * Returns the index of the home named {@code homeName} belonging
-     * to the player whose key is {@code playerKey}
-     *
-     * @return The index of the given home if it exists | {@code -1} otherwise
-     */
     public @Nullable Home getHome(String playerKey, String homeName)
     {
         if (playerHomes.containsKey(playerKey))
