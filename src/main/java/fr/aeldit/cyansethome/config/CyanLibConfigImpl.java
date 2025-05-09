@@ -32,6 +32,11 @@ public class CyanLibConfigImpl implements ICyanLibConfig
             "blockPerXpLevelHome", 300, RULES.POSITIVE_VALUE
     );
 
+    public static final BooleanOption TP_COOLDOWN = new BooleanOption("tpCooldown", false);
+    public static final IntegerOption TP_COOLDOWN_SECONDS = new IntegerOption(
+            "tpCooldownSeconds", 5, RULES.POSITIVE_VALUE
+    );
+
     @Override
     public Map<String, String> getDefaultTranslations()
     {
@@ -64,6 +69,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("error.notEnoughXp", "§cYou don't have enough XP (%s§c %s§c are required)"),
                 entry("error.playerNotFound", "§cCouldn't find the player %s"),
                 entry("error.noHomeWhileInCombat", "§cYou cannot teleport to a home while in combat"),
+                entry("error.movedWhileWaitingForTp", "§cYou moved, teleportation aborted"),
 
                 // MESSAGES
                 entry("msg.setHome", "§3The home %s §3has been created"),
@@ -83,6 +89,7 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry("msg.playerUnTrusted", "§3You no longer trust %s"),
                 entry("msg.translationsReloaded", "§3Translations have been reloaded"),
                 entry("msg.getHome", "%s §3(%s§3, created on the %s§3)"),
+                entry("msg.waitingXSeconds", "§3Waiting %s §3seconds before teleportation"),
 
                 // SETS
                 entry("msg.set.allowHomes", "§3Toggled§d allowHome §3option %s"),
@@ -116,8 +123,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 ),
                 entry(
                         "msg.getDesc.allowByPass", "§3The§d allowByPass §3option defines whether admins " +
-                                                   "with the correct OP level can bypass permissions like trust "
-                                                   + "between players"
+                                "with the correct OP level can bypass permissions like trust "
+                                + "between players"
                 ),
                 entry(
                         "msg.getDesc.maxHomes",
@@ -134,8 +141,8 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry(
                         "msg.getDesc.blockPerXpLevelHome",
                         "§3The number of blocks that will consume 1 XP level for teleportation to a home.\n" +
-                        "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
-                        " will lose 1 XP level, 2 XP level for 600 blocks, ..."
+                                "If set to 300 (default), a player teleporting to a home in a distance <= 300 blocks" +
+                                " will lose 1 XP level, 2 XP level for 600 blocks, ..."
                 ),
                 entry(
                         "msg.getDesc.useXpToTpHome",
@@ -144,27 +151,27 @@ public class CyanLibConfigImpl implements ICyanLibConfig
                 entry(
                         "msg.getDesc.xpUsePoints",
                         "§3The§e xpUsePoints §3option defines whether the necessary XP will be in points or in " +
-                        "levels"
+                                "levels"
                 ),
                 entry(
                         "msg.getDesc.xpUseFixedAmount",
                         "§3The§e xpUseFixedAmount §3option defines the whether the necessary XP to teleport will be a"
-                        + " fixed amount or will depend on the distance"
+                                + " fixed amount or will depend on the distance"
                 ),
                 entry(
                         "msg.getDesc.xpAmount",
                         "§3The§e xpAmount §3option defines the fixed amount of XP used when the xpUseFixedAmount "
-                        + "option is ON"
+                                + "option is ON"
                 ),
                 entry(
                         "msg.getDesc.tpInCombat",
                         "§3The§e tpInCombat §3option defines whether players can teleport to homes after taking "
-                        + "damage by a mod or a player"
+                                + "damage by a mod or a player"
                 ),
                 entry(
                         "msg.getDesc.combatTimeoutSeconds",
                         "§3The§e combatTimeoutSeconds §3option defines the amount of time in seconds a player stays "
-                        + "in combat mode after taking damage"
+                                + "in combat mode after taking damage"
                 ),
 
                 // GET_CFG
