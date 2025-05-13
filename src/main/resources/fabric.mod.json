@@ -26,9 +26,6 @@
       "fr.aeldit.cyansethome.config.ModMenuApiImpl"
     ]
   },
-  "mixins": [
-    "cyansethome.mixins.json"
-  ],
   "depends": {
     "minecraft": ">=${min} <=${max}",
     "java": ">=${java_version}",

@@ -1,11 +1,12 @@
 package fr.aeldit.cyansethome;
 
 import fr.aeldit.cyanlib.events.MissingLivingEntityEvent;
+import fr.aeldit.cyanlib.events.PlayerMovedEvent;
+import fr.aeldit.cyanlib.lib.CombatTracking;
 import fr.aeldit.cyanlib.lib.commands.CyanLibConfigCommands;
 import fr.aeldit.cyansethome.commands.HomeCommands;
 import fr.aeldit.cyansethome.commands.HomeOfCommands;
 import fr.aeldit.cyansethome.commands.PermissionCommands;
-import fr.aeldit.cyansethome.event.PlayerMoveEvent;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -15,7 +16,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Formatting;
 
-import static fr.aeldit.cyansethome.CombatTracking.removePlayerOnPlayerQuit;
 import static fr.aeldit.cyansethome.CooldownManager.*;
 import static fr.aeldit.cyansethome.CyanSHCore.*;
 import static fr.aeldit.cyansethome.config.CyanLibConfigImpl.XP_USE_POINTS;
@@ -33,7 +33,7 @@ public class CyanSHClientCore implements ClientModInitializer
             TRUSTS.readClient();
         });
 
-        PlayerMoveEvent.AFTER_MOVE.register((player) -> {
+        PlayerMovedEvent.AFTER_MOVE.register((player) -> {
             if (HOMES.playerRequestedTp(player.getName().getString()))
             {
                 cancelCooldown(player);
@@ -89,7 +89,7 @@ public class CyanSHClientCore implements ClientModInitializer
         *///?}
 
         ServerPlayConnectionEvents.DISCONNECT.register(
-                (handler, server) -> removePlayerOnPlayerQuit(handler.player.getName().getString())
+                (handler, server) -> CombatTracking.removePlayerOnPlayerQuit(handler.player.getName().getString())
         );
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {

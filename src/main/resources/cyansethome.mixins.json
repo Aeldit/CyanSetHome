@@ -1,13 +1,11 @@
 {
-  "package": "fr.aeldit.cyansethome.mixin",
-  "required": true,
+  "package": "fr.aeldit",
+  "required": false,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
   "injectors": {
     "defaultRequire": 1
   },
-  "mixins": [
-    "ServerPlayerEntityMixin"
-  ],
+  "mixins": [],
   "client": []
 }
