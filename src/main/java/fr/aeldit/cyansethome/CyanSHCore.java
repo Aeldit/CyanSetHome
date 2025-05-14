@@ -38,13 +38,13 @@ public class CyanSHCore implements ModInitializer
 {
     public static final String MODID = "cyansethome";
     public static final Logger CYANSH_LOGGER = LoggerFactory.getLogger(MODID);
-    public static Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
+    public static final Path MOD_PATH = FabricLoader.getInstance().getConfigDir().resolve(MODID);
 
     public static final Homes HOMES = new Homes();
     public static final Trusts TRUSTS = new Trusts();
 
-    public static CyanLib CYANSH_LIB_UTILS = new CyanLib(MODID, new CyanLibConfigImpl());
-    public static CyanLibLanguageUtils CYANSH_LANG_UTILS = CYANSH_LIB_UTILS.getLanguageUtils();
+    public static final CyanLib CYANSH_LIB_UTILS = new CyanLib(MODID, new CyanLibConfigImpl());
+    public static final CyanLibLanguageUtils CYANSH_LANG_UTILS = CYANSH_LIB_UTILS.getLanguageUtils();
 
     public static void checkOrCreateHomesDir()
     {
