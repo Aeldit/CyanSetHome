@@ -16,11 +16,14 @@
   "icon": "assets/cyansh/icon.png",
   "environment": "*",
   "entrypoints": {
-    "server": [
-      "fr.aeldit.cyansethome.CyanSHServerCore"
+    "main": [
+      "fr.aeldit.cyansethome.CyanSHCore"
     ],
     "client": [
       "fr.aeldit.cyansethome.CyanSHClientCore"
+    ],
+    "server": [
+      "fr.aeldit.cyansethome.CyanSHServerCore"
     ],
     "modmenu": [
       "fr.aeldit.cyansethome.config.ModMenuApiImpl"
