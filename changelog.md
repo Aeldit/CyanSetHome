@@ -1,1 +1,1 @@
-Add the possibility to set a cooldown before players teleport
+Update to CyanLib 1.0.6
